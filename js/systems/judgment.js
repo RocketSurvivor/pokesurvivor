@@ -75,7 +75,8 @@ G.Judgment = (() => {
   let ported = false, landed = false, canSkip = false, cues = {};
   let A = null;                       // Arceus
   let center = null;                  // centro de la arena (mundo)
-  let arenaT = 0, bossT = 0, bossN = 0, base = 0, downs = 0, revives = 0;
+  let arenaT = 0, bossT = 0, bossN = 0, base = 0, downs = 0;
+  let back = null, retired = false, kept = null;   // seguir sin Arceus (ver retire)
   let dealt = 0, shielded = false, broke = false, brk = 0;
   let noBosses = false;                // para vídeos: sin legendarios (debugNoBosses)   // daño a Arceus · ¿hay legendarios? · objetos rotos
   // Daño a un solo enemigo por segundo (el que más recibe en cada segundo; con
@@ -87,7 +88,8 @@ G.Judgment = (() => {
 
   function reset() {
     phase = null; ct = 0; cfg = null; ported = landed = canSkip = false; cues = {};
-    A = null; center = null; arenaT = bossT = 0; bossN = 0; base = 0; downs = 0; revives = 0;
+    A = null; center = null; arenaT = bossT = 0; bossN = 0; base = 0; downs = 0;
+    back = null; retired = false; kept = null;
     dealt = 0; shielded = broke = false; brk = 0;
     hits = new Map(); hitT = 0; samples = []; embers = []; cam = null;
   }
@@ -154,6 +156,7 @@ G.Judgment = (() => {
   function port() {
     ported = true;
     const pl = G.Game.player, ts = TS();
+    back = { x: pl.x, y: pl.y, biome: G.World.biome };
     G.Rift.reset();
     if (authority()) G.EnemyMgr.stash(); else G.EnemyMgr.clearRemote();
     G.Projectiles.clear();
@@ -286,6 +289,7 @@ G.Judgment = (() => {
   /** En la pelea (lo llama game.js en cada fotograma de juego). */
   function update(dt, pl, time) {
     if (!phase) {
+      if (retired) return;                  // ya se fue: no vuelve en esta partida
       sampleDps(dt);                        // (para la vida del primer legendario)
       if (authority() && time >= AT && !G.Rift.inArena) start();
       return;
@@ -795,28 +799,36 @@ G.Judgment = (() => {
     /** ¿En plena pelea (no en la animación)? */
     get fighting() { return phase === 'fight'; },
     /**
-     * Seguir tras caer (sólo en solitario, ver game.js): la pelea sigue donde
-     * estaba (el reloj de la Sentencia no se reinicia, así que Arceus y los
-     * legendarios siguen escalando con el tiempo) y Arceus se aparta un poco.
+     * Seguir tras caer (sólo en solitario, ver game.js): Arceus se va para el
+     * resto de la partida y vuelves al mapa donde estabas, con los enemigos que
+     * había. Siguen las oleadas, mareas, jefes y grietas como antes del minuto
+     * 30, cada vez más fuertes porque escalan con el tiempo de la partida.
      */
-    revived(pl) {
-      revives++;
-      if (A) {
-        const [nx, ny] = G.U.norm(A.x - pl.x, A.y - pl.y);
-        A.x = pl.x + (nx || 1) * 260; A.y = pl.y + (ny || 0) * 260;
-        A.touchCd = Math.max(A.touchCd || 0, 2.5);
-      }
+    retire() {
+      if (phase !== 'fight') return;
+      kept = { time: arenaT, bosses: downs, dmg: Math.round(dealt), plate: cfg.pl };
+      phase = null; retired = true; A = null; brk = 0;
+      G.EnemyMgr.restore();
+      G.Projectiles.clear();
+      G.Combat.clearFields();
       G.Hazards.clear();
-      G.Spawner.say(G.I18n.f('¡Sigues en pie! Continuación {x}', revives), 2.6, true);
+      if (back) {
+        G.World.setBiome(back.biome, true);
+        for (const p of G.Game.everyone()) { p.x = back.x; p.y = back.y; }
+        G.Camera.x = back.x; G.Camera.y = back.y;
+      }
+      G.Game.flash('#fff3c8', 0.8);
+      G.Spawner.say('Arceus se ha ido… ¡la partida sigue!', 3);
     },
-    get revives() { return revives; },
+    /** ¿Ya hubo Sentencia y se siguió sin Arceus? */
+    get retired() { return retired; },
     /** ¿Hay legendarios vivos? (entonces los ataques no le apuntan a Arceus) */
     get shielded() { return shielded; },
     get cinematic() { return phase === 'cine'; },
     /** Lo que suena: nada en la animación hasta que aterriza. */
     get music() { return phase === 'cine' && ct < T_LAND ? null : 'judgment'; },
     /** Para el resumen de la partida: { time, bosses, dmg, plate } o null. */
-    summary() { return phase === 'fight' ? { time: arenaT, bosses: downs, dmg: Math.round(dealt), plate: cfg.pl } : null; },
+    summary() { return phase === 'fight' ? { time: arenaT, bosses: downs, dmg: Math.round(dealt), plate: cfg.pl } : kept; },
     /** Para pruebas: vida del primer legendario y daño medido. */
     get debug() { return { base, single: singleDps(), samples: samples.length }; },
     /** Para pruebas: la Sentencia ya. */

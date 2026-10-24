@@ -171,6 +171,26 @@ G.Enemies = (() => {
     return { cast, bosses };
   }
 
+  /**
+   * Jefe extra tras irse Arceus (spawner.js): un Pokémon fuerte al azar (ni
+   * legendario ni mega) con la vida y el daño del último jefe, que crecen un
+   * 50 % por cada 10 min de partida pasado el minuto 15 (y además bossScale).
+   */
+  /** @param dex  el Pokémon (si ya se eligió antes); si no, uno al azar */
+  function extraBoss(t, dex = 0) {
+    const last = BOSS_SLOTS[BOSS_SLOTS.length - 1];
+    const p = G.DEX_BY[dex] || G.U.pick(G.DEX.filter(p => !p.leg && !p.mega && p.bst >= 560 && G.SPRITE_META[p.dex]));
+    const k = 1 + Math.max(0, t - last.at) / 600 * 0.5;
+    G.Sprites.preload([p.dex]);
+    return {
+      at: t, dex: p.dex, name: p.name,
+      hp: Math.round(last.hp * 1.35 * k), spd: Math.round(G.U.clamp(40 + baseSpd(p) * 0.5, 40, 100)),
+      dmg: Math.round(last.dmg * 1.2 * Math.sqrt(k)), xp: Math.round(last.xp * k),
+      behavior: behaviorOf(p) === 'ranged' ? 'ranged' : (baseSpd(p) > 90 ? 'charger' : 'chase'),
+      shotDmg: Math.round(last.dmg * 0.55 * Math.sqrt(k)), shotCd: 1.1, range: 260
+    };
+  }
+
   // (El "tiempo extra" del minuto 60 se quitó al llegar la Sentencia de Arceus,
   //  que acaba todas las partidas en el minuto 30: ver systems/judgment.js.)
   function scale(t) {
@@ -224,7 +244,7 @@ G.Enemies = (() => {
   }
 
   return {
-    TIERS, BOSS_SLOTS, rollRun, scale, bossScale, bagAt, upcomingDex, candidates, hordeTypes, hordeDefs,
+    TIERS, BOSS_SLOTS, rollRun, extraBoss, scale, bossScale, bagAt, upcomingDex, candidates, hordeTypes, hordeDefs,
     get BOSSES() { if (!bosses) rollRun(); return bosses; },
     get cast() { if (!cast) rollRun(); return cast; }
   };

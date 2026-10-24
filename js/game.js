@@ -178,12 +178,10 @@ G.Game = (() => {
       fall = { time, level: pl.level, kills: pl.kills, dmg: j ? j.dmg : 0, judgeTime: j ? j.time : 0 };
     }
     state = 'continue';
-    const n = G.Judgment.revives;
     document.getElementById('cont-stats').innerHTML =
       `<div><span>Tiempo</span><b>${G.U.mmss(time)}</b></div>` +
       `<div><span>Ante Arceus</span><b class="gold">${G.U.mmss(G.Judgment.summary().time)}</b></div>` +
-      `<div style="grid-column:1/-1"><span>Marca para el ranking</span><b>${G.U.mmss(fall.time)}</b></div>` +
-      (n ? `<div style="grid-column:1/-1"><span>Continuaciones</span><b>${n}</b></div>` : '');
+      `<div style="grid-column:1/-1"><span>Marca para el ranking</span><b>${G.U.mmss(fall.time)}</b></div>`;
     G.UI.show('scr-continue');
     G.Audio.sfx('gameover');
     document.getElementById('btn-cont-yes').onclick = doContinue;
@@ -192,9 +190,9 @@ G.Game = (() => {
   function doContinue() {
     if (state !== 'continue' || !pl) return;
     G.UI.hideAll();
+    G.Judgment.retire();
     pl.revive(1);
     pl.invuln = 3;
-    G.Judgment.revived(pl);
     state = 'playing';
   }
 

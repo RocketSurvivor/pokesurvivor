@@ -22,11 +22,11 @@ G.Spawner = (() => {
   // hacia el minuto 6, cuando ya tienes ataques para tumbarlos.
   const hpK = t => 3.3 + Math.min(1.7, t / 210);
   const SHINY_RATE = 1 / 4096;
-  let acc = 0, bossIdx = 0, surgeT = 32, announce = null, announceT = 0, preloadT = 0;
+  let acc = 0, bossIdx = 0, surgeT = 32, announce = null, announceT = 0, preloadT = 0, extraT = 0, extraNext = null;
   let forceShiny = 0;           // para pruebas: los N próximos salen shiny
 
   function reset() {
-    acc = 0; bossIdx = 0; surgeT = 32; announce = null; announceT = 0; preloadT = 0;
+    acc = 0; bossIdx = 0; surgeT = 32; announce = null; announceT = 0; preloadT = 0; extraT = 0; extraNext = null;
     G.Enemies.rollRun();
     G.Sprites.preload(G.Enemies.upcomingDex(0, 80));
   }
@@ -149,6 +149,15 @@ G.Spawner = (() => {
     // --- jefes ---
     const b = G.Enemies.BOSSES[bossIdx];
     if (b && t >= b.at) { spawnBoss(anchor(), t, b); bossIdx++; }
+    // Tras irse Arceus (ver Judgment.retire): un jefe cada 3 min, el primero al minuto.
+    // (Se elige con antelación para que su sprite ya esté cargado al salir.)
+    if (!b && G.Judgment.retired) {
+      if (!extraT) { extraT = t + 60; extraNext = G.Enemies.extraBoss(extraT); }
+      else if (t >= extraT) {
+        spawnBoss(anchor(), t, G.Enemies.extraBoss(t, extraNext.dex));
+        extraT = t + 180; extraNext = G.Enemies.extraBoss(extraT);
+      }
+    }
 
     // Combate de jefe: las oleadas bajan al 25% y no hay mareas, para que el
     // jefe sea un momento propio y se le pueda apuntar entre la multitud.
