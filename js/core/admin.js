@@ -10,6 +10,9 @@
  */
 G.Admin = (() => {
   const NAMES = ['admin'];
+  // Otras cuentas de la nube con todo desbloqueado (por su UID de Firebase, que no se
+  // puede falsificar). Los moderadores del ranking van en net/ranking.js y firestore.rules.
+  const UIDS = ['iwfb9nOrIES0lq8ypnW1FmmPtGK2'];   // last
   const PASS_HASH = 'ed47f635476b2b792c76724c3fac6897a681b18c784353d557325080ee0b4ecc';
 
   const isAdminName = name => NAMES.includes(String(name || '').trim().toLowerCase());
@@ -52,5 +55,5 @@ G.Admin = (() => {
     return s;
   }
 
-  return { NAMES, isAdminName, checkPass, unlockAll };
+  return { NAMES, UIDS, isAdminName, checkPass, unlockAll };
 })();

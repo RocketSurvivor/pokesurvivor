@@ -631,7 +631,7 @@ G.DB = (() => {
     key = uid; user = save.name; guest = false;
     // Cuenta de administrador (core/admin.js): la de nombre "admin". El correo interno
     // es único, así que sólo existe una, la primera que se creó (con su contraseña).
-    const adminCloud = G.Admin && u.email && G.Admin.NAMES.some(n => u.email === nameToEmail(n));
+    const adminCloud = G.Admin && ((u.email && G.Admin.NAMES.some(n => u.email === nameToEmail(n))) || G.Admin.UIDS.includes(u.uid));
     if (adminCloud) { G.Admin.unlockAll(save); save = fold(save); }
     write(K_CLOUD + uid, save);
     lastPull = Date.now();
