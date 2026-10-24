@@ -1096,5 +1096,14 @@ G.I18n.add({
   "Mega-Zeraora": "Mega Zeraora",
   "Mega-Tatsugiri": "Mega Tatsugiri",
   "Megaevoluciones: 42 megas nuevas en el gacha (Mega-Charizard X, Mega-Mewtwo Y, Mega-Rayquaza, Mega-Gengar, Mega-Lucario, Mega-Zygarde...), cada una en el banner de la región de su Pokémon. Son Legendarias (5★), tienen sus propios tipos, estadísticas y habilidad, casi todas con versión shiny, aprenden las MT de su Pokémon y en la colección salen justo detrás de él.": "Mega Evolutions: 42 new Megas in the gacha (Mega Charizard X, Mega Mewtwo Y, Mega Rayquaza, Mega Gengar, Mega Lucario, Mega Zygarde...), each in the banner of its Pokémon's region. They are Legendary (5★), have their own types, stats and ability, almost all with a shiny version, learn their Pokémon's TMs and appear right after it in the collection.",
-  "Megaevoluciones, 18 ataques, 6 objetos y jefes con ataques nuevos": "Mega Evolutions, 18 moves, 6 items and bosses with new attacks"
+  "Megaevoluciones, 18 ataques, 6 objetos y jefes con ataques nuevos": "Mega Evolutions, 18 moves, 6 items and bosses with new attacks",
+  "Arceus te ha derrotado": "Arceus defeated you",
+  "Tu marca para el ranking ya está guardada. Si sigues, la Sentencia continúa donde estaba y Arceus y los legendarios se siguen haciendo más fuertes con el tiempo.": "Your ranking mark is already saved. If you keep going, the Judgment continues where it was, and Arceus and the legendaries keep getting stronger over time.",
+  "Continuar (1)": "Continue (1)",
+  "Terminar la run (2)": "End the run (2)",
+  "Marca para el ranking": "Ranking mark",
+  "Continuaciones": "Continues",
+  "Marca para el ranking (primera caída)": "Ranking mark (first fall)",
+  "¡Sigues en pie! Continuación {x}": "Still standing! Continue {x}",
+  "Ante Arceus ya no se acaba todo al caer: puedes continuar la run o terminarla. Si sigues, la Sentencia continúa donde estaba y Arceus y los legendarios se siguen haciendo más fuertes con el tiempo. Para el ranking, los récords y los logros cuenta la primera caída; seguir te da más experiencia y Pokémonedas por tiempo.": "Falling to Arceus no longer ends everything: you can continue the run or end it. If you keep going, the Judgment continues where it was, and Arceus and the legendaries keep getting stronger over time. The ranking, records and achievements use your first fall; continuing gives you more experience and time-based PokéCoins."
 });

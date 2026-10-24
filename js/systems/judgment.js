@@ -75,7 +75,7 @@ G.Judgment = (() => {
   let ported = false, landed = false, canSkip = false, cues = {};
   let A = null;                       // Arceus
   let center = null;                  // centro de la arena (mundo)
-  let arenaT = 0, bossT = 0, bossN = 0, base = 0, downs = 0;
+  let arenaT = 0, bossT = 0, bossN = 0, base = 0, downs = 0, revives = 0;
   let dealt = 0, shielded = false, broke = false, brk = 0;
   let noBosses = false;                // para vídeos: sin legendarios (debugNoBosses)   // daño a Arceus · ¿hay legendarios? · objetos rotos
   // Daño a un solo enemigo por segundo (el que más recibe en cada segundo; con
@@ -87,7 +87,7 @@ G.Judgment = (() => {
 
   function reset() {
     phase = null; ct = 0; cfg = null; ported = landed = canSkip = false; cues = {};
-    A = null; center = null; arenaT = bossT = 0; bossN = 0; base = 0; downs = 0;
+    A = null; center = null; arenaT = bossT = 0; bossN = 0; base = 0; downs = 0; revives = 0;
     dealt = 0; shielded = broke = false; brk = 0;
     hits = new Map(); hitT = 0; samples = []; embers = []; cam = null;
   }
@@ -792,6 +792,24 @@ G.Judgment = (() => {
   return {
     AT, reset, noteDmg, hitArceus, dress, dmgK, update, cineTick, skip, bossDown, drawable, drawAir, drawOverlay, onEvent, netState, netApply,
     get active() { return !!phase; }, capSpd,
+    /** ¿En plena pelea (no en la animación)? */
+    get fighting() { return phase === 'fight'; },
+    /**
+     * Seguir tras caer (sólo en solitario, ver game.js): la pelea sigue donde
+     * estaba (el reloj de la Sentencia no se reinicia, así que Arceus y los
+     * legendarios siguen escalando con el tiempo) y Arceus se aparta un poco.
+     */
+    revived(pl) {
+      revives++;
+      if (A) {
+        const [nx, ny] = G.U.norm(A.x - pl.x, A.y - pl.y);
+        A.x = pl.x + (nx || 1) * 260; A.y = pl.y + (ny || 0) * 260;
+        A.touchCd = Math.max(A.touchCd || 0, 2.5);
+      }
+      G.Hazards.clear();
+      G.Spawner.say(G.I18n.f('¡Sigues en pie! Continuación {x}', revives), 2.6, true);
+    },
+    get revives() { return revives; },
     /** ¿Hay legendarios vivos? (entonces los ataques no le apuntan a Arceus) */
     get shielded() { return shielded; },
     get cinematic() { return phase === 'cine'; },

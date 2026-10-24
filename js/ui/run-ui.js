@@ -139,6 +139,7 @@ G.RunUI = (() => {
         ${r.moves.map(m => `${G.Icons.html('move:' + m.id, 16)} ${G.T(m.name, 'move')} Nv.${m.lvl}`).join(' · ') || '—'}</b></div>
       ${r.caught && r.caught.length ? `<div style="grid-column:1/-1" class="caught"><span>${G.Icons.html('shiny', 12)} Shinies conseguidos</span>
         <div class="caught-row" id="over-caught"></div></div>` : ''}
+      ${r.fall ? `<div style="grid-column:1/-1"><span>Marca para el ranking (primera caída)</span><b>${G.U.mmss(r.fall.time)} · ${(r.fall.dmg || 0).toLocaleString(G.I18n.locale)}</b></div>` : ''}
       ${r.record ? '<div style="grid-column:1/-1;text-align:center" class="gold">¡Nuevo récord de tiempo!</div>' : ''}
       ${askSupport(r) ? `<div class="support-ask" id="over-ask" style="grid-column:1/-1">
         <button class="x" type="button" aria-label="Cerrar">×</button>

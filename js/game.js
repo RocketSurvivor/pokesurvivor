@@ -161,7 +161,40 @@ G.Game = (() => {
     // Para el ranking: el servidor apunta cuándo empieza la partida (anti-trampas).
     if (!coop || G.Coop.isHost) G.Ranking.runStarted(coop ? 'g' : 's');
     deathT = 0;
+    fall = null;
 
+    state = 'playing';
+  }
+
+  /*
+   * Seguir tras caer ante Arceus (sólo en solitario). La marca del ranking es
+   * la de la PRIMERA caída (tiempo, nivel, derrotados y daño a Arceus): seguir
+   * no la mejora. Lo demás (monedas por tiempo, experiencia) sí cuenta.
+   */
+  let fall = null;
+  function askContinue() {
+    if (!fall) {
+      const j = G.Judgment.summary();
+      fall = { time, level: pl.level, kills: pl.kills, dmg: j ? j.dmg : 0, judgeTime: j ? j.time : 0 };
+    }
+    state = 'continue';
+    const n = G.Judgment.revives;
+    document.getElementById('cont-stats').innerHTML =
+      `<div><span>Tiempo</span><b>${G.U.mmss(time)}</b></div>` +
+      `<div><span>Ante Arceus</span><b class="gold">${G.U.mmss(G.Judgment.summary().time)}</b></div>` +
+      `<div style="grid-column:1/-1"><span>Marca para el ranking</span><b>${G.U.mmss(fall.time)}</b></div>` +
+      (n ? `<div style="grid-column:1/-1"><span>Continuaciones</span><b>${n}</b></div>` : '');
+    G.UI.show('scr-continue');
+    G.Audio.sfx('gameover');
+    document.getElementById('btn-cont-yes').onclick = doContinue;
+    document.getElementById('btn-cont-no').onclick = () => { G.UI.hideAll(); state = 'playing'; endRun(true); };
+  }
+  function doContinue() {
+    if (state !== 'continue' || !pl) return;
+    G.UI.hideAll();
+    pl.revive(1);
+    pl.invuln = 3;
+    G.Judgment.revived(pl);
     state = 'playing';
   }
 
@@ -337,7 +370,9 @@ G.Game = (() => {
       recogidas: pl.coins
     };
     const coins = Math.round((parts.tiempo + parts.derrotados + parts.jefes + parts.recogidas) * mul);
-    const record = time > save.stats.bestTime;
+    // Si siguió tras caer ante Arceus, para récords, logros y ranking cuenta la primera caída.
+    const markT = fall ? fall.time : time;
+    const record = markT > save.stats.bestTime;
 
     save.coins += coins;
     bankTickets(false);
@@ -345,14 +380,14 @@ G.Game = (() => {
     save.pused = save.pused || {};
     save.pused[pl.dex] = (+save.pused[pl.dex] || 0) + 1;     // para "más usados" en la colección
     save.stats.totalKills += pl.kills;
-    save.stats.bestTime = Math.max(save.stats.bestTime, Math.floor(time));
+    save.stats.bestTime = Math.max(save.stats.bestTime, Math.floor(markT));
     if (coop) save.stats.bestGroupTime = Math.max(save.stats.bestGroupTime || 0, Math.floor(time));
     save.stats.bestLevel = Math.max(save.stats.bestLevel, pl.level);
     save.stats.coinsEarned += coins;
     const judge = G.Judgment.summary();
     if (judge) G.Progress.event('judgeEnd', judge);
     G.Judgment.reset();
-    G.Progress.event('runEnd', { time, level: pl.level, coins: pl.coins, types: pl.mon.types, group: coop });
+    G.Progress.event('runEnd', { time: markT, level: fall ? fall.level : pl.level, coins: pl.coins, types: pl.mon.types, group: coop });
     G.Progress.checkAch();
     // A la nube al acabar la partida (como mucho cada hora); si la marca entra
     // en un top (hoy, semana o mes), enseguida (abajo, tras subirla al ranking).
@@ -360,7 +395,8 @@ G.Game = (() => {
     if (G.Social.me) G.Social.publishProfile();
 
     // Ranking: en solitario cada uno lo suyo; en grupo lo sube el anfitrión.
-    const mark = { t: Math.floor(time), lv: pl.level, kills: pl.kills, dmg: judge ? judge.dmg : 0 };   // dmg: a Arceus
+    const mark = fall ? { t: Math.floor(fall.time), lv: fall.level, kills: fall.kills, dmg: fall.dmg }
+                      : { t: Math.floor(time), lv: pl.level, kills: pl.kills, dmg: judge ? judge.dmg : 0 };   // dmg: a Arceus
     // Si la partida se ha tocado (ver clean()), no sube al ranking (sin avisar); lo demás, sí.
     const ok = clean();
     const sent = ok && !coop ? G.Ranking.submitSolo(Object.assign(mark, { dex: pl.dex, shiny: pl.shiny }))
@@ -368,7 +404,7 @@ G.Game = (() => {
     if (sent) sent.then(b => { if (b && b.some(p => p !== 'a')) G.DB.commit(true); }).catch(() => {});
 
     G.RunUI.showOver({
-      dead, time, level: pl.level, kills: pl.kills, bosses: pl.bosses, coins, record, t1: pl.t1, t10: pl.t10, judge,
+      dead, time, level: pl.level, kills: pl.kills, bosses: pl.bosses, coins, record, t1: pl.t1, t10: pl.t10, judge, fall,
       moves: pl.moves, caught,
       breakdown: Object.entries(parts).filter(([, v]) => v).map(([k, v]) => `${k} ${v}`).join(' · ') +
                  (mul > 1 ? ` · ×${mul.toFixed(2)} Fortuna` : '')
@@ -568,6 +604,11 @@ G.Game = (() => {
       if (['space', 'enter', 'escape'].some(k => G.Input.tap(k))) G.Judgment.skip();
       return;
     }
+    if (state === 'continue') {
+      if (G.Input.tap('digit1') || G.Input.tap('numpad1') || G.Input.tap('enter')) document.getElementById('btn-cont-yes').click();
+      else if (G.Input.tap('digit2') || G.Input.tap('numpad2') || G.Input.tap('escape')) document.getElementById('btn-cont-no').click();
+      return;
+    }
     if (state === 'levelup') {
       for (let i = 0; i < 3; i++) {
         if (G.Input.tap('digit' + (i + 1)) || G.Input.tap('numpad' + (i + 1))) G.RunUI.pick(i);
@@ -700,7 +741,11 @@ G.Game = (() => {
       G.EnemyMgr.update(dt * 0.3, pl);
       G.FX.update(dt);
       G.Camera.follow(pl.x, pl.y, dt);
-      if (deathT > 1.3) { deathT = 0; endRun(true); }
+      if (deathT > 1.3) {
+        deathT = 0;
+        // Ante Arceus (en solitario) se puede seguir: se pregunta primero.
+        if (G.Judgment.fighting) askContinue(); else endRun(true);
+      }
       return;
     }
     time += dt;
