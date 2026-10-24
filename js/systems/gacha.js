@@ -23,6 +23,8 @@ G.Gacha = (() => {
   /** @param use  't1' (tickets normales) o 't10' (un ticket ×10, sólo para la ×10) */
   function costOf(save, n, use = 't1') {
     const t = save.tickets || { t1: 0, t10: 0 };
+    // Gacha shiny: cada ticket shiny es una ×10 (y la ×100, diez tickets).
+    if (use === 'ts') return n === 10 && (t.ts || 0) >= 1 ? { t1: 0, t10: 0, ts: 1 } : n === 100 && (t.ts || 0) >= 10 ? { t1: 0, t10: 0, ts: 10 } : null;
     if (n === 100 && use === 't10') return t.t10 >= 10 ? { t1: 0, t10: 10 } : null;
     if (n === 10 && use === 't10') return t.t10 >= 1 ? { t1: 0, t10: 1 } : null;
     return t.t1 >= n ? { t1: n, t10: 0 } : null;
@@ -46,10 +48,17 @@ G.Gacha = (() => {
     { gen: 6, name: 'Kalos',   color: ['#4a1a3a', '#2a3a7a', '#1a5a7a'] },
     { gen: 7, name: 'Alola',   color: ['#7a3a1a', '#1a6a6a', '#2a4a8a'] },
     { gen: 8, name: 'Galar',   color: ['#4a1a5a', '#1a3a6a', '#6a1a3a'] },
-    { gen: 9, name: 'Paldea',  color: ['#6a2a1a', '#4a1a5a', '#1a4a6a'] }
+    { gen: 9, name: 'Paldea',  color: ['#6a2a1a', '#4a1a5a', '#1a4a6a'] },
+    // Gacha shiny (25-10-2026): todas las regiones y todo sale shiny. Se tira
+    // con tickets shiny (los suelta el Aipom shiny, ver events.js).
+    { gen: 10, name: 'Shiny', shiny: true, color: ['#0f4d6e', '#2a7aa8', '#7e5be0'] }
   ];
+  const SHINY = 10;
 
-  function inBanner(p, gen) { return p.gen === gen && !!G.SPRITE_META[p.dex]; }
+  function inBanner(p, gen) {
+    if (gen === SHINY) return !!G.SPRITE_META[p.dex] && G.Sprites.hasShiny(p.dex);
+    return p.gen === gen && !!G.SPRITE_META[p.dex];
+  }
 
   /** Pokémon de una rareza en un banner. */
   function pool(rarity, gen) { return G.DEX.filter(p => inBanner(p, gen) && p.rarity === rarity); }
@@ -67,12 +76,16 @@ G.Gacha = (() => {
 
   /** Cuántos tienes de una generación → { have, total }. */
   function dexOf(save, gen) {
+    if (gen === SHINY) {
+      const list = G.DEX.filter(p => inBanner(p, SHINY));
+      return { have: list.filter(p => save.shiny && save.shiny[p.dex]).length, total: list.length };
+    }
     const list = G.DEX.filter(p => p.gen === gen);
     return { have: list.filter(p => save.owned[p.dex]).length, total: list.length };
   }
 
   /** ¿Tiene el Amuleto Iris de esa generación (su Pokédex completa)? */
-  function hasIris(save, gen) { const d = dexOf(save, gen); return d.have >= d.total; }
+  function hasIris(save, gen) { if (gen === SHINY) return false; const d = dexOf(save, gen); return d.have >= d.total; }
 
   function shinyRate(save, gen) { return hasIris(save, gen) ? SHINY_RATE_IRIS : SHINY_RATE; }
 
@@ -109,6 +122,7 @@ G.Gacha = (() => {
     if (!cost) return null;
     save.tickets.t1 -= cost.t1;
     save.tickets.t10 -= cost.t10;
+    if (cost.ts) save.tickets.ts = (save.tickets.ts || 0) - cost.ts;
     save.pity = save.pity || {};
     save.shiny = save.shiny || {};
     save.pity[gen] = save.pity[gen] || 0;
@@ -125,7 +139,7 @@ G.Gacha = (() => {
       const { rarity, list } = poolNear(want, gen);
       if (rarity === 5) save.pity[gen] = 0;
       let mon = G.U.pick(list);
-      let shiny = G.Sprites.hasShiny(mon.dex) && (forceShiny > 0 ? (forceShiny--, true) : Math.random() < rate);
+      let shiny = G.Sprites.hasShiny(mon.dex) && (gen === SHINY || (forceShiny > 0 ? (forceShiny--, true) : Math.random() < rate));
       // Los shiny no se repiten: si ya tienes ese, sale otro de la misma rareza
       // cuyo shiny te falte; si los tienes todos, sale normal.
       if (shiny && save.shiny[mon.dex]) {
@@ -155,5 +169,5 @@ G.Gacha = (() => {
 
   return { debugForceShiny(n = 1) { forceShiny = n; },
            costOf, RATES, PITY_5, SHINY_RATE, SHINY_RATE_IRIS, REFUND, RARITY_NAME, RARITY_COLOR, BANNERS,
-           pool, featured, pull, dexOf, hasIris, shinyRate };
+           pool, featured, pull, dexOf, hasIris, shinyRate, SHINY };
 })();

@@ -235,6 +235,7 @@
         const n = this.def.loot === 'ticket10' ? 6 : 20;
         for (let i = 0; i < n; i++) G.Pickups.drop('coin', this.x + G.U.rand(-36, 36), this.y + G.U.rand(-26, 26), 5);
         if (this.def.loot === 'ticket10') G.Pickups.drop('ticket10', this.x, this.y - 12, 1);
+        if (this.def.loot === 'ticketS') G.Pickups.drop('ticketS', this.x, this.y - 12, 1);     // Aipom shiny
         G.FX.ring(this.x, this.y, this.r, this.r * 5, '#ffd23f', 0.6, 4);
       }
       if (this.legend) {
@@ -485,6 +486,12 @@
         ranged.push(has('ghost', 'psychic', 'fairy', 'dark', 'poison') ? 'spiral'
                   : has('ground', 'rock', 'grass', 'bug', 'ice', 'water') ? 'cage' : 'cross');
       }
+      // Legendarios (grietas y Grieta de legendarios, 25-10-2026): todos los ataques
+      // de lejos, más la tormenta y los rayos en ráfaga.
+      if (this.legend && !this.judge) {
+        ranged.length = 0;
+        ranged.push('rain', 'beam', 'nova', 'volley', 'spiral', 'cage', 'cross', 'storm', 'snipe');
+      }
       const far = this.behavior === 'ranged';
       this.ai = { melee, ranged, farLike: far ? 0.65 : 0.35, mode: far ? 'far' : 'close', modeT: G.U.rand(6, 8),
                   cd: 1.6, cast: null, fury: false, side: Math.random() < 0.5 ? -1 : 1 };
@@ -603,6 +610,15 @@
           c.wind = 1.0; c.after = 0.7; this.anim.play('Charge', { speed: 1.1 });
           break;
         }
+        case 'storm':      // tormenta: zonas que caen por todas partes a tu alrededor
+          c.wind = 0.4; c.after = 0.3; c.dur = ai.fury ? 2.4 : 2.0; c.every = ai.fury ? 0.14 : 0.18; c.next = 0;
+          this.anim.play('Charge', { speed: 1.2 });
+          G.FX.ring(this.x, this.y, this.r, this.r * 4, col, 0.6, 3);
+          break;
+        case 'snipe':      // rayos en ráfaga: 3 (o 4) seguidos apuntando adonde estás
+          c.wind = 0.3; c.after = 0.4; c.shots = ai.fury ? 4 : 3; c.every = 0.5; c.next = 0; c.dur = c.shots * c.every;
+          this.anim.play('Charge', { speed: 1.4 });
+          break;
         case 'volley':     // abanico de disparos
         case 'nova':       // anillo de disparos
           c.wind = (id === 'nova' ? 0.7 : 0.5) * f;
@@ -620,6 +636,27 @@
         if (c.t >= c.wind + c.dur) return this.bossEnd();
         const sp = c.len / c.dur;
         return [Math.cos(c.ang) * sp, Math.sin(c.ang) * sp, 'Walk'];
+      }
+      if (c.id === 'storm' && c.t >= c.wind) {
+        while (c.t - c.wind >= c.next && c.next < c.dur) {
+          const a = Math.random() * 6.2832, d = G.U.rand(0, 240);
+          this.hazard({ kind: 'zone', x: pl.x + Math.cos(a) * d, y: pl.y + Math.sin(a) * d * 0.8, r: 44,
+                          delay: 0.9, dmg: this.shotDmg() * 1.1, type: this.atkType, color: G.U.TYPE_COLOR[this.atkType] || '#ff7a9e' });
+          c.next += c.every;
+        }
+        if (c.t >= c.wind + c.dur + c.after) return this.bossEnd();
+        return [0, 0, 'Idle'];
+      }
+      if (c.id === 'snipe' && c.t >= c.wind) {
+        while (c.t - c.wind >= c.next && c.next < c.dur) {
+          const ang = Math.atan2(pl.y - this.y, pl.x - this.x);
+          this.hazard({ kind: 'beam', x: this.x, y: this.y, angle: ang, len: 480, w: 30,
+                          delay: 0.55, dmg: this.shotDmg() * 1.2, type: this.atkType, color: G.U.TYPE_COLOR[this.atkType] || '#ff7a9e' });
+          this.anim.play('Shoot');
+          c.next += c.every;
+        }
+        if (c.t >= c.wind + c.dur + c.after) return this.bossEnd();
+        return [0, 0, 'Idle'];
       }
       if (c.id === 'spiral' && c.t >= c.wind) {
         // Va soltando un disparo por brazo cada `every` s mientras gira.

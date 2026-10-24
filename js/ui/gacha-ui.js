@@ -8,9 +8,9 @@ G.GachaUI = (() => {
 
   function init() {
     $('pull-10').onclick = () => pull(10, 't1');
-    $('pull-10b').onclick = () => pull(10, 't10');
+    $('pull-10b').onclick = () => pull(10, gen === G.Gacha.SHINY ? 'ts' : 't10');
     $('pull-100').onclick = () => pull(100, 't1');
-    $('pull-100b').onclick = () => pull(100, 't10');
+    $('pull-100b').onclick = () => pull(100, gen === G.Gacha.SHINY ? 'ts' : 't10');
     $('pull-close').onclick = close;
     // Saltar: se acaba la tragaperras y salen todas las cartas de golpe (también con Esc).
     $('pull-skip').onclick = skipNow;
@@ -21,7 +21,7 @@ G.GachaUI = (() => {
       const t = document.createElement('button');
       t.className = 'gen-tab';
       t.dataset.gen = b.gen;
-      t.innerHTML = `<b>${b.name}</b><small>Gen ${b.gen}</small>`;
+      t.innerHTML = b.shiny ? `<b>${G.Icons.html('shiny', 12)} ${b.name}</b><small>${G.T('Todas')}</small>` : `<b>${b.name}</b><small>Gen ${b.gen}</small>`;
       t.onclick = () => { gen = b.gen; refresh(); };
       tabs.appendChild(t);
     });
@@ -33,6 +33,8 @@ G.GachaUI = (() => {
   }
 
   function refresh() {
+    if (gen === G.Gacha.SHINY) return refreshShiny();
+    ['pull-10', 'pull-100'].forEach(id => $(id).classList.remove('hidden'));
     const s = G.DB.save;
     const banner = G.Gacha.BANNERS[gen - 1];
     document.querySelectorAll('#gacha-gens .gen-tab').forEach(t => t.classList.toggle('on', +t.dataset.gen === gen));
@@ -80,6 +82,40 @@ G.GachaUI = (() => {
     $('pull-10b').disabled = !G.Gacha.costOf(s, 10, 't10');
     $('pull-100').disabled = !G.Gacha.costOf(s, 100, 't1');
     $('pull-100b').disabled = !G.Gacha.costOf(s, 100, 't10');
+    G.UI.refreshCoins();
+  }
+
+  /** El gacha shiny: todas las regiones, todo shiny, con tickets shiny. */
+  function refreshShiny() {
+    const s = G.DB.save, gen = G.Gacha.SHINY, banner = G.Gacha.BANNERS[gen - 1];
+    document.querySelectorAll('#gacha-gens .gen-tab').forEach(t => t.classList.toggle('on', +t.dataset.gen === gen));
+    const d = G.Gacha.dexOf(s, gen);
+    const [c1, c2, c3] = banner.color;
+    $('banner').style.background =
+      `radial-gradient(circle at 80% 30%, rgba(154,230,255,.4), transparent 45%),
+       radial-gradient(circle at 15% 80%, rgba(255,210,63,.3), transparent 50%),
+       linear-gradient(135deg, ${c1}, ${c2} 55%, ${c3})`;
+    $('banner-title').textContent = G.T('Gacha Shiny');
+    $('banner-desc').textContent = G.T('Todas las regiones y todo lo que sale es shiny. Los tickets shiny los suelta el Aipom shiny, que a veces aparece en las partidas.');
+    $('gacha-owned').innerHTML = `${G.Icons.html('shiny', 12)} ` + G.I18n.f('Tienes {x} de {x} shiny', d.have, d.total);
+    const feat = $('gacha-feat');
+    feat.innerHTML = '';
+    for (const dex of G.Gacha.featured(gen)) feat.appendChild(G.UI.spriteCanvas(dex, 170, 190, { lively: true, scale: 2, dir: 1, shiny: true }));
+    const pity = (s.pity && s.pity[gen]) || 0;
+    $('gacha-pity').textContent = G.I18n.f('Tiradas sin legendaria en el gacha shiny: {x} / {x}', pity, G.Gacha.PITY_5);
+    $('gacha-rates').innerHTML = '<h3>Probabilidades</h3>' + G.Gacha.RATES.slice().reverse().map(([r, w]) => `
+      <div><span style="color:${G.Gacha.RARITY_COLOR[r]}">${G.UI.stars(r, 10)} ${G.Gacha.RARITY_NAME[r]}</span>
+      <span>${w}% · ${G.Gacha.pool(r, gen).length}</span></div>`).join('') +
+      `<div><span>${G.Icons.html('shiny', 12)} Shiny</span><span>100%</span></div>
+       <p class="note">${G.T('· Cada ticket shiny es una tirada ×10, con una Épica asegurada.')}<br>
+       ${G.T('· Si ya tienes ese shiny, sale otro de la misma rareza que te falte; si los tienes todos, te da Pokémonedas.')}</p>`;
+    const ts = (s.tickets && s.tickets.ts) || 0;
+    ['pull-10', 'pull-100'].forEach(id => $(id).classList.add('hidden'));
+    $('cost-10b').innerHTML = `${G.Icons.html('ticketS', 18)} 1`;
+    $('cost-100b').innerHTML = `${G.Icons.html('ticketS', 18)} 10`;
+    $('gacha-tickets').innerHTML = G.I18n.f('Tienes {x} tickets shiny', `${G.Icons.html('ticketS', 18)} <b>${ts}</b>`);
+    $('pull-10b').disabled = !G.Gacha.costOf(s, 10, 'ts');
+    $('pull-100b').disabled = !G.Gacha.costOf(s, 100, 'ts');
     G.UI.refreshCoins();
   }
 

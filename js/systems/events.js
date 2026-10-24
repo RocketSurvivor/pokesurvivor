@@ -21,15 +21,24 @@
 G.Events = (() => {
   const EVERY = [240, 300], DUR = 30, LOST_TIME = 120;
   const THIEF_FIRST = [120, 240], THIEF_NEXT = [240, 360], THIEF_LIFE = 15;
+  /*
+   * Aipom shiny (25-10-2026): como mucho uno por partida. Al empezar se decide
+   * si saldrá (35 %) y cuándo (entre los minutos 4 y 25). Huye más rápido y
+   * dura 20 s; si lo derrotas suelta un ticket shiny (una ×10 del gacha shiny).
+   * Así sale en una de cada tres partidas largas, más o menos.
+   */
+  const AIPOM_CHANCE = 0.35, AIPOM_AT = [240, 1500], AIPOM_LIFE = 20;
   const authority = () => !G.Coop.active || G.Coop.isHost;
 
   let nextT = 0, cur = null, last = null, thiefT = 0, thieves = 0;
+  let aipomT = 0, aipomOn = false;
   let lost = null;      // { dex, name, x, y, hp, maxHp, state, follow, tx, ty, t, anim, r, hitCd, netT, grant }
 
   function reset() {
     nextT = G.U.rand(EVERY[0], EVERY[1]);
     cur = null; last = null; lost = null;
     thiefT = G.U.rand(THIEF_FIRST[0], THIEF_FIRST[1]); thieves = 0;
+    aipomOn = Math.random() < AIPOM_CHANCE; aipomT = G.U.rand(AIPOM_AT[0], AIPOM_AT[1]);
   }
 
   // ---------------- ciclo ----------------
@@ -41,6 +50,14 @@ G.Events = (() => {
     }
     if (lost) lostTick(dt, players);
     if (!authority() || G.Rift.inArena || G.Judgment.active) return;
+
+    if (aipomOn) {
+      aipomT -= dt;
+      if (aipomT <= 0) {
+        if (G.EnemyMgr.bossAlive()) aipomT = 8;
+        else { aipomOn = false; spawnAipom(players, time); }
+      }
+    }
 
     if (thieves < 2) {
       thiefT -= dt;
@@ -100,6 +117,28 @@ G.Events = (() => {
   function bag() { return cur && cur.id === 'horde' && cur.defs.length ? cur.defs : null; }
 
   // ---------------- duende del tesoro ----------------
+
+  function spawnAipom(players, time) {
+    const dex = 190, mon = G.DEX_BY[dex];
+    if (!mon || !G.SPRITE_META[dex]) return;
+    const alive = players.filter(p => !p.dead), pl = G.U.pick(alive.length ? alive : players);
+    G.Sprites.preload([dex], 8000, true);
+    const def = { dex, name: mon.name, behavior: 'thief', hp: Math.round(60 * (1 + time / 95)),      // (makeShiny la dobla)
+                  spd: 108, dmg: 0, xp: 10, loot: 'ticketS' };
+    for (let i = 0; i < 12; i++) {
+      const a = Math.random() * 6.2832, d = G.U.rand(230, 300);
+      const x = pl.x + Math.cos(a) * d, y = pl.y + Math.sin(a) * d * 0.8;
+      if (!G.World.isFree(x, y, 14)) continue;
+      const e = new G.Enemy(def, x, y, { hp: 1, spd: 1, dmg: 1 });
+      e.life = AIPOM_LIFE;
+      e.makeShiny();
+      G.EnemyMgr.add(e);
+      G.FX.ring(x, y, 4, 50, '#9ae6ff', 0.6, 4);
+      G.Spawner.say('¡Un Aipom shiny con un ticket shiny! ¡Atrápalo antes de que huya!', 3.6);
+      G.Audio.sfx('shiny');
+      return;
+    }
+  }
 
   function spawnThief(players, time) {
     const gold = Math.random() < 0.25;
@@ -348,6 +387,8 @@ G.Events = (() => {
 
   return {
     reset, update, bag, onNet, drawables, drawHud,
+    /** Para pruebas: el Aipom shiny ya. */
+    debugAipom() { spawnAipom(G.Game.everyone(), G.Game.st.time); },
     get golden() { return !!cur && cur.id === 'gold'; },
     get current() { return cur ? cur.id : null; },
     /** Para pruebas. */

@@ -138,6 +138,10 @@ G.Icons = (() => {
     ticket10: { pal: { p: '#c47bff', q: '#8a3fd0', w: '#f0d8ff', y: '#ffd23f' }, rows: [
       '............', '............', 'kkkkkkkkkkkk', 'kwpppqppyypk', 'kppppqpyyypk', '.kpppqpyyyk.',
       '.kpppqppyyk.', 'kppppqpppppk', 'kqqqqqqqqqqk', 'kkkkkkkkkkkk', '............', '............'] },
+    // Ticket shiny (25-10-2026): una ×10 del gacha shiny. Celeste con una estrella.
+    ticketS: { pal: { c: '#9ae6ff', b: '#4fb4ff', w: '#e8fbff', y: '#ffd23f' }, rows: [
+      '............', '............', 'kkkkkkkkkkkk', 'kwcccbccyyck', 'kccccbcyyyyk', '.kcccbccyyk.',
+      '.kcccbcyccyk', 'kccccbccccck', 'kbbbbbbbbbbk', 'kkkkkkkkkkkk', '............', '............'] },
     wsun: { pal: { y: '#ffd23f', o: '#ff9a3d' }, rows: [
       '.....yy.....', '..y..yy..y..', '...y....y...', '....kkkk....', 'yy.kyyyyk.yy', 'yy.kyyoyk.yy',
       '...kyooyk...', '....kkkk....', '...y....y...', '..y..yy..y..', '.....yy.....', '............'] },

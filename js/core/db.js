@@ -91,7 +91,7 @@ G.DB = (() => {
       ptm: {},                // dex -> [movimientos aprendidos con MT] (para siempre)
       pnat: {},               // dex -> [naturaleza, fecha]: la cambiada con Menta (si no, la que le tocó)
       pabil: {},              // dex -> [0|1|2, fecha]: la habilidad cambiada con Cápsula (2 = oculta)
-      tickets: { t1: 0, t10: 0 },   // tickets del gacha (x1 y x10)
+      tickets: { t1: 0, t10: 0, ts: 0 },   // tickets del gacha (x1, x10 y shiny: una ×10 del gacha shiny)
       pity: {},               // generación del banner -> tiradas sin ★5
       legends: {},            // dex -> fecha: legendarios vencidos en grietas
       arenas: {},             // tipo -> fecha: arenas de grieta ganadas
@@ -234,7 +234,8 @@ G.DB = (() => {
   const CUR = {
     c: [s => s.coins, (s, v) => { s.coins = v; }],
     t1: [s => s.tickets.t1, (s, v) => { s.tickets.t1 = v; }],
-    t10: [s => s.tickets.t10, (s, v) => { s.tickets.t10 = v; }]
+    t10: [s => s.tickets.t10, (s, v) => { s.tickets.t10 = v; }],
+    ts: [s => s.tickets.ts || 0, (s, v) => { s.tickets.ts = v; }]      // ticket shiny (25-10-2026)
   };
   /*
    * Desde el 20-10-2026 también la Mochila y las MT (Tienda Kecleon), con la misma

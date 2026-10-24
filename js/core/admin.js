@@ -49,6 +49,7 @@ G.Admin = (() => {
     s.tickets = s.tickets || { t1: 0, t10: 0 };
     s.tickets.t1 = Math.max(s.tickets.t1 || 0, 999);
     s.tickets.t10 = Math.max(s.tickets.t10 || 0, 999);
+    s.tickets.ts = Math.max(s.tickets.ts || 0, 99);           // tickets shiny (gacha shiny)
     s.bag = s.bag || {}; s.tms = s.tms || {};
     for (const id of G.Shop.ORDER) s.bag[id] = 999;
     for (const id of Object.keys(G.TM_MOVES)) if (G.Moves.BY_ID[id]) s.tms[id] = 999;

@@ -118,6 +118,7 @@ G.Game = (() => {
     G.Pickups.clear();
     G.Spawner.reset();
     G.Rift.reset();
+    G.LegendRift.reset();
     G.Judgment.reset();
     G.Events.reset();
     G.Weather.reset();
@@ -132,7 +133,7 @@ G.Game = (() => {
     pl = new G.Player(mon, perks, !!save.partnerShiny && G.DB.ownsShiny(mon.dex));
     G.Orbs.reset();
     pl.setAbility(G.Mons.abilityOf(mon.dex).id);
-    banked = { t1: 0, t10: 0 };
+    banked = { t1: 0, t10: 0, ts: 0 };
     caught = [];
     // Atajos: movimientos con hueco fijo (save.pbind[dex] = [id del 1, id del 2, ...]),
     // antes de aprender nada: addMove ya los coloca.
@@ -226,15 +227,15 @@ G.Game = (() => {
    * antes sólo al acabar, y si la pestaña se cerraba de golpe se perdían.
    * `banked` = los de esta partida que ya están en la partida guardada.
    */
-  let banked = { t1: 0, t10: 0 };
+  let banked = { t1: 0, t10: 0, ts: 0 };
   function bankTickets(save_ = true) {
     const sv = G.DB.save;
     if (!sv || !pl) return;
     sv.tickets = sv.tickets || { t1: 0, t10: 0 };
-    const d1 = Math.max(0, pl.t1 - banked.t1), d10 = Math.max(0, pl.t10 - banked.t10);
-    if (!d1 && !d10) return;
-    sv.tickets.t1 += d1; sv.tickets.t10 += d10;
-    banked = { t1: pl.t1, t10: pl.t10 };
+    const d1 = Math.max(0, pl.t1 - banked.t1), d10 = Math.max(0, pl.t10 - banked.t10), ds = Math.max(0, (pl.ts || 0) - (banked.ts || 0));
+    if (!d1 && !d10 && !ds) return;
+    sv.tickets.t1 += d1; sv.tickets.t10 += d10; sv.tickets.ts = (sv.tickets.ts || 0) + ds;
+    banked = { t1: pl.t1, t10: pl.t10, ts: pl.ts || 0 };
     if (save_) G.DB.commit('run');
   }
 
@@ -402,7 +403,7 @@ G.Game = (() => {
     if (sent) sent.then(b => { if (b && b.some(p => p !== 'a')) G.DB.commit(true); }).catch(() => {});
 
     G.RunUI.showOver({
-      dead, time, level: pl.level, kills: pl.kills, bosses: pl.bosses, coins, record, t1: pl.t1, t10: pl.t10, judge, fall,
+      dead, time, level: pl.level, kills: pl.kills, bosses: pl.bosses, coins, record, t1: pl.t1, t10: pl.t10, ts: pl.ts || 0, judge, fall,
       moves: pl.moves, caught,
       breakdown: Object.entries(parts).filter(([, v]) => v).map(([k, v]) => `${k} ${v}`).join(' · ') +
                  (mul > 1 ? ` · ×${mul.toFixed(2)} Fortuna` : '')
@@ -526,7 +527,7 @@ G.Game = (() => {
 
   // ---------------- recogida ----------------
 
-  const PICK_SFX = { xp: 'xp', xpBig: 'xp', coin: 'coin', heal: 'heal', bomb: 'break', magnet: 'confirm', ticket: 'shiny', ticket10: 'legend', item: 'legend', sphere: 'confirm' };
+  const PICK_SFX = { xp: 'xp', xpBig: 'xp', coin: 'coin', heal: 'heal', bomb: 'break', magnet: 'confirm', ticket: 'shiny', ticket10: 'legend', ticketS: 'shiny', item: 'legend', sphere: 'confirm' };
 
   /*
    * Cooperativo: la elección de objeto y las cartas de nivel no pueden taparse.
@@ -604,6 +605,13 @@ G.Game = (() => {
     if (p.kind === 'sphere') {
       // La de un invitado: el anfitrión lleva la cuenta de lo que tiene (para saber si le cabe otra).
       if (mine) G.Orbs.got(pl, p.value); else G.Orbs.add(who, p.value);
+      return;
+    }
+    if (p.kind === 'ticketS') {
+      pl.ts = (pl.ts || 0) + 1;
+      bankTickets();
+      G.FX.dmgText(who.x, who.y - who.bodyH - 8, G.T('¡Ticket shiny!'), '#9ae6ff', true);
+      G.FX.ring(who.x, who.y, 6, 60, '#9ae6ff', 0.5, 4);
       return;
     }
     if (p.kind === 'ticket' || p.kind === 'ticket10') {
@@ -829,6 +837,7 @@ G.Game = (() => {
     G.Hazards.update(dt);
     G.Interact.update(dt, pl);
     G.Rift.update(dt, pl, time);
+    G.LegendRift.update(dt, pl, time);
     G.Judgment.update(dt, pl, time);
     G.Events.update(dt, all, time);
     G.Weather.update(dt, time, pl);
@@ -865,6 +874,7 @@ G.Game = (() => {
     const t = performance.now() / 1000;
     G.World.drawGround(ctx, cam);
     G.World.drawLiquid(ctx, cam, t);
+    G.LegendRift.drawGround(ctx);
     G.Hazards.draw(ctx);
     G.Combat.drawGroundFields(ctx);
     G.Pickups.draw(ctx);
