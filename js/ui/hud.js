@@ -392,6 +392,23 @@ G.HUD = (() => {
         ctx.textAlign = 'center';
         ctx.fillStyle = '#ffd23f';
         ctx.fillText(G.Items.BY[pl.item].name, ix + S / 2, iy - 6);
+        // Metrónomo: 6 rayitas que se van llenando; al máximo, todo naranja y parpadea.
+        if (pl.item === 'metronome') {
+          const n = pl.metroStacks(), full = n >= 6, blink = full && Math.sin(performance.now() / 140) > 0;
+          const bw = (S - 14) / 6;
+          for (let i = 0; i < 6; i++) {
+            ctx.fillStyle = i < n ? (full ? (blink ? '#ffd23f' : '#ff9a3d') : '#ffd23f') : 'rgba(255,255,255,.18)';
+            ctx.fillRect(ix + 7 + i * bw, iy + S - 7, bw - 2, 4);
+          }
+          if (full) {
+            roundRect(ctx, ix - 2, iy - 2, S + 4, S + 4, 14);
+            ctx.lineWidth = 3; ctx.strokeStyle = blink ? '#ff9a3d' : 'rgba(255,154,61,.45)'; ctx.stroke();
+            // Etiqueta dentro de la casilla, arriba a la derecha (abajo está la ayuda de teclas).
+            ctx.font = F(700, 9); ctx.textAlign = 'right'; ctx.fillStyle = '#ff9a3d';
+            ctx.fillText(G.T('MÁX'), ix + S - 5, iy + 11);
+            ctx.textAlign = 'center';
+          }
+        }
       }
     }
 

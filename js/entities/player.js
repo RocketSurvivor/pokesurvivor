@@ -184,6 +184,9 @@ G.Player = class Player {
   }
   /** Metrónomo (objeto): +6 % cada 4 s seguidos con el mismo hueco activo, hasta +36 %. */
   metroK() { return this.hasItem('metronome') ? 1 + Math.min(6, Math.floor((this._metroT || 0) / 4)) * 0.06 : 1; }
+  static get METRO_MAX() { return 1.36 - 1e-9; }
+  /** Cargas del Metrónomo (0-6), para el HUD. */
+  metroStacks() { return this.hasItem('metronome') ? Math.min(6, Math.floor((this._metroT || 0) / 4)) : 0; }
   /** Monotipo (19-10-2026): los de un solo tipo pegan un +20 % con los ataques de su tipo (tienen menos variedad). */
   static get MONO_K() { return 1.2; }
   monoType(type) { return this.mon.types.length === 1 && type === this.mon.types[0]; }
@@ -462,7 +465,21 @@ G.Player = class Player {
     if (this.bellHeal > 0) { const h = Math.min(this.bellHeal, 4 * dt); this.hp = Math.min(this.maxHp, this.hp + h); this.bellHeal -= h; }
     if (this.power && (this.power.t -= dt) <= 0) { this.power.def.off(this); this.power = null; }
     if (this.regen > 0) this.hp = Math.min(this.maxHp, this.hp + this.regen * dt * (this.hasItem('bigroot') ? 1.5 : 1));
-    if (this.hasItem('metronome')) this._metroT = (this._metroT || 0) + dt;
+    if (this.hasItem('metronome')) {
+      this._metroT = (this._metroT || 0) + dt;
+      // Al llegar al máximo, un aviso; mientras dure, un aura que lo deja ver.
+      const max = this.metroK() >= Player.METRO_MAX;
+      if (max && !this._metroMax) {
+        G.FX.dmgText(this.x, this.y - this.bodyH - 16, G.T('¡Metrónomo al máximo!'), '#ff9a3d', true);
+        G.FX.ring(this.x, this.y, 8, 90, '#ff9a3d', 0.5, 5);
+        G.Audio.sfx('select');
+      }
+      if (max && (this._metroAura = (this._metroAura || 0) - dt) <= 0) {
+        this._metroAura = 0.9;
+        G.FX.ring(this.x, this.y - this.bodyH * 0.4, this.r * 1.6, this.r * 3.2, '#ff9a3d', 0.45, 3);
+      }
+      this._metroMax = max;
+    } else this._metroMax = false;
     if (this.abil && this.abil.tick) this.abil.tick(this, dt);
     // Sequía, Llovizna...: su clima al empezar y cada 3 min, si no hay otro (en
     // grupo lo pone el anfitrión, que es quien manda el clima a todos).
