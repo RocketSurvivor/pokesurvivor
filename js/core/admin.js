@@ -29,7 +29,7 @@ G.Admin = (() => {
     for (const p of G.DEX) {
       if (!G.SPRITE_META[p.dex]) continue;
       if (!s.owned[p.dex]) s.owned[p.dex] = { at: now, from: 'admin' };
-      if (!s.shiny[p.dex]) s.shiny[p.dex] = { at: now, from: 'admin' };
+      if (!s.shiny[p.dex] && G.Sprites.hasShiny(p.dex)) s.shiny[p.dex] = { at: now, from: 'admin' };
       const up = s.pupg[p.dex] = s.pupg[p.dex] || {};
       for (const u of G.Upgrades.LIST) up[u.id] = u.max;
       if (p.leg) mark(s.legends, p.dex);

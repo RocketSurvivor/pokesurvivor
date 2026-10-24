@@ -124,6 +124,30 @@ uso **no comercial** y con atribución a sus artistas.
 | YoukaiMinori | <@91001329228464128> | 252, 253 |
 | ◥θ┴θ◤ | DC:<@215638650434617345> | 157, 445, 501, 504, 505, 566, 577, 595, 627, 650, 651, 658, 661, 676, 684, 707, 724, 726, 728, 729, 730, 761, 763, 790, 823, 872, 907, 991 |
 
+### Megaevoluciones
+
+Sprites de las megaevoluciones (`tools/fetch_megas.py`), también de SpriteCollab (CC BY-NC 4.0).
+
+| Artista | Contacto | Megaevoluciones |
+|---|---|---|
+| baronessfaron |  | Mega-Alakazam, Mega-Banette, Mega-Diancie, Mega-Gardevoir, Mega-Gengar, Mega-Glalie, Mega-Lucario, Mega-Mawile, Mega-Sharpedo, Mega-Steelix |
+| Caitemis | https://caitemis-art.tumblr.com/ | Mega-Aerodactyl, Mega-Camerupt |
+| Deeshura | https://bsky.app/profile/deeshura.bsky.social | Mega-Absol, Mega-Kangaskhan |
+| DeltaL | averyderp.sm2@gmail.com | Mega-Dragalge, Mega-Drampa, Mega-Excadrill, Mega-Floette, Mega-Zeraora, Mega-Zygarde |
+| Emboarger |  | Mega-Absol, Mega-Gengar |
+| Emmuffin | https://twitter.com/Ernmuffin | Mega-Alakazam, Mega-Altaria, Mega-Banette, Mega-Chimecho, Mega-Dragalge, Mega-Drampa, Mega-Excadrill, Mega-Gengar, Mega-Glalie, Mega-Hawlucha, Mega-Kangaskhan, Mega-Latias, Mega-Latios, Mega-Lucario, Mega-Mawile, Mega-Sableye, Mega-Sceptile, Mega-Scrafty, Mega-Sharpedo, Mega-Slowbro, Mega-Tatsugiri, Mega-Zeraora |
+| G〜 | https://bsky.app/profile/justtr4sh.pmd.social | Mega-Aerodactyl, Mega-Charizard X |
+| JFain |  | Mega-Gallade, Mega-Lopunny, Mega-Medicham, Mega-Mewtwo Y, Mega-Tyranitar |
+| Johanne2 | https://github.com/Johanne2 | Mega-Darkrai, Mega-Skarmory |
+| Kevin | <@479925530129596426> | Mega-Charizard X |
+| Kevin0itachi | https://www.deviantart.com/kevin0itachi | Mega-Charizard X |
+| Michael12 | https://www.deviantart.com/michael12dz | Mega-Alakazam, Mega-Gengar |
+| Morei | https://bsky.app/profile/murpia57.bsky.social | Mega-Absol, Mega-Charizard X, Mega-Gallade, Mega-Houndoom, Mega-Lopunny, Mega-Mewtwo Y |
+| pi3.14 | https://twitter.com/Pi_y_ranitas | Mega-Dragalge, Mega-Drampa, Mega-Excadrill, Mega-Floette, Mega-Scrafty, Mega-Zeraora, Mega-Zygarde |
+| Pokejavi. | <@823932975916777512> | Mega-Diancie, Mega-Steelix |
+| Soulja | https://twitter.com/OlSoulja | Mega-Dragalge, Mega-Drampa, Mega-Excadrill, Mega-Hawlucha, Mega-Scrafty, Mega-Slowbro |
+| Top_Kec | @topkec.bsky.social | Mega-Eelektross, Mega-Houndoom, Mega-Manectric, Mega-Rayquaza |
+
 ## Datos
 
 Stats base y nombres en español: [PokeAPI](https://pokeapi.co/),

@@ -6,13 +6,15 @@
  * Cada línea en español y en inglés.
  */
 G.CHANGELOG = [
-  { d: '2026-10-24', title: ['18 ataques, 6 objetos y jefes con ataques nuevos', '18 moves, 6 items and bosses with new attacks'], new: [
+  { d: '2026-10-24', title: ['Megaevoluciones, 18 ataques, 6 objetos y jefes con ataques nuevos', 'Mega Evolutions, 18 moves, 6 items and bosses with new attacks'], new: [
     ['18 ataques nuevos para los tipos que tenían menos variedad: Ventisca y Alud (Hielo), Trampa Rocas y Testarazo (Roca), Puño Bala y Cabeza de Hierro (Acero), Pin Misil y Tijera X (Bicho), Alarido (Siniestro), Golpe Fantasma (Fantasma), Cometa Draco (Dragón), Fuerza Lunar (Hada), Ultrapuño (Lucha), Onda Tóxica (Veneno), Vendaval (Volador), Trueno (Eléctrico), Surf (Agua) y Tierra Viva (Tierra). Todos se mejoran y evolucionan como los demás.',
      '18 new moves for the types that had the least variety: Blizzard and Avalanche (Ice), Stealth Rock and Head Smash (Rock), Bullet Punch and Iron Head (Steel), Pin Missile and X-Scissor (Bug), Snarl (Dark), Phantom Force (Ghost), Draco Meteor (Dragon), Moonblast (Fairy), Mach Punch (Fighting), Sludge Wave (Poison), Hurricane (Flying), Thunder (Electric), Surf (Water) and Earth Power (Ground). They all level up and evolve like the rest.'],
     ['6 objetos nuevos: Cinta Experto (+30 % de daño súper eficaz), Periscopio (+15 % de crítico), Raíz Grande (+50 % a toda tu curación), Roca del Rey (8 % de aturdir al golpear), Globo Helio (+15 % de velocidad y el agua no te frena) y Metrónomo (más daño cuanto más rato sigues con el mismo ataque).',
      '6 new items: Expert Belt (+30% super-effective damage), Scope Lens (+15% critical chance), Big Root (+50% to all your healing), King\'s Rock (8% chance to stun on hit), Air Balloon (+15% speed and water no longer slows you) and Metronome (more damage the longer you stick with the same move).'],
     ['Los jefes y los legendarios de las grietas tienen un ataque más según su tipo: una espiral de disparos que gira, una jaula de zonas alrededor de ti con un solo hueco para salir, o rayos en cruz seguidos de rayos en aspa.',
-     'Bosses and rift legendaries have one more attack depending on their type: a spinning spiral of shots, a cage of zones around you with a single gap to escape, or beams in a cross followed by beams in an X.']
+     'Bosses and rift legendaries have one more attack depending on their type: a spinning spiral of shots, a cage of zones around you with a single gap to escape, or beams in a cross followed by beams in an X.'],
+    ["Megaevoluciones: 42 megas nuevas en el gacha (Mega-Charizard X, Mega-Mewtwo Y, Mega-Rayquaza, Mega-Gengar, Mega-Lucario, Mega-Zygarde...), cada una en el banner de la región de su Pokémon. Son Legendarias (5★), tienen sus propios tipos, estadísticas y habilidad, casi todas con versión shiny, aprenden las MT de su Pokémon y en la colección salen justo detrás de él.",
+     "Mega Evolutions: 42 new Megas in the gacha (Mega Charizard X, Mega Mewtwo Y, Mega Rayquaza, Mega Gengar, Mega Lucario, Mega Zygarde...), each in the banner of its Pokémon's region. They are Legendary (5★), have their own types, stats and ability, almost all with a shiny version, learn their Pokémon's TMs and appear right after it in the collection."]
  ], chg: [
     ["La Tienda Kecleon ya no vende MT de ataques de tipo Normal: cualquier Pokémon los aprende al subir de nivel, así que no servían para nada.",
      "Kecleon's Shop no longer sells TMs for Normal-type moves: any Pokémon learns them by leveling up, so they were useless."],

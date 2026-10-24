@@ -195,7 +195,7 @@ G.MenuUI = (() => {
       const own = !!s.owned[p.dex];
       if (q) {
         // Por número, o por nombre (sin tildes); de los que no tienes no se busca el nombre.
-        if (num != null ? p.dex !== num : !(own && [p.name, G.T(p.name)].some(name => name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(q)))) return false;
+        if (num != null ? (G.dexNo ? G.dexNo(p) : p.dex) !== num : !(own && [p.name, G.T(p.name)].some(name => name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(q)))) return false;
       } else if (dexGen && p.gen !== dexGen) return false;
       if (f.status === 'own' && !own) return false;
       if (f.status === 'miss' && own) return false;
@@ -206,9 +206,10 @@ G.MenuUI = (() => {
       return true;
     });
     const at = p => (s.owned[p.dex] && s.owned[p.dex].at) || 0, used = p => +(s.pused || {})[p.dex] || 0;
-    const by = { num: (a, b) => a.dex - b.dex, name: (a, b) => G.T(a.name).localeCompare(G.T(b.name), G.I18n.locale),
-                 rar: (a, b) => b.rarity - a.rarity || a.dex - b.dex, new: (a, b) => at(b) - at(a) || a.dex - b.dex,
-                 used: (a, b) => used(b) - used(a) || a.dex - b.dex }[f.sort];
+    const o = G.dexOrder || (p => p.dex);
+    const by = { num: (a, b) => o(a) - o(b), name: (a, b) => G.T(a.name).localeCompare(G.T(b.name), G.I18n.locale),
+                 rar: (a, b) => b.rarity - a.rarity || o(a) - o(b), new: (a, b) => at(b) - at(a) || o(a) - o(b),
+                 used: (a, b) => used(b) - used(a) || o(a) - o(b) }[f.sort];
     // Los que no tienes no tienen nombre a la vista: al ordenar por nombre van al final.
     if (f.sort === 'name') list.sort((a, b) => (!s.owned[a.dex]) - (!s.owned[b.dex]) || by(a, b)); else list.sort(by);
     return list;
@@ -262,7 +263,7 @@ G.MenuUI = (() => {
     const cell = document.createElement('div');
     cell.className = 'cell' + (own ? '' : ' locked') + (p.dex === dexSel ? ' on' : '');
     cell.dataset.pad = '1';
-    cell.insertAdjacentHTML('beforeend', `<span class="no">${String(p.dex).padStart(3, '0')}${G.DB.isFav(p.dex) ? ' ' + G.Icons.html('star', 10) : ''}</span>`);
+    cell.insertAdjacentHTML('beforeend', `<span class="no">${String(G.dexNo ? G.dexNo(p) : p.dex).padStart(3, '0')}${G.DB.isFav(p.dex) ? ' ' + G.Icons.html('star', 10) : ''}</span>`);
     if (p.dex === s.partner) cell.insertAdjacentHTML('beforeend', `<span class="badge-r" title="Compañero">${G.Icons.html('crown', 14)}</span>`);
     else if (sh) cell.insertAdjacentHTML('beforeend', `<span class="badge-r" title="Tienes su shiny">${G.Icons.html('shiny', 12)}</span>`);
     const useShiny = sh && p.dex === s.partner && s.partnerShiny;
@@ -310,7 +311,7 @@ G.MenuUI = (() => {
           <button class="${viewShiny ? '' : 'on'}" data-v="0">Normal</button>
           <button class="${viewShiny ? 'on' : ''}" data-v="1">${G.Icons.html('shiny', 12)} Shiny</button></div>` : ''}
       <div class="center">
-        <div style="color:var(--muted);font-size:13px">Nº ${String(p.dex).padStart(3, '0')} · ${GEN_NAMES[p.gen - 1]}</div>
+        <div style="color:var(--muted);font-size:13px">Nº ${String(G.dexNo ? G.dexNo(p) : p.dex).padStart(3, '0')} · ${GEN_NAMES[p.gen - 1]}</div>
         <h3>${own ? p.name : '???'}</h3>
         ${own ? `<button id="dex-fav" class="chip${G.DB.isFav(dex) ? ' on' : ''}" type="button">${G.Icons.html(G.DB.isFav(dex) ? 'star' : 'starDim', 12)} ${G.DB.isFav(dex) ? 'Favorito' : 'Marcar como favorito'}</button>` : ''}
         <div style="color:${G.Gacha.RARITY_COLOR[p.rarity]}">${G.UI.stars(p.rarity, 24)} ${G.Gacha.RARITY_NAME[p.rarity]}</div>
