@@ -376,7 +376,7 @@ G.Game = (() => {
     bankTickets(false);
     save.stats.runs++;
     save.pused = save.pused || {};
-    save.pused[pl.dex] = (+save.pused[pl.dex] || 0) + 1;     // para "más usados" en la colección
+    save.pused[pl.startDex] = (+save.pused[pl.startDex] || 0) + 1;     // para "más usados" en la colección
     save.stats.totalKills += pl.kills;
     save.stats.bestTime = Math.max(save.stats.bestTime, Math.floor(markT));
     if (coop) save.stats.bestGroupTime = Math.max(save.stats.bestGroupTime || 0, Math.floor(time));
@@ -397,7 +397,7 @@ G.Game = (() => {
                       : { t: Math.floor(time), lv: pl.level, kills: pl.kills, dmg: judge ? judge.dmg : 0 };   // dmg: a Arceus
     // Si la partida se ha tocado (ver clean()), no sube al ranking (sin avisar); lo demás, sí.
     const ok = clean();
-    const sent = ok && !coop ? G.Ranking.submitSolo(Object.assign(mark, { dex: pl.dex, shiny: pl.shiny }))
+    const sent = ok && !coop ? G.Ranking.submitSolo(Object.assign(mark, { dex: pl.startDex, shiny: pl.shiny }))
                : ok && wasHost ? G.Ranking.submitGroup(Object.assign(mark, { members: team })) : null;
     if (sent) sent.then(b => { if (b && b.some(p => p !== 'a')) G.DB.commit(true); }).catch(() => {});
 
@@ -428,7 +428,47 @@ G.Game = (() => {
     return true;
   }
 
-  // ---------------- subida de nivel ----------------
+  // ---------------- evolución durante la partida (ver Player.evoLevel) ----------------
+
+  function maybeEvolve() {
+    if (!pl || pl.dead || state !== 'playing' || G.Rift.inArena) return;
+    const lv = pl.evoLevel();
+    if (!lv || pl.level < lv) return;
+    const opts = pl.evoOptions();
+    if (!opts.length) { pl.evoLeft = pl.evoN; return; }
+    // Varias formas (Eevee, Kirlia...): en solitario eliges; en grupo, al azar (no se para la partida).
+    if (opts.length > 1 && !G.Coop.active) { askEvolve(opts); return; }
+    doEvolve(opts.length > 1 ? G.U.pick(opts) : opts[0]);
+  }
+
+  function doEvolve(dex) {
+    const from = pl.mon.name;
+    if (!pl.evolveTo(dex)) return;
+    if (G.Coop.active) G.Coop.evolved(dex);
+    G.Game.flash('#ffffff', 0.8);
+    G.Audio.sfx('levelup');
+    G.FX.ring(pl.x, pl.y, 8, 140, '#ffffff', 0.6, 6);
+    G.FX.burst(pl.x, pl.y - pl.bodyH * 0.5, '#fff3c8', 40, 260);
+    G.Spawner.say(G.I18n.f('¡{x} ha evolucionado en {x}!', G.T(from), G.T(pl.mon.name)), 3.2, true);
+    G.FX.dmgText(pl.x, pl.y - pl.bodyH - 16, G.T('¡Crecimiento!'), '#ffd23f', true);
+  }
+
+  function askEvolve(opts) {
+    state = 'evolve';
+    const box = document.getElementById('evo-opts');
+    document.getElementById('evo-title').textContent = G.I18n.f('¡{x} va a evolucionar!', G.T(pl.mon.name));
+    box.innerHTML = '';
+    opts.forEach((dex, i) => {
+      const p = G.DEX_BY[dex], b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'btn' + (i ? '' : ' gold');
+      b.innerHTML = `${i + 1}. <span translate="no">${G.T(p.name)}</span> <small>${p.types.map(t => G.T(G.U.TYPE_NAME[t])).join(' / ')}</small>`;
+      b.onclick = () => { if (state !== 'evolve') return; G.UI.hideAll(); state = 'playing'; doEvolve(dex); };
+      box.appendChild(b);
+    });
+    G.UI.show('scr-evo');
+    G.Audio.sfx('pause');
+  }
 
   function maybeLevelUp() {
     if (pendingLevels <= 0 || state !== 'playing') return;
@@ -600,6 +640,13 @@ G.Game = (() => {
     // La Sentencia de Arceus: Espacio, Intro o Esc saltan la animación (si se puede).
     if (G.Judgment.cinematic && state === 'playing') {
       if (['space', 'enter', 'escape'].some(k => G.Input.tap(k))) G.Judgment.skip();
+      return;
+    }
+    if (state === 'evolve') {
+      for (let i = 0; i < 9; i++) if (G.Input.tap('digit' + (i + 1)) || G.Input.tap('numpad' + (i + 1))) {
+        const b = document.querySelectorAll('#evo-opts button')[i];
+        if (b) b.click();
+      }
       return;
     }
     if (state === 'continue') {
@@ -788,6 +835,7 @@ G.Game = (() => {
 
     G.Audio.music(G.Judgment.active ? G.Judgment.music : G.Rift.inArena ? 'rift' : G.EnemyMgr.bossAlive() ? 'boss' : G.BIOME_MUSIC[biome % G.BIOME_MUSIC.length]);
     if (!coop || G.Coop.isHost) maybeLevelUp();
+    maybeEvolve();
     if (pl.bonds > 0) offerBond(true);
     if (G.Coop.isHost) checkAllDown(dt);
   }

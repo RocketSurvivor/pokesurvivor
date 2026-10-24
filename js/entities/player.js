@@ -80,6 +80,78 @@ G.Player = class Player {
     this.statsTaken = {};      // mejoras de stat cogidas (condición de evolución)
     this.abil = null;          // efecto de su habilidad (data/ability-fx.js), lo pone game.js
     this.sturdyAt = -999;      // última vez que le salvó Robustez
+    // Evolución en la partida (ver evoLevel): el Pokémon con el que empezaste
+    // (mejoras, ranking, "más usados") y cuántas veces ha evolucionado.
+    this.startDex = mon.dex;
+    this.evoN = 0;
+    this.evoLeft = Player.evoDepth(mon.dex);
+  }
+
+  // ---------------- evolución durante la partida ----------------
+  /*
+   * Si empiezas con un Pokémon que no es su última forma, evoluciona al subir
+   * de nivel (como en los juegos, pero aquí siempre por nivel):
+   *   - le quedan 2 evoluciones (Charmander): a los niveles 7 y 16
+   *   - le queda 1 (Charmeleon, Pikachu...): al nivel 10
+   * Cada evolución da CRECIMIENTO para el resto de la partida: +12 % de daño y
+   * +10 % de vida máxima (y te cura del todo). Así, quien empieza débil acaba
+   * más fuerte que si hubiera cogido directamente la última forma (+25 % de
+   * daño y +21 % de vida con dos evoluciones).
+   */
+  /** Cuántas evoluciones le quedan como mucho (0, 1 o 2). */
+  static evoDepth(dex, n = 0) {
+    const next = (G.EVOS && G.EVOS[dex]) || [];
+    if (!next.length || n > 3) return 0;
+    return 1 + Math.max(...next.map(d => Player.evoDepth(d, n + 1)));
+  }
+  static get GROW_ATK() { return 1.12; }
+  static get GROW_HP() { return 0.10; }
+  /** Nivel al que toca la siguiente evolución, o 0 si ya no le quedan. */
+  evoLevel() {
+    const left = this.evoLeft - this.evoN;
+    if (left <= 0 || !(G.EVOS && G.EVOS[this.dex] && G.EVOS[this.dex].length)) return 0;
+    return this.evoLeft >= 2 ? [7, 16][this.evoN] || 0 : [10][this.evoN] || 0;
+  }
+  /** En qué puede evolucionar ahora. */
+  evoOptions() { return ((G.EVOS && G.EVOS[this.dex]) || []).filter(d => G.DEX_BY[d] && G.SPRITE_META[d]); }
+
+  /** Cambia el aspecto y el Pokémon (también la copia de un compañero en cooperativo). */
+  morph(dex) {
+    const base = G.DEX_BY[dex];
+    if (!base) return false;
+    // La naturaleza es la del Pokémon con el que empezaste (ver G.Mons.monFor).
+    const n = G.Mons.natureOf(this.startDex || this.dex), m = Object.assign({}, base);
+    if (n.up) m[n.up] = base[n.up] * 1.1;
+    if (n.down) m[n.down] = base[n.down] * 0.9;
+    m.atk = Math.max(m.pa, m.sa);
+    m.nature = n.id;
+    m.tmDex = this.startDex || this.dex;          // las MT aprendidas son las de tu Pokémon
+    const old = this.mon;
+    this.mon = m;
+    this.dex = dex;
+    this.shiny = this.shiny && G.Sprites.hasShiny(dex);
+    this.scale = G.Sprites.playerScale(dex);
+    this.anim = new G.Sprites.Animator(dex, this.scale, this.shiny);
+    this.r = G.Sprites.playerRadius(dex);
+    this.bodyH = G.Sprites.bodyHeight(dex, this.scale);
+    G.Sprites.preload([dex], 8000, this.shiny);
+    return old;
+  }
+
+  /** Evoluciona (tu Pokémon): stats de la nueva forma y Crecimiento. */
+  evolveTo(dex) {
+    const old = this.morph(dex);
+    if (!old) return false;
+    const m = this.mon;
+    this.maxHp += m.hp - old.hp;
+    this.baseSpd += m.spd - old.spd;
+    this.baseAtk += m.atk - old.atk;
+    this.evoN++;
+    this.atkMul *= Player.GROW_ATK;
+    this.maxHp = Math.round(this.maxHp * (1 + Player.GROW_HP));
+    this.hp = this.maxHp;
+    this.invuln = Math.max(this.invuln, 1.5);
+    return true;
   }
 
   /** Pone la habilidad (G.AbilityFX.of) y aplica lo que hace al empezar. */

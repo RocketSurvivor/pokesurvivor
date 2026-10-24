@@ -85,13 +85,13 @@ G.Pickups = (() => {
       // Ticket ×10: siempre el legendario de la grieta; un jefe normal, 1 de cada 3 veces.
       // (Hasta el 12-10-2026 el legendario de la grieta daba siempre 2: salían demasiados.)
       if (Math.random() < (legend ? LEGEND_T10 : BOSS_T10)) push(orb('ticket10', x, y - 20, 1));
-      push(orb('sphere', x - 20, y - 16, G.Orbs.roll()));
-      if (legend) push(orb('sphere', x + 20, y - 16, G.Orbs.roll()));
+      drop('sphere', x - 20, y - 16, G.Orbs.roll());
+      if (legend) drop('sphere', x + 20, y - 16, G.Orbs.roll());
       return;
     }
     push(orb(value >= 20 ? 'xpBig' : 'xp', x, y, value));
     if (Math.random() < TICKET_RATE) push(orb('ticket', x + G.U.rand(-6, 6), y, 1));
-    if (Math.random() < SPHERE_RATE) push(orb('sphere', x + G.U.rand(-6, 6), y, G.Orbs.roll()));
+    if (Math.random() < SPHERE_RATE) drop('sphere', x + G.U.rand(-6, 6), y, G.Orbs.roll());
 
     // Drops ocasionales.
     const r = Math.random();
@@ -102,6 +102,7 @@ G.Pickups = (() => {
 
   /** Suelta un objeto suelto: 'heal' | 'magnet' | 'bomb' | 'coin'. */
   function drop(kind, x, y, value = 0) {
+    if (kind === 'sphere' && !value) return;      // esferas desactivadas (systems/orbs.js)
     push(orb(kind, x, y, value));
   }
 

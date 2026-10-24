@@ -343,7 +343,7 @@ G.VFX = (() => {
     'gust':          { proj: 'wind' },
     'wing-attack':   { melee: 'feather' },
     'tackle':        { melee: 'impact' },
-    'body-slam':     { melee: 'impact' },
+    'body-slam':     { proj: 'impact', trail: 'dirt' },
     'hyper-voice':   { proj: 'note' },
     'bug-bite':      { melee: 'jaws' },
     'string-shot':   { proj: 'web' },
@@ -437,7 +437,14 @@ G.VFX = (() => {
     'hurricane':     { proj: 'wind' },
     'thunder':       { proj: 'bolt', trail: 'spark' },
     'surf':          { proj: 'drop', trail: 'drip' },
-    'earth-power':   { proj: 'rock', trail: 'dirt' }
+    'earth-power':   { proj: 'rock', trail: 'dirt' },
+    // ataques físicos (24-10-2026) y Golpe Cuerpo / Picotazo Veneno rehechos
+    'fire-fang':     { melee: 'jaws' },
+    'aqua-tail':     { melee: 'impact' },
+    'thunder-punch': { melee: 'impact' },
+    'spark':         { proj: 'bolt', trail: 'spark' },
+    'zen-headbutt':  { proj: 'ring', trail: 'wisp' },
+    'poison-jab':    { melee: 'claw' }
   };
 
   const TYPE_SHAPE = {

@@ -285,8 +285,7 @@ G.RunUI = (() => {
       <h3>Tus estadísticas</h3><div class="sum-stats">${st}</div>
       <h3>Objeto y cartas</h3>
       <p class="sub">${it ? G.Icons.html(pl.item, 18) + ' <b>' + it.name + '</b>: ' + it.desc : 'Sin objeto.'}</p>
-      <div class="chips">${cards || '<span class="sub">Aún no has cogido cartas de mejora.</span>'}</div>
-      <h3>Tus esferas</h3>${orbsSummary(pl)}`;
+      <div class="chips">${cards || '<span class="sub">Aún no has cogido cartas de mejora.</span>'}</div>`;
   }
 
   /** Las esferas que llevas (con su tecla y lo que hacen) y las mejoras que tienes puestas. */

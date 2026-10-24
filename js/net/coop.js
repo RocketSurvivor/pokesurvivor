@@ -345,6 +345,10 @@ G.Coop = (() => {
           if (typeof ev[1] === 'string' && G.Orbs.onMateUse(m.pl, ev[1], x, y, z)) emit(['ob', ev[1], x, y, z], from);
           break;
         }
+        case 'evo':
+          // Un invitado ha evolucionado: se ve aquí y se avisa a los demás.
+          if (G.DEX_BY[ev[1]] && m.pl.morph) { m.pl.morph(ev[1]); emit(['evo', from, ev[1]], from); }
+          break;
         case 'lp': picked(from); break;
         case 'hs': holdOn(from); break;
         case 'he': holdOff(from); break;
@@ -427,6 +431,7 @@ G.Coop = (() => {
                               friendly: false, color: '#ff7a9e', vis: G.VFX.forType(ev[8]), mtype: ev[8], cat: ev[9] });
         break;
       case 'c': { const m = mates.get(ev[1]); if (m) G.Combat.ghostCast(m.pl, ev[2], ev[3], ev[4], ev[5]); break; }
+      case 'evo': { const m = mates.get(ev[1]); if (m && G.DEX_BY[ev[2]] && m.pl.morph) m.pl.morph(ev[2]); break; }
       case 'item': api.item(ev[1]); break;
       case 'orb': if (typeof ev[1] === 'string') api.orb(ev[1]); break;
       case 'ob': if (typeof ev[1] === 'string') G.Orbs.nearBuff(ev[1], num(ev[2], 0, -1e6, 1e6), num(ev[3], 0, -1e6, 1e6)); break;
@@ -500,6 +505,11 @@ G.Coop = (() => {
   }
 
   function shinyCaught(e) { emit(['sh', e.dex]); }
+  /** Tu Pokémon ha evolucionado en la partida: los demás lo ven cambiar. */
+  function evolved(dex) {
+    if (!active) return;
+    if (host) emit(['evo', me, dex]); else { outEv.push(['evo', dex]); flushClient(true); }
+  }
 
   /** Has usado una esfera: el anfitrión avisa a todos; un invitado se lo pide al anfitrión. */
   function orbUsed(id, x, y, z) {
@@ -577,7 +587,7 @@ G.Coop = (() => {
   return {
     ANIMS, COLORS, begin, end, leave, keeps, tick, players, puppets, xpFactor, scaleRate, scaleHp,
     cast, hit, status, hurtShown, enemyAdded, enemyGone, enemyShot, pickupAdded, pickupGone, say,
-    propBroken, collected, shinyCaught, orbUsed, levelStart, localPicked, over, holdStart, holdEnd,
+    propBroken, collected, shinyCaught, evolved, orbUsed, levelStart, localPicked, over, holdStart, holdEnd,
     /** Anfitrión: evento para todos. Invitado: evento para el anfitrión. */
     broadcast(ev) { emit(ev); },
     toHost(ev) { if (active && !host) { outEv.push(ev); flushClient(true); } },

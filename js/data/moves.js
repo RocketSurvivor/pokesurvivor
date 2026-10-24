@@ -302,18 +302,20 @@
       cd: 0.55, dmg: 14, radius: 58, arc: 1.9, knock: 70 },
 
     // ---------------- NORMAL (extra) ----------------
-    { id: 'body-slam', name: 'Golpe Cuerpo', type: 'normal', kind: 'melee',
-      desc: 'Placaje con todo el peso: lento, corto y brutal.',
-      cd: 0.95, dmg: 30, radius: 46, arc: 2.2, knock: 140 },
+    // (24-10-2026: era otro golpe en arco, igual que Placaje. Ahora aplasta y paraliza, como en los juegos.)
+    { id: 'body-slam', name: 'Golpe Cuerpo', type: 'normal', kind: 'stun',
+      desc: 'Te dejas caer con todo tu peso donde avisa el suelo: aplasta y paraliza.',
+      cd: 1.6, dmg: 30, radius: 62, stun: 0.9 },
 
     { id: 'hyper-voice', name: 'Vozarrón', type: 'normal', kind: 'nova',
       desc: 'Onda sonora que sale en todas direcciones.',
       cd: 1.15, dmg: 12, speed: 260, count: 9, pierce: 1, life: 0.9, size: 7 },
 
     // ---------------- VENENO (extra) ----------------
-    { id: 'poison-sting', name: 'Picotazo Veneno', type: 'poison', kind: 'projectile',
-      desc: 'Aguijón rápido que envenena.',
-      cd: 0.34, dmg: 8, speed: 420, count: 1, spread: 0.08, pierce: 0, life: 1.0, size: 4, poison: 1 },
+    // (24-10-2026: era otro disparo recto, igual que Residuos. Ahora el aguijón busca solo.)
+    { id: 'poison-sting', name: 'Picotazo Veneno', type: 'poison', kind: 'homing',
+      desc: 'Aguijones que buscan solos al enemigo y lo envenenan.',
+      cd: 0.36, dmg: 8, speed: 380, life: 1.4, size: 4, homing: 5, poison: 1 },
 
     { id: 'toxic', name: 'Tóxico', type: 'poison', kind: 'trail',
       desc: 'Vas dejando charcos de veneno que intoxican a quien los pisa.',
@@ -668,7 +670,35 @@
 
     { id: 'earth-power', name: 'Tierra Viva', type: 'ground', kind: 'stun',
       desc: 'El suelo estalla donde avisa y deja aturdidos a los que pilla.',
-      cd: 1.7, dmg: 28, radius: 58, stun: 0.8 }
+      cd: 1.7, dmg: 28, radius: 58, stun: 0.8 },
+
+    // ---------------- ataques físicos (24-10-2026) ----------------
+    // Fuego, Agua, Eléctrico, Psíquico y Veneno casi sólo tenían ataques
+    // especiales: un Pokémon de Ataque alto (Mega-Charizard X, Machamp...) no
+    // tenía con qué pegar bien con su tipo.
+    { id: 'fire-fang', name: 'Colmillo Ígneo', type: 'fire', kind: 'melee',
+      desc: 'Un mordisco en llamas en arco corto que quema.',
+      cd: 0.5, dmg: 16, radius: 46, arc: 1.6, knock: 50, burn: 1 },
+
+    { id: 'aqua-tail', name: 'Acua Cola', type: 'water', kind: 'melee',
+      desc: 'Un coletazo de agua amplio que aparta a los enemigos.',
+      cd: 0.6, dmg: 19, radius: 54, arc: 2.2, knock: 90 },
+
+    { id: 'thunder-punch', name: 'Puño Trueno', type: 'electric', kind: 'melee',
+      desc: 'Un puñetazo eléctrico en arco corto que frena.',
+      cd: 0.5, dmg: 17, radius: 46, arc: 1.6, knock: 60, slow: 0.3 },
+
+    { id: 'spark', name: 'Chispa', type: 'electric', kind: 'dash',
+      desc: 'Te lanzas cargado de electricidad y golpeas todo el camino.',
+      cd: 0.7, dmg: 18, radius: 115, width: 34 },
+
+    { id: 'zen-headbutt', name: 'Cabezazo Zen', type: 'psychic', kind: 'dash',
+      desc: 'Una embestida de cabeza con fuerza mental que aparta a todos.',
+      cd: 0.85, dmg: 22, radius: 110, width: 38, knock: 60 },
+
+    { id: 'poison-jab', name: 'Puya Nociva', type: 'poison', kind: 'melee',
+      desc: 'Un golpe venenoso en arco corto que envenena.',
+      cd: 0.5, dmg: 16, radius: 46, arc: 1.6, knock: 50, poison: 1 }
   ];
 
   // Cuerpo a cuerpo (12-10-2026): +20 % de daño y +25 % de alcance y de arco
@@ -700,7 +730,9 @@
     'sucker-punch', 'night-slash',
     // paquete de contenido (24-10-2026)
     'avalanche', 'stealth-rock', 'head-smash', 'bullet-punch', 'iron-head', 'pin-missile', 'x-scissor',
-    'phantom-force', 'mach-punch']);
+    'phantom-force', 'mach-punch',
+    // ataques físicos (24-10-2026)
+    'fire-fang', 'aqua-tail', 'thunder-punch', 'spark', 'zen-headbutt', 'poison-jab']);
 
   // Los que disparan bolas necesitan count y spread de base: las mejoras los
   // multiplican y, sin ellos, "+1 proyectil" no sumaba ninguno y el abanico se
@@ -734,7 +766,7 @@
   function poolFor(mon, natural) {
     const ids = new Set(POOL.normal.filter(id => ANYONE.has(id)));
     for (const t of mon.types) for (const id of (POOL[t] || [])) ids.add(id);
-    if (!natural && G.Mons && mon.dex) for (const id of G.Mons.taught(mon.dex)) ids.add(id);
+    if (!natural && G.Mons && mon.dex) for (const id of G.Mons.taught(mon.tmDex || mon.dex)) ids.add(id);
     return [...ids];
   }
 
@@ -859,7 +891,11 @@
     'draco-meteor': 'atk',    'moonblast': 'cd',
     'mach-punch': 'spd',      'sludge-wave': 'rgn',
     'hurricane': 'mag',       'thunder': 'atk',
-    'surf': 'hp',             'earth-power': 'atk'
+    'surf': 'hp',             'earth-power': 'atk',
+    // ataques físicos (24-10-2026)
+    'fire-fang': 'atk',       'aqua-tail': 'hp',
+    'thunder-punch': 'spd',   'spark': 'spd',
+    'zen-headbutt': 'def',    'poison-jab': 'atk'
   };
   // Lo que gana al evolucionar, según cómo funcione.
   const EVO_MODS = {

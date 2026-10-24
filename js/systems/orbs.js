@@ -38,7 +38,14 @@ G.Orbs = (() => {
   let cd = 0, sel = 0;
   const seen = new Set();           // las que ya te han explicado en esta partida
 
-  function roll() { return G.U.pick(LIST).id; }
+  /*
+   * Desactivadas en esta versión (24-10-2026): ya no salen en las partidas. El
+   * código se queda (y las partidas en grupo con versiones viejas no fallan),
+   * pero roll() no da ninguna y add() no guarda nada. Para volver a activarlas,
+   * ENABLED = true y recupera los textos de dev.html y run-ui.js.
+   */
+  const ENABLED = false;
+  function roll() { return ENABLED ? G.U.pick(LIST).id : null; }
 
   // ---------------- la bolsa de cada jugador (pl.orbs = 4 huecos: { id, n } o null) ----------------
   // Cada esfera se queda en su hueco (y en su tecla) aunque gastes las de al lado.
@@ -51,7 +58,7 @@ G.Orbs = (() => {
   }
 
   function add(p, id) {
-    if (!BY[id] || !canTake(p, id)) return false;
+    if (!ENABLED || !BY[id] || !canTake(p, id)) return false;
     const inv = bag(p), s = inv.find(o => o && o.id === id);
     if (s) s.n++; else inv[inv.indexOf(null)] = { id, n: 1 };
     return true;
