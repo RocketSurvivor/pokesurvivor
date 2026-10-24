@@ -203,6 +203,7 @@
   </div>
 </section>
 
+<button id="btn-movedex" class="btn small gold movedex-btn hidden" type="button" title="Todos los ataques del juego">Movedex</button>
 <div id="topbar" class="topbar hidden">
   <div class="pill"><span class="coin"></span><span id="coins">0</span></div>
   <div class="pill" id="tickets-pill" title="Tickets del gacha"></div>
@@ -452,6 +453,19 @@
 </div>
 
 <!-- ====== Colección ====== -->
+<section id="scr-movedex" class="scr dim hidden">
+  <div class="box wide">
+    <div class="row between"><h2>Movedex <span id="mdx-count" class="sub" style="font-size:15px"></span></h2><button class="btn small ghost" data-back>Volver</button></div>
+    <p class="sub">Todos los ataques del juego, con sus números a nivel 1 (las cartas de nivel y las Mejoras los suben).</p>
+    <div class="dex-tools">
+      <input id="mdx-q" type="search" placeholder="Buscar ataque" autocomplete="off" spellcheck="false">
+      <select id="mdx-type" title="Tipo"></select>
+    </div>
+    <div class="filters dex-sort" id="mdx-sort"></div>
+    <div class="mdx-grid" id="mdx-grid"></div>
+  </div>
+</section>
+
 <section id="scr-dex" class="scr dim hidden">
   <div class="box wide">
     <div class="row between"><h2>Pokémon <span id="dex-total" class="sub" style="font-size:15px"></span></h2><button class="btn small ghost" data-back>Volver</button></div>
@@ -595,6 +609,7 @@
       <button id="btn-pause-settings" class="btn">Ajustes</button>
       <button id="btn-quit" class="btn">Abandonar run</button>
     </div>
+    <div id="pause-auto" class="pause-auto"></div>
     <div id="pause-sum" class="pause-sum"></div>
     <div id="pause-sound" class="sound-inline"></div>
   </div>
@@ -709,6 +724,7 @@
 <script defer src="js/ui/gacha-ui.js"></script>
 <script defer src="js/ui/shop-ui.js"></script>
 <script defer src="js/ui/run-ui.js"></script>
+<script defer src="js/ui/movedex-ui.js"></script>
 <script defer src="js/ui/social-ui.js"></script>
 <script defer src="js/ui/ranking-ui.js"></script>
 <script defer src="js/ui/mod-ui.js"></script>

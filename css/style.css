@@ -996,3 +996,28 @@ html:lang(zh-Hant) { --font: 'Pixelify', 'PingFang TC', 'Microsoft JhengHei', 'N
 html:lang(zh-Hans) { --font: 'Pixelify', 'PingFang SC', 'Microsoft YaHei', 'Noto Sans CJK SC', system-ui, sans-serif; }
 html:lang(zh) body { line-height: 1.5; -webkit-font-smoothing: antialiased; }
 html:lang(zh) .btn, html:lang(zh) .chip { letter-spacing: 0; }
+
+/* ---- Movedex (25-10-2026) ---- */
+.movedex-btn { position: fixed; top: 14px; left: 16px; z-index: 25; }
+.mdx-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; margin-top: 10px;
+  max-height: 62vh; overflow-y: auto; padding-right: 4px; }
+.mdx-card { background: rgba(10,20,50,.55); border: 2px solid var(--edge); border-radius: 12px; padding: 10px 12px; }
+.mdx-head { display: flex; gap: 10px; align-items: center; }
+.mdx-head b { font-size: 16px; }
+.mdx-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 3px; }
+.mdx-tags .tag-chip.kind { background: #3a4870; }
+.mdx-desc { font-size: 13px; color: var(--muted); margin: 6px 0; }
+.mdx-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+.mdx-stats div { background: rgba(255,255,255,.05); border-radius: 6px; padding: 3px 6px; display: flex; flex-direction: column; }
+.mdx-stats span { font-size: 10px; color: var(--muted); text-transform: uppercase; }
+.mdx-stats b { font-size: 14px; }
+.mdx-ef { font-size: 12px; color: #ffd23f; margin: 6px 0 0; }
+.mdx-foot { font-size: 11px; color: var(--muted); margin: 6px 0 0; }
+@media (max-width: 700px) { .movedex-btn { top: 5px; left: 6px; padding: 2px 6px; } .mdx-grid { max-height: 58vh; } }
+/* ---- Mejora automática (menú de pausa) ---- */
+.pause-auto { margin-top: 10px; text-align: left; background: rgba(10,20,50,.5); border: 2px solid var(--edge); border-radius: 12px; padding: 8px 12px; }
+.pause-auto .auto-row { display: flex; align-items: center; gap: 8px; justify-content: space-between; flex-wrap: wrap; }
+.pause-auto ol { margin: 6px 0; padding-left: 22px; }
+.pause-auto li { display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 2px 0; }
+.pause-auto li .btn { padding: 0 8px; min-width: 0; }
+.pause-auto select { max-width: 200px; }

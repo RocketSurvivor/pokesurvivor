@@ -31,6 +31,95 @@ G.RunUI = (() => {
     $('lvl-reroll').onclick = reroll;
     G.UI.show('scr-levelup');
     guard($('cards'));
+    if (autoOn()) {
+      $('lvl-wait').classList.remove('hidden');
+      $('lvl-wait').textContent = G.T('Mejora automática…');
+      autoPick();
+    }
+  }
+
+  /* ---- Mejora automática ----
+   * Si está activada (menú de pausa), las cartas de nivel se eligen solas en
+   * cuanto pasa la protección: primero lo que pongas arriba en la lista.
+   *   Evoluciones: evolucionar un ataque (o la estadística que lo evoluciona).
+   *   Mejorar ataques: subir de nivel uno que ya tienes (antes el activo, luego el más bajo).
+   *   Ataques nuevos: mejor de tu lado (físico/especial) y que hagan daño.
+   *   Estadísticas: la que elijas; con poca vida, la Baya Zidra.
+   * Las cartas de objeto y de vínculo se siguen eligiendo a mano.
+   */
+  const CATS = { evo: 'Evoluciones', up: 'Mejorar ataques', new: 'Ataques nuevos', stat: 'Estadísticas' };
+  const autoCfg = () => G.Settings.get('autoPick') || G.Settings.DEF.autoPick;
+  const autoOn = () => !!autoCfg().on;
+  let autoT = 0;
+
+  function bestCard(list) {
+    const cfg = autoCfg(), pl = G.Game.player;
+    const rank = c => {
+      const cat = c.type === 'stat' && c.color === '#ffd23f' ? 'evo' : c.type;
+      const i = cfg.order.indexOf(cat);
+      return i < 0 ? 9 : i;
+    };
+    const score = c => {
+      const id = c.key.split(':')[1];
+      if (c.type === 'up') {
+        const m = pl && pl.moves.find(x => x.id === id);
+        const act = pl && pl.activeMove && pl.activeMove();
+        return (act && act.id === id ? 100 : 0) + (m ? 20 - m.lvl : 0);
+      }
+      if (c.type === 'new') {
+        const d = G.Moves.BY_ID[id];
+        if (!d) return 0;
+        return (d.kind === 'buff' ? 0 : 50) + (pl && d.cat && G.Stats.fit(pl.mon, d.cat) >= 0.999 ? 30 : 0) + (d.dmg ? Math.min(19, d.dmg / Math.max(0.2, d.cd) / 10) : 0);
+      }
+      if (c.type === 'stat') {
+        if (c.color === '#ffd23f') return 100;
+        const low = pl && pl.hp < pl.maxHp * 0.35;
+        return id === 'heal' ? (low ? 200 : -50) : id === cfg.stat ? 100 : id === 'atk' ? 10 : 0;
+      }
+      return 0;
+    };
+    let best = 0;
+    list.forEach((c, i) => {
+      const b = list[best];
+      if (rank(c) < rank(b) || (rank(c) === rank(b) && score(c) > score(b))) best = i;
+    });
+    return best;
+  }
+
+  function autoPick() {
+    clearTimeout(autoT);
+    const tryPick = () => {
+      if (!offers || !autoOn() || !G.UI.isOpen('scr-levelup')) return;
+      if (guarded()) { autoT = setTimeout(tryPick, 60); return; }
+      const i = bestCard(offers);
+      const el = $('cards').children[i];
+      if (el) el.classList.add('picked');
+      autoT = setTimeout(() => { if (offers) pick(i); }, 180);
+    };
+    autoT = setTimeout(tryPick, GUARD * 1000 + 40);
+  }
+
+  /** Controles de la mejora automática en el menú de pausa. */
+  function renderAuto() {
+    const box = $('pause-auto'), cfg = autoCfg();
+    const save = v => { G.Settings.set('autoPick', Object.assign({}, cfg, v)); renderAuto(); };
+    const stats = G.LevelUp.STATS.filter(s => s.id !== 'heal');
+    box.innerHTML = `
+      <div class="auto-row"><b>${G.T('Mejora automática')}</b>
+        <button type="button" class="btn small ${cfg.on ? 'gold' : 'ghost'}" id="auto-on">${cfg.on ? G.T('Activada') : G.T('Desactivada')}</button></div>
+      <div class="${cfg.on ? '' : 'hidden'}">
+        <p class="sub" style="margin:4px 0 0;font-size:12px">${G.T('Elige sola las cartas al subir de nivel. Prioridad (lo de arriba primero):')}</p>
+        <ol>${cfg.order.map((k, i) => `<li><span>${G.T(CATS[k])}</span><span>
+          <button type="button" class="btn small ghost" data-up="${i}" ${i === 0 ? 'disabled' : ''}>▲</button>
+          <button type="button" class="btn small ghost" data-dn="${i}" ${i === cfg.order.length - 1 ? 'disabled' : ''}>▼</button></span></li>`).join('')}</ol>
+        <div class="auto-row"><span>${G.T('Estadística preferida')}</span>
+          <select id="auto-stat">${stats.map(s => `<option value="${s.id}" ${s.id === cfg.stat ? 'selected' : ''}>${G.T(s.title)}</option>`).join('')}</select></div>
+      </div>`;
+    box.querySelector('#auto-on').onclick = () => save({ on: !cfg.on });
+    box.querySelector('#auto-stat').onchange = e => save({ stat: e.target.value });
+    const move = (i, j) => { const o = cfg.order.slice(); [o[i], o[j]] = [o[j], o[i]]; save({ order: o }); };
+    box.querySelectorAll('[data-up]').forEach(b => b.onclick = () => move(+b.dataset.up, +b.dataset.up - 1));
+    box.querySelectorAll('[data-dn]').forEach(b => b.onclick = () => move(+b.dataset.dn, +b.dataset.dn + 1));
   }
 
   /**
@@ -103,6 +192,7 @@ G.RunUI = (() => {
   }
 
   function closeLevelUp() {
+    clearTimeout(autoT);
     offers = null; offerCb = null;
     $('cards').classList.remove('done');
     G.UI.hide('scr-levelup');
@@ -267,8 +357,8 @@ G.RunUI = (() => {
       ['Vida', n(pl.hp) + ' / ' + n(pl.maxHp)],
       ['Ataque', k2(pl.atkFor({ cat: 'physical' }))],
       ['At. Esp.', k2(pl.atkFor({ cat: 'special' }))],
-      ['Defensa', mon.df + ' <small>' + guard(fis) + ' físico</small>'],
-      ['Def. Esp.', mon.sd + ' <small>' + guard(esp) + ' especial</small>'],
+      ['Defensa', Math.round(mon.df) + ' <small>' + guard(fis) + ' físico</small>'],
+      ['Def. Esp.', Math.round(mon.sd) + ' <small>' + guard(esp) + ' especial</small>'],
       ['Velocidad', n(pl.spd)],
       ['Crítico', pct(pl.critChance || 0)],
       ['Reducción de daño', pct(pl.reduction)],
@@ -305,6 +395,7 @@ G.RunUI = (() => {
 
   function showPause(coop = false) {
     $('pause-sum').innerHTML = pauseSummary();
+    renderAuto();
     G.UI.soundControls($('pause-sound'));
     $('pause-coop').classList.toggle('hidden', !coop);
     $('btn-quit').textContent = coop ? 'Salir de la partida' : 'Abandonar run';
@@ -316,5 +407,5 @@ G.RunUI = (() => {
     $('btn-quit').onclick = onQuit;
   }
 
-  return { showLevelUp, reroll, showItemChoice, showBond, pickBond, bondBack, pick, setWaiting, closeLevelUp, showOver, wirePause, showPause };
+  return { showLevelUp, reroll, showItemChoice, showBond, pickBond, bondBack, pick, setWaiting, closeLevelUp, showOver, wirePause, showPause, bestCard };
 })();

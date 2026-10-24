@@ -13,15 +13,19 @@
  *   gamepad     true/false                        jugar con mando (gamepad.js)
  *   padRumble   true/false                        que el mando vibre al recibir daño
  *   aimManual   true/false                        apuntar a mano (ratón o stick derecho) en vez de solo
+ *   autoPick    { on, order, stat }               mejora automática al subir de nivel (run-ui.js):
+ *                                                 order = prioridad de 'evo' | 'up' | 'new' | 'stat'
  *
  *   G.Settings.get('quality')  ·  G.Settings.set('fps', true)  ·  G.Settings.on(fn)
  *   G.Settings.fx   nivel efectivo 0 (bajo) .. 2 (alto), ya resuelto el 'auto'
  */
 G.Settings = (() => {
   const KEY = 'ps.settings';
-  const DEF = { quality: 'auto', dmgNumbers: true, calm: false, fps: false, stick: 1, stickMode: 'float', pad: null, gamepad: true, padRumble: true, aimManual: false };
+  const DEF = { quality: 'auto', dmgNumbers: true, calm: false, fps: false, stick: 1, stickMode: 'float', pad: null, gamepad: true, padRumble: true, aimManual: false,
+    autoPick: { on: false, order: ['evo', 'up', 'new', 'stat'], stat: 'atk' } };
   let s = Object.assign({}, DEF);
   try { Object.assign(s, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) { /* nada */ }
+  if (!s.autoPick || !Array.isArray(s.autoPick.order) || s.autoPick.order.length !== 4) s.autoPick = Object.assign({}, DEF.autoPick, { on: !!(s.autoPick && s.autoPick.on) });
   const fns = new Set();
 
   // Calidad automática: empieza alta (media en móvil) y baja si va a tirones.
