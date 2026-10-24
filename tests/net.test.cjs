@@ -296,7 +296,8 @@ test('co-op cut mid-run: the host keeps the guest while it reconnects and remove
   assert.equal(d.G.Coop.puppets().length, 0);
 });
 
-test('co-op orbs: the host applies a guest orb only if the guest really has it, and buffs reach those nearby', () => {
+// Las esferas están desactivadas en esta versión (systems/orbs.js, ENABLED = false).
+test.skip('co-op orbs: the host applies a guest orb only if the guest really has it, and buffs reach those nearby', () => {
   let msgFn = null;
   const G = {}, slept = [], slowed = [];
   G.Net = { uid: 'host', on(fn) { msgFn = fn; }, onPeer() {}, slow: () => false, send() {}, toHost() {}, mode: () => 'direct' };
