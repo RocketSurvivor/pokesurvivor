@@ -13,6 +13,9 @@ G.Upgrades = (() => {
     { id: 'xp',     icon: 'book', name: 'Sabiduría',      unit: '+5% experiencia',    max: 8,  base: 100, grow: 1.42 },
     { id: 'coins',  icon: 'coin', name: 'Fortuna',        unit: '+8% Pokémonedas',    max: 8,  base: 120, grow: 1.45 },
     { id: 'moves',  icon: 'cards', name: 'Repertorio',     unit: 'Empiezas con 2 movimientos', max: 1, base: 1500, grow: 1 },
+    // 25-10-2026: más disparos (Bola Sombra, Ascuas...) y más área (Puño Meteoro, golpes cuerpo a cuerpo...).
+    { id: 'proj',   icon: 'multi', name: 'Ráfaga',         unit: '+1 proyectil en los ataques que disparan', max: 2, base: 900, grow: 2.2 },
+    { id: 'area',   icon: 'area', name: 'Amplitud',       unit: '+7% de área en golpes y zonas', max: 4, base: 220, grow: 1.6 },
     { id: 'crit',   icon: 'star', name: 'Golpe Crítico',  unit: '+3% de críticos (x1,5 de daño)', max: 10, base: 90, grow: 1.4 },
     { id: 'reroll', icon: 'up', name: 'Cambio de cartas', unit: '+1 cambio de cartas de nivel por run', max: 5, base: 150, grow: 1.6 },
     { id: 'ban',    icon: 'ban', name: 'Veto',           unit: 'Bloquea 1 movimiento: no te sale en las cartas', max: 3, base: 300, grow: 1.9 },
@@ -46,7 +49,9 @@ G.Upgrades = (() => {
       startMoves: 1 + L('moves'),
       crit: L('crit') * 0.03,
       rerolls: L('reroll'),
-      bans: L('ban')
+      bans: L('ban'),
+      proj: L('proj'),
+      areaMul: 1 + L('area') * 0.07
     };
   }
 

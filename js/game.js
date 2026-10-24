@@ -431,10 +431,9 @@ G.Game = (() => {
   // ---------------- evolución durante la partida (ver Player.evoLevel) ----------------
 
   function maybeEvolve() {
-    if (!pl || pl.dead || state !== 'playing' || G.Rift.inArena) return;
-    const lv = pl.evoLevel();
+    if (!pl || pl.dead || pl.evoFx || state !== 'playing' || G.Rift.inArena) return;
+    const { lv, opts } = pl.nextEvo();
     if (!lv || pl.level < lv) return;
-    const opts = pl.evoOptions();
     if (!opts.length) { pl.evoLeft = pl.evoN; return; }
     // Varias formas (Eevee, Kirlia...): en solitario eliges; en grupo, al azar (no se para la partida).
     if (opts.length > 1 && !G.Coop.active) { askEvolve(opts); return; }
@@ -442,21 +441,23 @@ G.Game = (() => {
   }
 
   function doEvolve(dex) {
-    const from = pl.mon.name;
-    if (!pl.evolveTo(dex)) return;
-    if (G.Coop.active) G.Coop.evolved(dex);
-    G.Game.flash('#ffffff', 0.8);
-    G.Audio.sfx('levelup');
-    G.FX.ring(pl.x, pl.y, 8, 140, '#ffffff', 0.6, 6);
-    G.FX.burst(pl.x, pl.y - pl.bodyH * 0.5, '#fff3c8', 40, 260);
-    G.Spawner.say(G.I18n.f('¡{x} ha evolucionado en {x}!', G.T(from), G.T(pl.mon.name)), 3.2, true);
-    G.FX.dmgText(pl.x, pl.y - pl.bodyH - 16, G.T('¡Crecimiento!'), '#ffd23f', true);
+    const mega = !!(G.DEX_BY[dex] && G.DEX_BY[dex].mega);
+    // La esfera (Player.startEvo); al cambiar de forma, el aviso y los compañeros.
+    pl.startEvo(dex, from => {
+      if (G.Coop.active) G.Coop.evolved(dex);
+      G.Game.flash(mega ? '#ffd0f4' : '#ffffff', 0.7);
+      G.Audio.sfx(mega ? 'legend' : 'levelup');
+      G.Spawner.say(mega ? G.I18n.f('¡{x} ha megaevolucionado!', G.T(from))
+                         : G.I18n.f('¡{x} ha evolucionado en {x}!', G.T(from), G.T(pl.mon.name)), 3.2, true);
+      if (!mega) G.FX.dmgText(pl.x, pl.y - pl.bodyH - 16, G.T('¡Crecimiento!'), '#ffd23f', true);
+    });
   }
 
   function askEvolve(opts) {
     state = 'evolve';
     const box = document.getElementById('evo-opts');
-    document.getElementById('evo-title').textContent = G.I18n.f('¡{x} va a evolucionar!', G.T(pl.mon.name));
+    const megaPick = opts.some(d => G.DEX_BY[d] && G.DEX_BY[d].mega);
+    document.getElementById('evo-title').textContent = G.I18n.f(megaPick ? '¡{x} va a megaevolucionar!' : '¡{x} va a evolucionar!', G.T(pl.mon.name));
     box.innerHTML = '';
     opts.forEach((dex, i) => {
       const p = G.DEX_BY[dex], b = document.createElement('button');

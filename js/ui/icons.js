@@ -76,6 +76,13 @@ G.Icons = (() => {
     bond: { pal: { y: '#ffd23f', w: '#fff3b0', p: '#ff8ad8', q: '#ffd3f1' }, rows: [
       '.kkkkk......', 'kwyyyyk.....', 'kykkkyk.....', 'kyk.kyk.....', 'kykkkyk.....', 'kyyyyykkkkk.',
       '.kkkkkqppppk', '.....kpkkkpk', '.....kpk.kpk', '.....kpkkkpk', '.....kpppppk', '......kkkkk.'] },
+    // Mejoras Ráfaga (tres disparos) y Amplitud (ondas que se abren), 25-10-2026.
+    multi: { pal: { y: '#ffd23f', o: '#ff9a3d', w: '#fff3b0' }, rows: [
+      '............', '.kk.........', 'kwyk..kkk...', 'kyok.kwyyk..', '.kk..kyyook.', '......kook..',
+      '.kk...kkk...', 'kwyk........', 'kyok...kk...', '.kk...kwyk..', '......kyok..', '.......kk...'] },
+    area: { pal: { b: '#4fb4ff', c: '#9fe0ff', w: '#ffffff' }, rows: [
+      '...kkkkkk...', '..kcccccck..', '.kckkkkkkck.', 'kckk....kkck', 'kck..kk..kck', 'kck.kbwk.kck',
+      'kck.kbbk.kck', 'kck..kk..kck', 'kckk....kkck', '.kckkkkkkck.', '..kcccccck..', '...kkkkkk...'] },
     clock: { pal: { w: '#f4f4ff', y: '#ffd23f', o: '#c9c9e0' }, rows: [
       '....kkkk....', '..kkyyyykk..', '.kyywwwwyyk.', '.kywwwkwwyk.', 'kywwwwkwwwyk', 'kywwwwkwwwyk',
       'kywwwwkkkwyk', 'kywwwwwwwwyk', '.kywwwwwwyk.', '.kyyowwwyyk.', '..kkyyyykk..', '....kkkk....'] },

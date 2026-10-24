@@ -57,6 +57,8 @@ G.Player = class Player {
     this.rerolls = 0;          // veces que ha cambiado las cartas de nivel en esta run
     this.rerollBonus = perks.rerolls || 0;   // cambios comprados en Mejoras (más el gratis)
     this.critChance = perks.crit || 0;       // probabilidad de golpe crítico (Mejoras)
+    this.extraProj = perks.proj || 0;        // Mejoras → Ráfaga: proyectiles de más
+    this.areaMul = perks.areaMul || 1;       // Mejoras → Amplitud: × al área
     this.banned = new Set();                 // movimientos vetados (Mejoras → Veto): no salen en las cartas
     this.bind = {};                          // movimiento -> hueco fijo (0-3), elegido en Mejoras
     this.coins = 0;            // monedas recogidas en esta run
@@ -85,7 +87,25 @@ G.Player = class Player {
     this.startDex = mon.dex;
     this.evoN = 0;
     this.evoLeft = Player.evoDepth(mon.dex);
+    this.isMega = !!mon.mega;     // ya megaevolucionado (o empezaste con una mega)
+    this.evoFx = null;            // animación de la esfera (ver startEvo)
   }
+
+  /*
+   * Mejoras Ráfaga y Amplitud: se aplican al aprender el ataque (las mejoras de
+   * nivel y la evolución del ataque multiplican y suman encima, como siempre).
+   *   Ráfaga: +1 proyectil por nivel (+2 en los que ya sueltan muchos: abanico y anillo).
+   *   Amplitud: × al radio de golpes cuerpo a cuerpo, auras, zonas, meteoros, minas...
+   */
+  static applyPerks(m, proj, area) {
+    if (proj > 0 && Player.PROJ_KINDS.has(m.kind)) {
+      m.count = (m.count || 1) + proj * (m.kind === 'nova' || m.kind === 'cone' ? 2 : 1);
+      if (m.spread != null && (m.kind === 'projectile' || m.kind === 'homing' || m.kind === 'bounce')) m.spread = Math.max(m.spread, 0.12) * (1 + proj * 0.6);
+    }
+    if (area > 1 && Player.AREA_KINDS.has(m.kind) && m.radius) m.radius *= area;
+  }
+  static get PROJ_KINDS() { return new Set(['projectile', 'homing', 'bounce', 'boomerang', 'cone', 'nova']); }
+  static get AREA_KINDS() { return new Set(['melee', 'aura', 'meteor', 'mine', 'stun', 'quake', 'vortex', 'shove', 'spin', 'trail']); }
 
   // ---------------- evolución durante la partida ----------------
   /*
@@ -115,6 +135,24 @@ G.Player = class Player {
   /** En qué puede evolucionar ahora. */
   evoOptions() { return ((G.EVOS && G.EVOS[this.dex]) || []).filter(d => G.DEX_BY[d] && G.SPRITE_META[d]); }
 
+  /*
+   * Megaevolución en la partida: cuando ya no le quedan evoluciones normales y
+   * su forma tiene mega (data/megas.js), megaevoluciona al nivel MEGA_LV. Da
+   * las estadísticas de la mega (no da Crecimiento: ya es un salto grande).
+   */
+  static get MEGA_LV() { return 24; }
+  megaOptions() {
+    if (this.isMega) return [];
+    return (G.MEGAS || []).filter(m => m.base === this.dex && G.SPRITE_META[m.dex]).map(m => m.dex);
+  }
+  /** Lo siguiente que le toca: { lv, opts } (lv 0 = nada). */
+  nextEvo() {
+    const lv = this.evoLevel();
+    if (lv) return { lv, opts: this.evoOptions() };
+    const megas = this.megaOptions();
+    return megas.length ? { lv: Player.MEGA_LV, opts: megas } : { lv: 0, opts: [] };
+  }
+
   /** Cambia el aspecto y el Pokémon (también la copia de un compañero en cooperativo). */
   morph(dex) {
     const base = G.DEX_BY[dex];
@@ -138,17 +176,21 @@ G.Player = class Player {
     return old;
   }
 
-  /** Evoluciona (tu Pokémon): stats de la nueva forma y Crecimiento. */
+  /** Evoluciona (tu Pokémon): stats de la nueva forma y Crecimiento (las megas, sin Crecimiento). */
   evolveTo(dex) {
+    const mega = !!(G.DEX_BY[dex] && G.DEX_BY[dex].mega);
     const old = this.morph(dex);
     if (!old) return false;
     const m = this.mon;
     this.maxHp += m.hp - old.hp;
     this.baseSpd += m.spd - old.spd;
     this.baseAtk += m.atk - old.atk;
-    this.evoN++;
-    this.atkMul *= Player.GROW_ATK;
-    this.maxHp = Math.round(this.maxHp * (1 + Player.GROW_HP));
+    if (mega) this.isMega = true;
+    else {
+      this.evoN++;
+      this.atkMul *= Player.GROW_ATK;
+      this.maxHp = Math.round(this.maxHp * (1 + Player.GROW_HP));
+    }
     this.hp = this.maxHp;
     this.invuln = Math.max(this.invuln, 1.5);
     return true;
@@ -206,6 +248,7 @@ G.Player = class Player {
     if (this.slots.length >= this.maxMoves || this.hasMove(id)) return false;
     const m = G.Moves.instance(id, 1);
     m.since = G.Game.st.time;          // desde cuándo lo tienes (daño por segundo en el resumen)
+    Player.applyPerks(m, this.extraProj, this.areaMul);
     this.moves.push(m);
     const group = [m];
     this.slots.push(group);
@@ -450,9 +493,67 @@ G.Player = class Player {
   }
 
   // ---------------- ciclo ----------------
+  /*
+   * Animación de evolución: una esfera de luz te envuelve (0-0,35 s), late
+   * (hasta 0,8 s), cambias de forma dentro y estalla dejándote ver (hasta 1,25 s).
+   * Mientras dura no te pueden dañar. `done(nombreAnterior)` se llama al cambiar.
+   */
+  startEvo(dex, done) {
+    if (this.evoFx) return false;
+    this.evoFx = { t: 0, dex, done, swapped: false, mega: !!(G.DEX_BY[dex] && G.DEX_BY[dex].mega) };
+    this.invuln = Math.max(this.invuln, 1.4);
+    G.Audio.sfx('heal');
+    return true;
+  }
+  static get EVO_SWAP() { return 0.8; }
+  static get EVO_END() { return 1.25; }
+  evoTick(dt) {
+    const f = this.evoFx;
+    if (!f) return;
+    f.t += dt;
+    this.invuln = Math.max(this.invuln, 0.2);
+    if (!f.swapped && f.t >= Player.EVO_SWAP) {
+      f.swapped = true;
+      const from = this.mon.name;
+      if (this.evolveTo(f.dex) && f.done) f.done(from);
+      G.FX.ring(this.x, this.y - this.bodyH * 0.5, 10, this.r * 7, f.mega ? '#ff7ad8' : '#ffffff', 0.5, 6);
+      G.FX.burst(this.x, this.y - this.bodyH * 0.5, f.mega ? '#ffb0f0' : '#fff3c8', 46, 300);
+    }
+    if (f.t >= Player.EVO_END) this.evoFx = null;
+  }
+  /** La esfera (encima del sprite). */
+  drawEvo(ctx) {
+    const f = this.evoFx;
+    if (!f) return;
+    const cx = this.x, cy = this.y - this.bodyH * 0.5;
+    const R = Math.max(this.r * 2.6, this.bodyH * 0.85, 26);
+    const t = f.t, grow = Math.min(1, t / 0.35), ease = 1 - Math.pow(1 - grow, 3);
+    let rad = R * ease, a = 0.95 * ease;
+    if (t >= Player.EVO_SWAP) {                       // estalla
+      const k = Math.min(1, (t - Player.EVO_SWAP) / (Player.EVO_END - Player.EVO_SWAP));
+      rad = R * (1 + k * 0.7); a = 0.95 * (1 - k);
+    } else if (t > 0.35) rad *= 1 + Math.sin(t * 28) * 0.04;   // late
+    const tint = f.mega ? ['255,240,252', '255,122,216'] : ['255,255,255', '160,210,255'];
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, a);
+    const g = ctx.createRadialGradient(cx - rad * 0.3, cy - rad * 0.3, rad * 0.1, cx, cy, rad);
+    g.addColorStop(0, `rgba(${tint[0]},1)`);
+    g.addColorStop(0.7, `rgba(${tint[0]},0.95)`);
+    g.addColorStop(1, `rgba(${tint[1]},0.75)`);
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(cx, cy, rad, 0, 6.2832); ctx.fill();
+    ctx.lineWidth = 2; ctx.strokeStyle = `rgba(${tint[1]},1)`; ctx.stroke();
+    ctx.restore();
+    if (t < Player.EVO_SWAP && Math.random() < 0.6) {
+      const ang = Math.random() * 6.2832;
+      G.FX.px(cx + Math.cos(ang) * rad * 1.2, cy + Math.sin(ang) * rad * 1.2, f.mega ? '#ff9ae6' : '#cfe8ff', { vx: -Math.cos(ang) * 60, vy: -Math.sin(ang) * 60, life: 0.4 });
+    }
+  }
+
   update(dt) {
     this.anim.update(dt);
     if (this.dead) return;
+    this.evoTick(dt);
     if (this.invuln > 0) this.invuln -= dt;
     if (this.flash > 0) this.flash -= dt;
     if (this.attackFace > 0) this.attackFace -= dt;
@@ -656,6 +757,7 @@ G.Player = class Player {
 
     const alpha = this.invuln > 0 && !this.dead ? (Math.floor(this.invuln * 18) % 2 ? 0.45 : 1) : 1;
     this.anim.draw(ctx, this.x, this.y, { flash: this.flash > 0, softFlash: true, alpha, color: '#ffcb3d' });
+    this.drawEvo(ctx);
 
     // Arcos de buff alrededor de los pies.
     const COL = { atk: '#ff6b4d', patk: '#ff6b4d', satk: '#c47bff', spd: '#7fe0ff', def: '#b0b8c8', regen: '#5fe08a' };
