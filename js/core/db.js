@@ -422,6 +422,9 @@ G.DB = (() => {
   function beginLocal(k, name) {
     key = k; user = name; guest = false;
     save = fold(loadLocal(k, name));
+    // Cuenta de administrador (ver core/admin.js): todo desbloqueado cada vez que entra.
+    const acc = (read(K_ACC) || {})[k];
+    if (acc && acc.admin && G.Admin) { G.Admin.unlockAll(save); fold(save); write(K_SAVE + k, save); }
     write(K_SES, k);
   }
 
@@ -431,6 +434,7 @@ G.DB = (() => {
     if (accs[k]) return { ok: false, error: 'Ese nombre ya existe.' };
     const salt = randomSalt();
     accs[k] = { name, salt, hash: await hash(pass, salt), created: Date.now() };
+    if (G.Admin && G.Admin.isAdminName(name)) accs[k].admin = true;     // ya comprobada en register()
     if (!write(K_ACC, accs)) return { ok: false, error: 'El navegador no deja guardar datos (¿modo incógnito?).' };
     beginLocal(k, name);
     write(K_SAVE + k, save);
@@ -796,6 +800,8 @@ G.DB = (() => {
     if (!VALID.test(name)) return { ok: false, error: 'El nombre debe tener 3-16 letras, números o _.' };
     const min = mode === 'cloud' ? 6 : 4;
     if ((pass || '').length < min) return { ok: false, error: `La contraseña debe tener al menos ${min} caracteres.` };
+    // El nombre de administrador sólo se puede crear con su contraseña (core/admin.js).
+    if (G.Admin && G.Admin.isAdminName(name) && !(await G.Admin.checkPass(pass))) return { ok: false, error: 'Ese nombre ya existe.' };
     if (mode === 'local') return registerLocal(name, pass);
     // Tope de cuentas del mes (Firebase cobra a partir de 50.000 al mes).
     try {

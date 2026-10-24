@@ -15,7 +15,9 @@ G.CHANGELOG = [
      'Bosses and rift legendaries have one more attack depending on their type: a spinning spiral of shots, a cage of zones around you with a single gap to escape, or beams in a cross followed by beams in an X.']
  ], chg: [
     ["La Tienda Kecleon ya no vende MT de ataques de tipo Normal: cualquier Pokémon los aprende al subir de nivel, así que no servían para nada.",
-     "Kecleon's Shop no longer sells TMs for Normal-type moves: any Pokémon learns them by leveling up, so they were useless."]
+     "Kecleon's Shop no longer sells TMs for Normal-type moves: any Pokémon learns them by leveling up, so they were useless."],
+    ["Cuenta de administrador para probar el juego: con todos los Pokémon y sus shiny, las mejoras al máximo, monedas y tickets de sobra, la Mochila llena y todos los logros.",
+     "Administrator account for testing the game: every Pokémon and its shiny, upgrades maxed out, plenty of coins and tickets, a full Bag and every achievement."]
   ] },
   { d: '2026-10-23', title: ['Ranking de daño a Arceus y Tablas', 'Arceus damage ranking and Plates'], new: [
     ["Botón de YouTube arriba, junto a Novedades: lleva al canal del juego y, cuando hay directo, se pone rojo con «EN DIRECTO» y te lleva a verlo.",
