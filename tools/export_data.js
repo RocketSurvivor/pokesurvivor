@@ -21,7 +21,7 @@ for (const f of ['js/core/locales.js', 'js/core/util.js', 'js/core/i18n.js']) lo
 // Captura el diccionario inglés (clave en español).
 const add = G.I18n.add;
 G.I18n.add = (d, language = 'en', context = '') => { if (language === 'en' && !context) Object.assign(EN, d); add(d, language, context); };
-for (const f of ['js/data/lang-en.js', 'js/core/settings.js', 'js/data/pokedex.js', 'js/data/sprites-meta.js', 'js/data/megas.js', 'js/data/moves.js', 'js/data/types.js',
+for (const f of ['js/data/lang-en.js', 'js/data/lang-megas.js', 'js/core/settings.js', 'js/data/pokedex.js', 'js/data/sprites-meta.js', 'js/data/megas.js', 'js/data/moves.js', 'js/data/types.js',
                  'js/data/items.js', 'js/systems/orbs.js', 'js/data/achievements.js', 'js/world/tiles.js', 'js/data/funding.js',
                  'js/data/changelog.js']) {
   try { load(f); } catch (e) { console.warn('aviso', f, e.message); }

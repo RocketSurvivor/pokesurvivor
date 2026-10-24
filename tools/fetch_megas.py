@@ -41,9 +41,39 @@ EXTRA_ABIL = {
 }
 
 
-def js_object(path, name):
-    """Lee un objeto JSON-ish de un .js generado (G.DEX = [...] o similar)."""
-    return open(path, encoding='utf-8').read()
+def write_credits(sc, megas):
+    """Rehace la tabla de artistas de las megas en CREDITS.md (licencia CC BY-NC 4.0)."""
+    import collections
+    names = {}
+    cn = os.path.join(sc, 'credit_names.txt')
+    if os.path.exists(cn):
+        for line in open(cn, encoding='utf-8'):
+            p = line.rstrip('\n').split('\t')
+            if len(p) >= 2 and p[0] != 'Name':
+                names[p[1]] = (p[0], p[2] if len(p) > 2 else '')
+    art = collections.defaultdict(set)
+    for m in megas:
+        for folder in (m['_folder'], os.path.join(m['_folder'], '0001')):
+            f = os.path.join(folder, 'credits.txt')
+            if os.path.exists(f):
+                for line in open(f, encoding='utf-8'):
+                    p = line.rstrip('\n').split('\t')
+                    if len(p) >= 2:
+                        art[p[1]].add(m['name'])
+    rows = []
+    for who, mons in sorted(art.items(), key=lambda x: names.get(x[0], (x[0], ''))[0].lower()):
+        nm, contact = names.get(who, (who, ''))
+        if nm == who and who.startswith('<@'):
+            nm, contact = 'Anónimo', who
+        rows.append(f'| {nm} | {contact} | {", ".join(sorted(mons))} |')
+    block = ('### Megaevoluciones\n\nSprites de las megaevoluciones (`tools/fetch_megas.py`), también de SpriteCollab (CC BY-NC 4.0).\n\n'
+             '| Artista | Contacto | Megaevoluciones |\n|---|---|---|\n' + '\n'.join(rows) + '\n')
+    path = os.path.join(ROOT, 'CREDITS.md')
+    s = open(path, encoding='utf-8').read()
+    i = s.find('### Megaevoluciones')
+    j = s.index('\n## Datos')
+    s = (s[:i] if i >= 0 else s[:j].rstrip() + '\n\n') + block + s[j:]
+    open(path, 'w', encoding='utf-8').write(s)
 
 
 def main():
@@ -139,7 +169,7 @@ def main():
                 'atk': round(0.70 + max(st['attack'], st['special-attack']) / 100 * 0.55, 2),
                 'pa': round(0.70 + st['attack'] / 100 * 0.55, 2), 'sa': round(0.70 + st['special-attack'] / 100 * 0.55, 2),
                 'df': st['defense'], 'sd': st['special-defense'],
-                'rarity': 5, 'bst': bst, 'starter': False, 'gen': base['gen'],
+                'rarity': 5, 'bst': bst, 'starter': False, 'gen': base['gen'], '_folder': folder,
             })
             ab = [a['ability']['name'] for a in pk['abilities']]
             ok = [a for a in ab if a in known_abil or a in EXTRA_ABIL]
@@ -160,7 +190,7 @@ def main():
         ' */',
         'G.MEGAS = [',
     ]
-    L += ['  ' + json.dumps(p, ensure_ascii=False, separators=(',', ':')) + ',' for p in megas]
+    L += ['  ' + json.dumps({k: v for k, v in p.items() if not k.startswith('_')}, ensure_ascii=False, separators=(',', ':')) + ',' for p in megas]
     L += ['];', '', 'Object.assign(G.SPRITE_META, {']
     L += [f'  {d}: {json.dumps(metas[d], separators=(",", ":"))},' for d in sorted(metas)]
     L += ['});', '', 'if (G.DEX_ABIL) Object.assign(G.DEX_ABIL, {']
@@ -188,8 +218,19 @@ def main():
           '']
     with io.open(OUT_JS, 'w', encoding='utf-8', newline='\n') as f:
         f.write('\n'.join(L))
-    with io.open(os.path.join(ROOT, 'tools', 'cache', 'megas-names.json'), 'w', encoding='utf-8') as f:
-        json.dump(langs, f, ensure_ascii=False, indent=0)
+    # Nombres: el inglés va en el juego (lang-megas.js) y los otros cinco, en
+    # lang-megas-i18n.js (tools/build_langs.js los reparte por idioma).
+    langs.sort()
+    head = ['/* ============ GENERADO por tools/fetch_megas.py: no editar a mano ============',
+            ' * Nombres de las megaevoluciones (clave en español). */']
+    en = {r[0]: r[6] for r in langs}
+    with io.open(os.path.join(ROOT, 'js', 'data', 'lang-megas.js'), 'w', encoding='utf-8', newline='\n') as f:
+        f.write('\n'.join(head) + '\nG.I18n.add(' + json.dumps(en, ensure_ascii=False, indent=1) + ', \'en\');\n')
+    with io.open(os.path.join(ROOT, 'js', 'data', 'lang-megas-i18n.js'), 'w', encoding='utf-8', newline='\n') as f:
+        f.write('\n'.join(head) + '\n')
+        for i, lang in enumerate(['fr', 'it', 'pt-BR', 'zh-Hans', 'zh-Hant']):
+            f.write('G.I18n.add(' + json.dumps({r[0]: r[i + 1] for r in langs}, ensure_ascii=False, indent=1) + ', \'' + lang + '\');\n')
+    write_credits(sc, megas)
     print(f'\n{len(megas)} megaevoluciones ({sum(1 for m in metas.values() if m.get("sh"))} con shiny) -> {OUT_JS}')
 
 
