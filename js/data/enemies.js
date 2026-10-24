@@ -32,9 +32,10 @@
  */
 G.Enemies = (() => {
   const TIERS = [
-    { from: 0,   bst: [180, 330], hp: 17,  spd: 56, dmg: 6,  xp: 3.5, cast: 7 },
-    { from: 70,  bst: [300, 405], hp: 32,  spd: 62, dmg: 8.5, xp: 5,  cast: 7 },
-    { from: 160, bst: [385, 465], hp: 52,  spd: 60, dmg: 11, xp: 8,  cast: 7 },
+    // (25-10-2026: más vida en los tres primeros tramos: con Ráfaga y Amplitud se empieza más fuerte.)
+    { from: 0,   bst: [180, 330], hp: 21,  spd: 56, dmg: 6,  xp: 3.5, cast: 7 },
+    { from: 70,  bst: [300, 405], hp: 38,  spd: 62, dmg: 8.5, xp: 5,  cast: 7 },
+    { from: 160, bst: [385, 465], hp: 58,  spd: 60, dmg: 11, xp: 8,  cast: 7 },
     { from: 260, bst: [445, 515], hp: 88,  spd: 70, dmg: 14, xp: 13, cast: 7 },
     { from: 380, bst: [495, 560], hp: 150, spd: 66, dmg: 22, xp: 24, cast: 7 },
     { from: 500, bst: [530, 620], hp: 250, spd: 72, dmg: 28, xp: 38, cast: 7 }

@@ -96,6 +96,7 @@ G.Player = class Player {
    * nivel y la evolución del ataque multiplican y suman encima, como siempre).
    *   Ráfaga: +1 proyectil por nivel (+2 en los que ya sueltan muchos: abanico y anillo).
    *   Amplitud: × al radio de golpes cuerpo a cuerpo, auras, zonas, meteoros, minas...
+   *             y al grosor de rayos (Hiperrayo, Hidrobomba...) y embestidas.
    */
   static applyPerks(m, proj, area) {
     if (proj > 0 && Player.PROJ_KINDS.has(m.kind)) {
@@ -103,8 +104,11 @@ G.Player = class Player {
       if (m.spread != null && (m.kind === 'projectile' || m.kind === 'homing' || m.kind === 'bounce')) m.spread = Math.max(m.spread, 0.12) * (1 + proj * 0.6);
     }
     if (area > 1 && Player.AREA_KINDS.has(m.kind) && m.radius) m.radius *= area;
+    // Rayos (Hiperrayo, Hidrobomba...) y embestidas: más grosor.
+    if (area > 1 && Player.WIDTH_KINDS.has(m.kind) && m.width) m.width *= area;
   }
   static get PROJ_KINDS() { return new Set(['projectile', 'homing', 'bounce', 'boomerang', 'cone', 'nova']); }
+  static get WIDTH_KINDS() { return new Set(['beam', 'charge', 'dash']); }
   static get AREA_KINDS() { return new Set(['melee', 'aura', 'meteor', 'mine', 'stun', 'quake', 'vortex', 'shove', 'spin', 'trail']); }
 
   // ---------------- evolución durante la partida ----------------
@@ -141,6 +145,8 @@ G.Player = class Player {
    * las estadísticas de la mega (no da Crecimiento: ya es un salto grande).
    */
   static get MEGA_LV() { return 24; }
+  /** Los legendarios (Mewtwo, Rayquaza, Latias...) megaevolucionan más tarde. */
+  static get MEGA_LV_LEG() { return 40; }
   megaOptions() {
     if (this.isMega) return [];
     return (G.MEGAS || []).filter(m => m.base === this.dex && G.SPRITE_META[m.dex]).map(m => m.dex);
@@ -150,7 +156,8 @@ G.Player = class Player {
     const lv = this.evoLevel();
     if (lv) return { lv, opts: this.evoOptions() };
     const megas = this.megaOptions();
-    return megas.length ? { lv: Player.MEGA_LV, opts: megas } : { lv: 0, opts: [] };
+    const leg = G.DEX_BY[this.dex] && G.DEX_BY[this.dex].leg;
+    return megas.length ? { lv: leg ? Player.MEGA_LV_LEG : Player.MEGA_LV, opts: megas } : { lv: 0, opts: [] };
   }
 
   /** Cambia el aspecto y el Pokémon (también la copia de un compañero en cooperativo). */
