@@ -197,7 +197,9 @@ G.Progress = (() => {
   /** Títulos que tienes (de los logros conseguidos). */
   function titles() {
     const s = G.DB.save;
-    return G.AchDefs.LIST.filter(a => a.title && s && s.ach && s.ach[a.id]).map(a => a.title);
+    const own = G.AchDefs.LIST.filter(a => a.title && s && s.ach && s.ach[a.id]).map(a => a.title);
+    // Las cuentas con todo desbloqueado (core/admin.js) tienen además sus títulos propios.
+    return s && s.admin && G.Admin ? G.Admin.TITLES.concat(own) : own;
   }
 
   /** Premios de misiones por recoger (para el aviso del menú). */
