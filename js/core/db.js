@@ -537,7 +537,7 @@ G.DB = (() => {
    * cierra de verdad es la clave de la API restringida a estos dominios en
    * Google Cloud; esto frena las copias que ni lo miran (14-10-2026).
    */
-  const HOSTS = ['pokesurvivor.com', 'www.pokesurvivor.com', 'jpter78.github.io', 'localhost', '127.0.0.1'];
+  const HOSTS = ['juantxu98.github.io', 'localhost', '127.0.0.1'];
 
   async function initCloud() {
     const cfg = G.FIREBASE_CONFIG;
@@ -629,6 +629,10 @@ G.DB = (() => {
     }
     save = fold(migrate(s, s.name));
     key = uid; user = save.name; guest = false;
+    // Cuenta de administrador (core/admin.js): la de nombre "admin". El correo interno
+    // es único, así que sólo existe una, la primera que se creó (con su contraseña).
+    const adminCloud = G.Admin && u.email && G.Admin.NAMES.some(n => u.email === nameToEmail(n));
+    if (adminCloud) { G.Admin.unlockAll(save); save = fold(save); }
     write(K_CLOUD + uid, save);
     lastPull = Date.now();
     // Si esta copia tiene algo que la nube no (cuenta nueva, progreso sin subir),
@@ -636,7 +640,7 @@ G.DB = (() => {
     const same = remote && !opts.legacy && (!cached || (cached.updated || 0) <= (remote.updated || 0));
     lastPush = Date.now();
     if (!online) { pending = true; setSync('offline'); }
-    else if (same) setSync('ok');
+    else if (same && !adminCloud) setSync('ok');
     else { pending = true; setSync('pending'); }
   }
 

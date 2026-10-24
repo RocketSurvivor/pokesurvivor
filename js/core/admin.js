@@ -52,5 +52,5 @@ G.Admin = (() => {
     return s;
   }
 
-  return { isAdminName, checkPass, unlockAll };
+  return { NAMES, isAdminName, checkPass, unlockAll };
 })();
