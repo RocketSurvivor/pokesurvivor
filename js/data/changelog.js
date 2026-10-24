@@ -18,6 +18,8 @@ G.CHANGELOG = [
  ], chg: [
     ["La Tienda Kecleon ya no vende MT de ataques de tipo Normal: cualquier Pokémon los aprende al subir de nivel, así que no servían para nada.",
      "Kecleon's Shop no longer sells TMs for Normal-type moves: any Pokémon learns them by leveling up, so they were useless."],
+    ["Los ataques de tipo Normal (Placaje, Ataque Rápido, Golpe Cuerpo, Vozarrón, Giro Rápido, Hiperrayo y Sustituto) ya sólo los aprenden los Pokémon de tipo Normal. Fortaleza, Danza Espada, Maquinación y Agilidad los sigue pudiendo aprender cualquiera.",
+     "Normal-type attacks (Tackle, Quick Attack, Body Slam, Hyper Voice, Rapid Spin, Hyper Beam and Substitute) can now only be learned by Normal-type Pokémon. Any Pokémon can still learn Harden, Swords Dance, Nasty Plot and Agility."],
     ["Cuenta de administrador para probar el juego: con todos los Pokémon y sus shiny, las mejoras al máximo, monedas y tickets de sobra, la Mochila llena y todos los logros.",
      "Administrator account for testing the game: every Pokémon and its shiny, upgrades maxed out, plenty of coins and tickets, a full Bag and every achievement."]
   ] },
