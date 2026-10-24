@@ -54,14 +54,18 @@ G.Shop = (() => {
     for (let i = 0; i < seed.length; i++) { h ^= seed.charCodeAt(i); h = Math.imul(h, 16777619); }
     return () => { h += 0x6D2B79F5; let t = h; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; };
   }
-  /** Las 8 MT a la venta hoy. */
+  /**
+   * Las 8 MT a la venta hoy. Sin las de tipo Normal: esas las puede aprender
+   * ya cualquier Pokémon al subir de nivel, así que una MT no le servía de nada.
+   */
+  const forSale = id => G.Moves.BY_ID[id] && G.Moves.BY_ID[id].type !== 'normal';
   function dailyTms() {
-    const all = Object.keys(G.TM_MOVES).sort(), r = rng('kecleon:' + today());
+    const all = Object.keys(G.TM_MOVES).filter(forSale).sort(), r = rng('kecleon:' + today());
     for (let i = all.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [all[i], all[j]] = [all[j], all[i]]; }
     const list = all.slice(0, DAILY);
     const s = save(), dex = s && s.partner;
     if (dex && !list.some(id => G.Mons.canLearn(dex, id))) {
-      const mine = G.Mons.learnable(dex).sort();
+      const mine = G.Mons.learnable(dex).filter(forSale).sort();
       if (mine.length) list[DAILY - 1] = mine[Math.floor(rng('kecleon:' + today() + ':' + dex)() * mine.length)];
     }
     return list;

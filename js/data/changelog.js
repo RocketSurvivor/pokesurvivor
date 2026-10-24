@@ -13,6 +13,9 @@ G.CHANGELOG = [
      '6 new items: Expert Belt (+30% super-effective damage), Scope Lens (+15% critical chance), Big Root (+50% to all your healing), King\'s Rock (8% chance to stun on hit), Air Balloon (+15% speed and water no longer slows you) and Metronome (more damage the longer you stick with the same move).'],
     ['Los jefes y los legendarios de las grietas tienen un ataque más según su tipo: una espiral de disparos que gira, una jaula de zonas alrededor de ti con un solo hueco para salir, o rayos en cruz seguidos de rayos en aspa.',
      'Bosses and rift legendaries have one more attack depending on their type: a spinning spiral of shots, a cage of zones around you with a single gap to escape, or beams in a cross followed by beams in an X.']
+ ], chg: [
+    ["La Tienda Kecleon ya no vende MT de ataques de tipo Normal: cualquier Pokémon los aprende al subir de nivel, así que no servían para nada.",
+     "Kecleon's Shop no longer sells TMs for Normal-type moves: any Pokémon learns them by leveling up, so they were useless."]
   ] },
   { d: '2026-10-23', title: ['Ranking de daño a Arceus y Tablas', 'Arceus damage ranking and Plates'], new: [
     ["Botón de YouTube arriba, junto a Novedades: lleva al canal del juego y, cuando hay directo, se pone rojo con «EN DIRECTO» y te lleva a verlo.",
