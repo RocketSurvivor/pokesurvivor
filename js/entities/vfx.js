@@ -418,7 +418,26 @@ G.VFX = (() => {
     'mirror-shot':   { proj: 'shard', trail: 'spark' },
     'gyro-ball':     { melee: 'impact' },
     'sucker-punch':  { proj: 'crescent' },
-    'night-slash':   { melee: 'claw' }
+    'night-slash':   { melee: 'claw' },
+    // paquete de contenido (24-10-2026)
+    'blizzard':      { proj: 'shard', trail: 'wisp' },
+    'avalanche':     { proj: 'shard' },
+    'stealth-rock':  { proj: 'rock' },
+    'head-smash':    { proj: 'rock', trail: 'dirt' },
+    'bullet-punch':  { proj: 'impact' },
+    'iron-head':     { proj: 'shard', trail: 'spark' },
+    'pin-missile':   { proj: 'needle' },
+    'x-scissor':     { melee: 'claw' },
+    'snarl':         { proj: 'crescent' },
+    'phantom-force': { proj: 'shadow', trail: 'wisp' },
+    'draco-meteor':  { proj: 'fire', trail: 'ember' },
+    'moonblast':     { beam: 'star', proj: 'star' },
+    'mach-punch':    { proj: 'impact' },
+    'sludge-wave':   { proj: 'blob', trail: 'bubbles' },
+    'hurricane':     { proj: 'wind' },
+    'thunder':       { proj: 'bolt', trail: 'spark' },
+    'surf':          { proj: 'drop', trail: 'drip' },
+    'earth-power':   { proj: 'rock', trail: 'dirt' }
   };
 
   const TYPE_SHAPE = {

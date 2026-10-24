@@ -38,12 +38,25 @@ fs.writeFileSync(tmp, joined);
 const outJs = path.join(ROOT, 'js', 'app.min.js');
 const npx = process.platform === 'win32' ? 'npx.cmd' : 'npx';
 const shell = process.platform === 'win32';
-execFileSync(npx, ['--yes', 'terser@5', tmp, '--compress', 'passes=1', '--mangle', '--comments', 'false', '--ecma', '2020', '-o', outJs],
-  { stdio: 'inherit', shell });
+// Sin internet (npx no puede bajar terser) se usa esbuild si está instalado, y sin ofuscar.
+let offline = false;
+try {
+  execFileSync(npx, ['--yes', 'terser@5', tmp, '--compress', 'passes=1', '--mangle', '--comments', 'false', '--ecma', '2020', '-o', outJs],
+    { stdio: 'inherit', shell });
+} catch (err) {
+  let esbuild = null;
+  try { esbuild = require('esbuild'); } catch (_) {
+    try { esbuild = require(require.resolve('esbuild', { paths: [process.env.ESBUILD_PATH || '/opt/npm-tools/node_modules'] })); } catch (__) { /* sin esbuild */ }
+  }
+  if (!esbuild) throw err;
+  console.warn('terser no disponible: minificando con esbuild (sin ofuscar)');
+  esbuild.buildSync({ entryPoints: [tmp], outfile: outJs, minify: true, target: 'es2020', bundle: false, allowOverwrite: true, legalComments: 'none' });
+  offline = true;
+}
 // Y ofuscado: el código queda ilegible y se rompe solo si lo reformatean para
 // tocarlo. Las cadenas, en una tabla codificada (sólo una parte, para no frenar
 // el juego). Semilla fija: el mismo código da siempre el mismo archivo.
-if (!EXPOSE) {
+if (!EXPOSE && !offline) {
   execFileSync(npx, ['--yes', 'javascript-obfuscator@4.1.1', outJs, '--output', outJs,
     '--compact', 'true', '--self-defending', 'true', '--seed', '7',
     '--string-array', 'true', '--string-array-encoding', 'base64', '--string-array-threshold', '0.1',

@@ -108,8 +108,10 @@ G.Player = class Player {
    */
   atkFor(m) {
     const cat = m && m.cat, b = cat === 'physical' ? this.buffs.patk : cat === 'special' ? this.buffs.satk : null;
-    return this.atk * G.Stats.fit(this.mon, cat) * (b ? 1 + b.n * b.amount : 1) * (m && this.monoType(m.type) ? Player.MONO_K : 1);
+    return this.atk * G.Stats.fit(this.mon, cat) * (b ? 1 + b.n * b.amount : 1) * (m && this.monoType(m.type) ? Player.MONO_K : 1) * this.metroK();
   }
+  /** Metrónomo (objeto): +6 % cada 4 s seguidos con el mismo hueco activo, hasta +36 %. */
+  metroK() { return this.hasItem('metronome') ? 1 + Math.min(6, Math.floor((this._metroT || 0) / 4)) * 0.06 : 1; }
   /** Monotipo (19-10-2026): los de un solo tipo pegan un +20 % con los ataques de su tipo (tienen menos variedad). */
   static get MONO_K() { return 1.2; }
   monoType(type) { return this.mon.types.length === 1 && type === this.mon.types[0]; }
@@ -118,7 +120,7 @@ G.Player = class Player {
     const ab = this.abil || {}, stuck = this.slowT > 0 && !ab.steady;
     const s = this.baseSpd * this.spdMul * (1 + this.buffs.spd.n * this.buffs.spd.amount) * (stuck ? 0.5 : 1) * (ab.speed ? ab.speed(this) : 1);
     const w = G.Weather.speedFor(this.mon.types);
-    const slow = this.inLiquid && !ab.steady ? G.World.liquidEffect(this.mon.types).slow || 1 : 1;
+    const slow = this.inLiquid && !ab.steady && !this.hasItem('airballoon') ? G.World.liquidEffect(this.mon.types).slow || 1 : 1;
     return G.Judgment && G.Judgment.active ? G.Judgment.capSpd(s * slow * w) : s * slow * w;
   }
   get reduction() { return Math.min(0.8, this.dmgReduce + this.buffs.def.n * this.buffs.def.amount); }
@@ -173,6 +175,7 @@ G.Player = class Player {
       return;
     }
     this.active = i;
+    this._metroT = 0;
     G.Projectiles.clearOrbs(this);
     G.Audio.sfx('select');
     for (const m of this.slots[i]) m.t = Math.min(m.t, m.cd * 0.35);
@@ -317,6 +320,7 @@ G.Player = class Player {
 
   heal(amount) {
     if (this.abil && this.abil.healMul) amount *= this.abil.healMul;     // Gula, Recogida
+    if (this.hasItem('bigroot')) amount *= 1.5;                          // Raíz Grande (objeto)
     const before = this.hp;
     this.hp = Math.min(this.maxHp, this.hp + amount);
     const got = Math.round(this.hp - before);
@@ -385,7 +389,8 @@ G.Player = class Player {
     if (this.slowT > 0) this.slowT -= dt;
     if (this.bellHeal > 0) { const h = Math.min(this.bellHeal, 4 * dt); this.hp = Math.min(this.maxHp, this.hp + h); this.bellHeal -= h; }
     if (this.power && (this.power.t -= dt) <= 0) { this.power.def.off(this); this.power = null; }
-    if (this.regen > 0) this.hp = Math.min(this.maxHp, this.hp + this.regen * dt);
+    if (this.regen > 0) this.hp = Math.min(this.maxHp, this.hp + this.regen * dt * (this.hasItem('bigroot') ? 1.5 : 1));
+    if (this.hasItem('metronome')) this._metroT = (this._metroT || 0) + dt;
     if (this.abil && this.abil.tick) this.abil.tick(this, dt);
     // Sequía, Llovizna...: su clima al empezar y cada 3 min, si no hay otro (en
     // grupo lo pone el anfitrión, que es quien manda el clima a todos).

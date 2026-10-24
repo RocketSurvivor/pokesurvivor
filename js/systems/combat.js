@@ -740,17 +740,22 @@ G.Combat = (() => {
   /** × a quemaduras, venenos, frenazos y empujones: Potencia Bruta los quita, Dicha los dobla. */
   const statusK = pl => (!pl.abil ? 1 : pl.abil.sheer ? 0 : pl.abil.serene ? 2 : 1);
   function afterHit(pl, e, m) {
+    // Roca del Rey (objeto): 8 % de aturdir (no a los jefes ni a Arceus).
+    if (!e.dead && !e.boss && pl.hasItem && pl.hasItem('kingsrock') && Math.random() < 0.08) e.applyStun(0.6);
     const a = pl.abil;
     if (!a || e.dead) return;
     if (a.hit) a.hit(pl, e, m);
     if (a.touchPoison && m && (m.kind === 'melee' || m.kind === 'dash')) e.applyPoison(1);
   }
 
+  /** Cinta Experto (objeto): +30 % con los golpes súper eficaces. */
+  const beltK = (pl, type, e) => (type && pl.hasItem && pl.hasItem('expertbelt') && G.Types.mult(type, e.types) > 1 ? 1.3 : 1);
+
   /** Arceus (Sentencia) sólo recibe una parte (ver Judgment.dmgK). */
   const arcK = e => (e.arceus ? G.Judgment.dmgK() : 1);
 
   function hit(pl, e, dmg, col, dx, dy, knock, m) {
-    const k = typeK(m.type, e) * G.Stats.taken(e.mon, m.cat) * abilOut(pl, m, e) * arcK(e);
+    const k = typeK(m.type, e) * G.Stats.taken(e.mon, m.cat) * abilOut(pl, m, e) * arcK(e) * beltK(pl, m.type, e);
     const crit = isCrit(pl), sk = statusK(pl);
     dmg *= k * (crit ? critMul(pl) : 1);
     e.hurt(dmg, col, dx, dy, sk ? knock : 0, crit ? 'crit' : G.Types.label(G.Types.mult(m.type, e.types)));
@@ -862,7 +867,7 @@ G.Combat = (() => {
         }
 
         const crit = isCrit(pl), sk = statusK(pl);
-        const k = (p.mtype ? typeK(p.mtype, e) : 1) * G.Stats.taken(e.mon, p.mcat) * (crit ? critMul(pl) : 1) * abilOut(pl, p.src, e) * arcK(e);
+        const k = (p.mtype ? typeK(p.mtype, e) : 1) * G.Stats.taken(e.mon, p.mcat) * (crit ? critMul(pl) : 1) * abilOut(pl, p.src, e) * arcK(e) * beltK(pl, p.mtype, e);
         e.hurt(p.dmg * k, p.color, p.vx || (e.x - pl.x), p.vy || (e.y - pl.y), sk ? p.knock : 0,
                crit ? 'crit' : p.mtype ? G.Types.label(G.Types.mult(p.mtype, e.types)) : null);
         if (Math.random() < 0.5) G.FX.sp('impact', p.vis ? p.vis.pal : 'normal', e.x, e.y - e.bodyH * 0.5, { life: 0.12, scale: 1 });

@@ -594,7 +594,81 @@
       cd: 0.7, dmg: 22, speed: 330, life: 1.6, size: 7, homing: 6 },
     { id: 'night-slash', name: 'Tajo Umbrío', type: 'dark', kind: 'spin',
       desc: 'Cortes en giro que alcanzan a todo lo que te rodea.',
-      cd: 1.0, dmg: 11, count: 3, radius: 62 }
+      cd: 1.0, dmg: 11, count: 3, radius: 62 },
+
+    // ---------------- paquete de contenido (24-10-2026) ----------------
+    // Rellenan los tipos con menos variedad usando familias que ese tipo aún no tenía.
+    { id: 'blizzard', name: 'Ventisca', type: 'ice', kind: 'cone',
+      desc: 'Un vendaval helado en abanico que congela el paso.',
+      cd: 0.75, dmg: 7, count: 7, arc: 1.0, speed: 340, life: 0.48, size: 6, slow: 0.4 },
+
+    { id: 'avalanche', name: 'Alud', type: 'ice', kind: 'quake',
+      desc: 'Bloques de hielo revientan en línea delante de ti.',
+      cd: 1.2, dmg: 17, count: 6, radius: 30 },
+
+    { id: 'stealth-rock', name: 'Trampa Rocas', type: 'rock', kind: 'mine',
+      desc: 'Siembra piedras afiladas que estallan al pisarlas.',
+      cd: 1.3, dmg: 20, count: 2, radius: 60, dur: 8 },
+
+    { id: 'head-smash', name: 'Testarazo', type: 'rock', kind: 'dash',
+      desc: 'Embestida de cabeza lenta pero demoledora.',
+      cd: 1.05, dmg: 30, radius: 112, width: 40, knock: 80 },
+
+    { id: 'bullet-punch', name: 'Puño Bala', type: 'steel', kind: 'projectile',
+      desc: 'Puñetazos de acero rapidísimos al enemigo más cercano.',
+      cd: 0.32, dmg: 9, speed: 520, count: 1, spread: 0.08, pierce: 0, life: 0.9, size: 5 },
+
+    { id: 'iron-head', name: 'Cabeza de Hierro', type: 'steel', kind: 'dash',
+      desc: 'Cargas con la cabeza de acero por delante y apartas a todos.',
+      cd: 0.85, dmg: 22, radius: 110, width: 36, knock: 60 },
+
+    { id: 'pin-missile', name: 'Pin Misil', type: 'bug', kind: 'projectile',
+      desc: 'Una ráfaga de agujas que salen en abanico.',
+      cd: 0.55, dmg: 8, speed: 400, count: 3, spread: 0.35, pierce: 0, life: 1.1, size: 4 },
+
+    { id: 'x-scissor', name: 'Tijera X', type: 'bug', kind: 'spin',
+      desc: 'Cortes cruzados en giro que pillan a todo lo que te rodea.',
+      cd: 1.0, dmg: 12, count: 3, radius: 60 },
+
+    { id: 'snarl', name: 'Alarido', type: 'dark', kind: 'shove',
+      desc: 'Un rugido siniestro que daña y aparta a los que tienes cerca.',
+      cd: 1.15, dmg: 15, radius: 92, knock: 320 },
+
+    { id: 'phantom-force', name: 'Golpe Fantasma', type: 'ghost', kind: 'dash',
+      desc: 'Desapareces y reapareces golpeando todo el camino.',
+      cd: 0.8, dmg: 21, radius: 125, width: 34 },
+
+    { id: 'draco-meteor', name: 'Cometa Draco', type: 'dragon', kind: 'meteor',
+      desc: 'Llueven cometas sobre los enemigos cercanos.',
+      cd: 1.6, dmg: 30, count: 3, radius: 52, knock: 60 },
+
+    { id: 'moonblast', name: 'Fuerza Lunar', type: 'fairy', kind: 'charge',
+      desc: 'Reúne la luz de la luna y la suelta en un rayo enorme.',
+      cd: 2.2, charge: 0.8, dmg: 58, radius: 280, width: 42 },
+
+    { id: 'mach-punch', name: 'Ultrapuño', type: 'fighting', kind: 'dash',
+      desc: 'Un puñetazo tan rápido que te lleva hasta el enemigo.',
+      cd: 0.6, dmg: 15, radius: 105, width: 32 },
+
+    { id: 'sludge-wave', name: 'Onda Tóxica', type: 'poison', kind: 'nova',
+      desc: 'Una ola de lodo tóxico en todas direcciones que envenena.',
+      cd: 1.3, dmg: 10, speed: 230, count: 10, pierce: 1, life: 1.1, size: 8, poison: 1 },
+
+    { id: 'hurricane', name: 'Vendaval', type: 'flying', kind: 'vortex',
+      desc: 'Un huracán que arrastra a los enemigos a su centro y los va dañando.',
+      cd: 3.0, dmg: 9, radius: 76, dur: 2.6, pull: 160 },
+
+    { id: 'thunder', name: 'Trueno', type: 'electric', kind: 'meteor',
+      desc: 'Rayos que caen del cielo sobre los enemigos cercanos.',
+      cd: 1.4, dmg: 24, count: 3, radius: 44 },
+
+    { id: 'surf', name: 'Surf', type: 'water', kind: 'shove',
+      desc: 'Una ola que barre y aparta a todos los que tienes cerca.',
+      cd: 1.2, dmg: 17, radius: 100, knock: 300 },
+
+    { id: 'earth-power', name: 'Tierra Viva', type: 'ground', kind: 'stun',
+      desc: 'El suelo estalla donde avisa y deja aturdidos a los que pilla.',
+      cd: 1.7, dmg: 28, radius: 58, stun: 0.8 }
   ];
 
   // Cuerpo a cuerpo (12-10-2026): +20 % de daño y +25 % de alcance y de arco
@@ -623,7 +697,10 @@
     // nuevos del 19-10-2026
     'rapid-spin', 'flame-charge', 'seed-bomb', 'sand-tomb', 'magnitude', 'u-turn', 'rock-tomb', 'ice-shard',
     'rolling-kick', 'dynamic-punch', 'shadow-sneak', 'dragon-claw', 'outrage', 'play-rough', 'gyro-ball',
-    'sucker-punch', 'night-slash']);
+    'sucker-punch', 'night-slash',
+    // paquete de contenido (24-10-2026)
+    'avalanche', 'stealth-rock', 'head-smash', 'bullet-punch', 'iron-head', 'pin-missile', 'x-scissor',
+    'phantom-force', 'mach-punch']);
 
   // Los que disparan bolas necesitan count y spread de base: las mejoras los
   // multiplican y, sin ellos, "+1 proyectil" no sumaba ninguno y el abanico se
@@ -764,7 +841,17 @@
     'outrage': 'hp',          'draining-kiss': 'rgn',
     'play-rough': 'atk',      'disarming-voice': 'def',
     'mirror-shot': 'atk',     'gyro-ball': 'def',
-    'sucker-punch': 'atk',    'night-slash': 'spd'
+    'sucker-punch': 'atk',    'night-slash': 'spd',
+    // paquete de contenido (24-10-2026)
+    'blizzard': 'cd',         'avalanche': 'atk',
+    'stealth-rock': 'def',    'head-smash': 'hp',
+    'bullet-punch': 'spd',    'iron-head': 'def',
+    'pin-missile': 'cd',      'x-scissor': 'atk',
+    'snarl': 'def',           'phantom-force': 'spd',
+    'draco-meteor': 'atk',    'moonblast': 'cd',
+    'mach-punch': 'spd',      'sludge-wave': 'rgn',
+    'hurricane': 'mag',       'thunder': 'atk',
+    'surf': 'hp',             'earth-power': 'atk'
   };
   // Lo que gana al evolucionar, según cómo funcione.
   const EVO_MODS = {

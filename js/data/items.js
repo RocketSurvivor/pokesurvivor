@@ -32,7 +32,22 @@ G.Items = (() => {
     { id: 'rockyhelmet', name: 'Casco Dentado', desc: 'Los que te golpean cuerpo a cuerpo reciben daño.',
       on: () => {}, off: () => {} },
     { id: 'assaultvest', name: 'Chaleco Asalto', desc: '+20% de reducción de daño recibido.',
-      on: p => { p.dmgReduce += 0.2; }, off: p => { p.dmgReduce -= 0.2; } }
+      on: p => { p.dmgReduce += 0.2; }, off: p => { p.dmgReduce -= 0.2; } },
+    // ---- paquete de contenido (24-10-2026) ----
+    // Cinta Experto y Roca del Rey los mira combat.js; Raíz Grande, player.heal; Globo Helio, player.spd;
+    // Metrónomo, player.atkFor (cuenta en player.update y se reinicia al cambiar).
+    { id: 'expertbelt', name: 'Cinta Experto', desc: '+30% de daño con los golpes súper eficaces.',
+      on: () => {}, off: () => {} },
+    { id: 'scopelens', name: 'Periscopio', desc: '+15% de probabilidad de golpe crítico.',
+      on: p => { p.critChance += 0.15; }, off: p => { p.critChance -= 0.15; } },
+    { id: 'bigroot', name: 'Raíz Grande', desc: 'Toda la vida que recuperas es un 50% mayor.',
+      on: () => {}, off: () => {} },
+    { id: 'kingsrock', name: 'Roca del Rey', desc: 'Cada golpe tiene un 8% de dejar aturdido al enemigo (no a los jefes).',
+      on: () => {}, off: () => {} },
+    { id: 'airballoon', name: 'Globo Helio', desc: '+15% de velocidad y los charcos y el agua ya no te frenan.',
+      on: p => { p.spdMul *= 1.15; }, off: p => { p.spdMul /= 1.15; } },
+    { id: 'metronome', name: 'Metrónomo', desc: '+6% de daño cada 4 s seguidos con el mismo ataque (hasta +36%). Cambiar lo reinicia.',
+      on: p => { p._metroT = 0; }, off: p => { p._metroT = 0; } }
   ];
   const BY = {};
   for (const it of LIST) BY[it.id] = it;

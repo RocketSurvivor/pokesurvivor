@@ -478,6 +478,13 @@
                  : has('fairy', 'ghost', 'water', 'flying') ? 'nova' : 'volley';
       const others = ['rain', 'beam', 'nova', 'volley'].filter(x => x !== pref);
       const ranged = [pref, others[Math.floor(G.U.hash(this.dex, 5, 9) * 3) % 3]];
+      // Paquete de contenido (24-10-2026): un tercer ataque de lejos, más de esquivar
+      // que de correr: espiral de disparos, jaula de zonas con un hueco o rayos en cruz.
+      // (Arceus tiene los suyos en systems/judgment.js.)
+      if (!this.judge && !this.arceus) {
+        ranged.push(has('ghost', 'psychic', 'fairy', 'dark', 'poison') ? 'spiral'
+                  : has('ground', 'rock', 'grass', 'bug', 'ice', 'water') ? 'cage' : 'cross');
+      }
       const far = this.behavior === 'ranged';
       this.ai = { melee, ranged, farLike: far ? 0.65 : 0.35, mode: far ? 'far' : 'close', modeT: G.U.rand(6, 8),
                   cd: 1.6, cast: null, fury: false, side: Math.random() < 0.5 ? -1 : 1 };
@@ -567,6 +574,35 @@
           c.wind = 1.0; c.after = 0.25; this.anim.play('Charge', { speed: 1.1 });
           break;
         }
+        case 'spiral':     // espiral de disparos que gira (brazos de bala)
+          c.wind = 0.55 * f; c.dur = ai.fury ? 2.0 : 1.6; c.every = 0.12; c.next = 0;
+          c.arms = ai.fury ? 4 : 3; c.rot = ang; c.after = 0.3;
+          this.anim.play('Charge', { speed: 1.2 });
+          G.FX.ring(this.x, this.y, this.r, this.r * 3, col, c.wind, 3);
+          break;
+        case 'cage': {     // jaula: zona bajo ti y un anillo alrededor con un hueco por donde salir
+          const n = 12, R = 132, gap = Math.floor(Math.random() * n), d = 1.55 * (ai.fury ? 0.9 : 1);
+          this.hazard({ kind: 'zone', x: pl.x, y: pl.y, r: 66, delay: d, dmg: this.shotDmg() * 1.2, type, color: col });
+          for (let i = 0; i < n; i++) {
+            if (i === gap || i === (gap + 1) % n) continue;
+            const a = i / n * 6.2832;
+            this.hazard({ kind: 'zone', x: pl.x + Math.cos(a) * R, y: pl.y + Math.sin(a) * R * 0.8, r: 42,
+                            delay: d, dmg: this.shotDmg() * 1.2, type, color: col });
+          }
+          c.wind = 0.6; c.after = 0.4; this.anim.play('Shoot');
+          break;
+        }
+        case 'cross': {    // rayos en cruz (+) y, al poco, en aspa (×)
+          const w = ai.fury ? 30 : 24;
+          for (let i = 0; i < 4; i++) {
+            this.hazard({ kind: 'beam', x: this.x, y: this.y, angle: ang + i * 1.5708, len: 420, w,
+                            delay: 1.0, dmg: this.shotDmg() * 1.2, type, color: col });
+            this.hazard({ kind: 'beam', x: this.x, y: this.y, angle: ang + 0.7854 + i * 1.5708, len: 420, w,
+                            delay: 1.65, dmg: this.shotDmg() * 1.2, type, color: col });
+          }
+          c.wind = 1.0; c.after = 0.7; this.anim.play('Charge', { speed: 1.1 });
+          break;
+        }
         case 'volley':     // abanico de disparos
         case 'nova':       // anillo de disparos
           c.wind = (id === 'nova' ? 0.7 : 0.5) * f;
@@ -584,6 +620,18 @@
         if (c.t >= c.wind + c.dur) return this.bossEnd();
         const sp = c.len / c.dur;
         return [Math.cos(c.ang) * sp, Math.sin(c.ang) * sp, 'Walk'];
+      }
+      if (c.id === 'spiral' && c.t >= c.wind) {
+        // Va soltando un disparo por brazo cada `every` s mientras gira.
+        while (c.t - c.wind >= c.next && c.next < c.dur) {
+          for (let i = 0; i < c.arms; i++) {
+            const a = c.rot + i * 6.2832 / c.arms;
+            this.shoot(Math.cos(a), Math.sin(a), 0, 1, 0.55);
+          }
+          c.rot += 0.24; c.next += c.every;
+        }
+        if (c.t >= c.wind + c.dur + c.after) return this.bossEnd();
+        return [0, 0, 'Idle'];
       }
       if (c.t >= c.wind && !c.fired) {
         c.fired = true;

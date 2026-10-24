@@ -189,6 +189,25 @@ G.Icons = (() => {
     assaultvest: { pal: { g: '#4f8a3a', d: '#2f5a22', y: '#ffd23f' }, rows: [
       '............', '.kkk....kkk.', 'kggk....kggk', 'kgggkkkkgggk', 'kgggyggygggk', 'kgggggggggdk',
       'kggyggggygdk', 'kgggggggggdk', 'kgggggggggdk', 'kddddddddddk', 'kkkkkkkkkkkk', '............'] },
+    // paquete de contenido (24-10-2026)
+    expertbelt: { pal: { d: '#3a3a46', g: '#5a5a6a', y: '#ffd23f', o: '#c08a10' }, rows: [
+      '............', '............', '............', 'kkkkkkkkkkkk', 'kgggkyyykggk', 'kdddkyokkddk',
+      'kdddkyyykddk', 'kkkkkkkkkkkk', '............', '............', '............', '............'] },
+    scopelens: { pal: { c: '#9fe0ff', b: '#4fb4ff', w: '#ffffff', g: '#9aa6b5' }, rows: [
+      '....kkkk....', '..kkggggkk..', '.kgkccbbkgk.', '.kkcwcccbkk.', 'kgkcwccccbgk', 'kgkcccccbbgk',
+      'kgkccccbbbgk', '.kkcccbbbkk.', '.kgkbbbbkgk.', '..kkggggkk..', '....kkkkkgk.', '.........kk.'] },
+    bigroot: { pal: { b: '#a0703a', d: '#6a4520', g: '#5fe08a' }, rows: [
+      '....kgk.....', '...kggk.....', '....kbk.....', '...kbbk.....', '...kbbbk....', '..kbbdbk....',
+      '.kbk.kbbk...', 'kbk..kbdbk..', 'kk..kbk.kbk.', '...kbk...kk.', '...kk.......', '............'] },
+    kingsrock: { pal: { y: '#ffd23f', o: '#c08a10', g: '#9aa6b5', d: '#5d6773' }, rows: [
+      '............', 'k..k..k..k..', 'kyky.kyk.kyk', 'kyyykyyykyyk', 'kyoyyyoyyyok', 'kkkkkkkkkkkk',
+      '.kgggggggdk.', 'kggggggggddk', 'kgggggggdddk', 'kgggggdddddk', '.kkkkkkkkkk.', '............'] },
+    airballoon: { pal: { r: '#ff5f6d', d: '#b8283a', w: '#ffd8d8' }, rows: [
+      '...kkkkk....', '..krrrrrk...', '.krwwrrrdk..', '.krwrrrrdk..', '.krrrrrrdk..', '.krrrrrddk..',
+      '..krrrddk...', '...kkddk....', '....kk......', '.....k......', '....k.......', '.....k......'] },
+    metronome: { pal: { b: '#a0703a', d: '#6a4520', w: '#e8eef8', y: '#ffd23f' }, rows: [
+      '.....kk.....', '....kbbk....', '....kbbk.k..', '...kbbbkyk..', '...kbbbyk...', '..kbbbybk...',
+      '..kbbwybbk..', '.kbbwwbbbk..', '.kbbbbbbddk.', 'kbbbbbbbbddk', 'kkkkkkkkkkkk', '............'] },
     // ---------- medallas de logros (bronce, plata, oro) ----------
     medal1: { pal: { r: '#ff5f6d', q: '#b8283a', m: '#d08a4a', n: '#8a5226', w: '#ffd0a0', s: '#ffe8c8' }, rows: MEDAL },
     medal2: { pal: { r: '#4fb4ff', q: '#2a6fb0', m: '#c9d2de', n: '#7d8899', w: '#ffffff', s: '#ffffff' }, rows: MEDAL },
