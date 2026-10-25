@@ -130,13 +130,14 @@ Sprites de las megaevoluciones (`tools/fetch_megas.py`), también de SpriteColla
 
 | Artista | Contacto | Megaevoluciones |
 |---|---|---|
-| baronessfaron |  | Mega-Alakazam, Mega-Banette, Mega-Diancie, Mega-Gardevoir, Mega-Gengar, Mega-Glalie, Mega-Lucario, Mega-Mawile, Mega-Sharpedo, Mega-Steelix |
+| baronessfaron |  | Dialga Origen, Groudon Primigenio, Kyogre Primigenio, Mega-Alakazam, Mega-Banette, Mega-Diancie, Mega-Gardevoir, Mega-Gengar, Mega-Glalie, Mega-Lucario, Mega-Mawile, Mega-Sharpedo, Mega-Steelix, Palkia Origen |
 | Caitemis | https://caitemis-art.tumblr.com/ | Mega-Aerodactyl, Mega-Camerupt |
+| CHUNSOFT | https://www.spike-chunsoft.com/ | Giratina Origen |
 | Deeshura | https://bsky.app/profile/deeshura.bsky.social | Mega-Absol, Mega-Kangaskhan |
 | DeltaL | averyderp.sm2@gmail.com | Mega-Dragalge, Mega-Drampa, Mega-Excadrill, Mega-Floette, Mega-Zeraora, Mega-Zygarde |
 | Emboarger |  | Mega-Absol, Mega-Gengar |
-| Emmuffin | https://twitter.com/Ernmuffin | Mega-Alakazam, Mega-Altaria, Mega-Banette, Mega-Chimecho, Mega-Dragalge, Mega-Drampa, Mega-Excadrill, Mega-Gengar, Mega-Glalie, Mega-Hawlucha, Mega-Kangaskhan, Mega-Latias, Mega-Latios, Mega-Lucario, Mega-Mawile, Mega-Sableye, Mega-Sceptile, Mega-Scrafty, Mega-Sharpedo, Mega-Slowbro, Mega-Tatsugiri, Mega-Zeraora |
-| G〜 | https://bsky.app/profile/justtr4sh.pmd.social | Mega-Aerodactyl, Mega-Charizard X |
+| Emmuffin | https://twitter.com/Ernmuffin | Dialga Origen, Giratina Origen, Mega-Alakazam, Mega-Altaria, Mega-Banette, Mega-Chimecho, Mega-Dragalge, Mega-Drampa, Mega-Excadrill, Mega-Gengar, Mega-Glalie, Mega-Hawlucha, Mega-Kangaskhan, Mega-Latias, Mega-Latios, Mega-Lucario, Mega-Mawile, Mega-Sableye, Mega-Sceptile, Mega-Scrafty, Mega-Sharpedo, Mega-Slowbro, Mega-Tatsugiri, Mega-Zeraora, Palkia Origen |
+| G〜 | https://bsky.app/profile/justtr4sh.pmd.social | Groudon Primigenio, Kyogre Primigenio, Mega-Aerodactyl, Mega-Charizard X |
 | JFain |  | Mega-Gallade, Mega-Lopunny, Mega-Medicham, Mega-Mewtwo Y, Mega-Tyranitar |
 | Johanne2 | https://github.com/Johanne2 | Mega-Darkrai, Mega-Skarmory |
 | Kevin | <@479925530129596426> | Mega-Charizard X |
@@ -145,8 +146,57 @@ Sprites de las megaevoluciones (`tools/fetch_megas.py`), también de SpriteColla
 | Morei | https://bsky.app/profile/murpia57.bsky.social | Mega-Absol, Mega-Charizard X, Mega-Gallade, Mega-Houndoom, Mega-Lopunny, Mega-Mewtwo Y |
 | pi3.14 | https://twitter.com/Pi_y_ranitas | Mega-Dragalge, Mega-Drampa, Mega-Excadrill, Mega-Floette, Mega-Scrafty, Mega-Zeraora, Mega-Zygarde |
 | Pokejavi. | <@823932975916777512> | Mega-Diancie, Mega-Steelix |
+| PoliteHoppip |  | Groudon Primigenio |
 | Soulja | https://twitter.com/OlSoulja | Mega-Dragalge, Mega-Drampa, Mega-Excadrill, Mega-Hawlucha, Mega-Scrafty, Mega-Slowbro |
 | Top_Kec | @topkec.bsky.social | Mega-Eelektross, Mega-Houndoom, Mega-Manectric, Mega-Rayquaza |
+
+### Formas regionales y alternativas
+
+Sprites de las formas regionales y alternativas (`tools/fetch_forms.py`), también de SpriteCollab (CC BY-NC 4.0).
+
+| Artista | Contacto | Formas |
+|---|---|---|
+| Audino | https://github.com/audinowho | Ninetales de Alola, Vulpix de Alola |
+| Axcel |  | Lycanroc (Forma Nocturna), Voltorb de Hisui |
+| baronessfaron |  | Arcanine de Hisui, Articuno de Galar, Avalugg de Hisui, Braviary de Hisui, Darmanitan (Modo Daruma), Darmanitan de Galar, Decidueye de Hisui, Eiscue (Cara Deshielo), Enamorus (Therian Forme), Exeggutor de Alola, Growlithe de Hisui, Landorus (Forma Tótem), Lilligant de Hisui, Linoone de Galar, Lycanroc (Forma Nocturna), Meloetta (Forma Danza), Mr. Mime de Galar, Ninetales de Alola, Ogerpon (Máscara Cimiento), Ogerpon (Máscara Fuente), Ogerpon (Máscara Horno), Oricorio (Estilo Animado), Oricorio (Estilo Plácido), Oricorio (Estilo Refinado), Ponyta de Galar, Pumpkaboo (Tamaño Extragrande), Pumpkaboo (Tamaño Grande), Pumpkaboo (Tamaño Pequeño), Raichu de Alola, Rapidash de Galar, Samurott de Hisui, Sandshrew de Alola, Sandslash de Alola, Slowbro de Galar, Ultra-Necrozma, Urshifu (Estilo Fluido), Vulpix de Alola, Weezing de Galar, Zacian (Espada Suprema), Zoroark de Hisui, Zygarde (Forma 10%), Zygarde (Forma Completa) |
+| Caitemis | https://caitemis-art.tumblr.com/ | Meowth de Galar, Typhlosion de Hisui, Zapdos de Galar |
+| Chi | <@95638225439166464> | Deoxys (Forma Ataque), Deoxys (Forma Defensa), Deoxys (Forma Velocidad) |
+| CHUNSOFT | https://www.spike-chunsoft.com/ | Castform (Forma Lluvia), Castform (Forma Nieve), Castform (Forma Sol), Deoxys (Forma Ataque), Deoxys (Forma Defensa), Deoxys (Forma Velocidad), Shaymin (Forma Cielo), Wormadam (Tronco Arena), Wormadam (Tronco Basura) |
+| Deeshura | https://bsky.app/profile/deeshura.bsky.social | Samurott de Hisui, Typhlosion de Hisui, Urshifu (Estilo Fluido), Zoroark de Hisui |
+| DeltaL | averyderp.sm2@gmail.com | Zamazenta (Escudo Supremo) |
+| electronvolt | electronvolt@gamepad.club | Electrode de Hisui |
+| Emboarger |  | Diglett de Alola, Grimer de Alola, Hoopa Desatado, Minior (Núcleo Rojo), Pumpkaboo (Tamaño Extragrande), Pumpkaboo (Tamaño Grande), Pumpkaboo (Tamaño Pequeño), Qwilfish de Hisui, Ultra-Necrozma, Voltorb de Hisui |
+| Emmuffin | https://twitter.com/Ernmuffin | Arcanine de Hisui, Articuno de Galar, Avalugg de Hisui, Braviary de Hisui, Darmanitan (Modo Daruma), Darmanitan de Galar, Decidueye de Hisui, Eiscue (Cara Deshielo), Floette (Flor Eterna), Goodra de Hisui, Gourgeist (Tamaño Extragrande), Landorus (Forma Tótem), Lycanroc (Forma Crepuscular), Marowak de Alola, Meloetta (Forma Danza), Mr. Mime de Galar, Oricorio (Estilo Animado), Rotom Calor, Rotom Frío, Rotom Lavado, Rotom Ventilador, Shaymin (Forma Cielo), Sliggoo de Hisui, Slowbro de Galar, Slowking de Galar, Slowpoke de Galar, Tauros (Paldean Form (Aqua Breed)), Tauros (Paldean Form (Blaze Breed)), Tauros de Paldea, Ursaluna (Luna Carmesí), Weezing de Galar, Zacian (Espada Suprema), Zigzagoon de Galar, Zygarde (Forma Completa) |
+| FerMrack | https://x.com/FerMrack_FM | Zamazenta (Escudo Supremo) |
+| FissionCube | https://twewyfinalmix.tumblr.com | Slowpoke de Galar |
+| Fresco | marcfreixer@gmail.com | Qwilfish de Hisui |
+| Gelius | <@276428982683959296> | Electrode de Hisui |
+| GustavoMusinTG | https://x.com/GustavoMusinTG | Lilligant de Hisui |
+| G〜 | https://bsky.app/profile/justtr4sh.pmd.social | Enamorus (Therian Forme), Eternatus (Dinamax Infinito), Meowth de Galar, Palafin (Hero Form), Terapagos (Forma teracristal) |
+| Ichor |  | Zorua de Hisui |
+| JFain |  | Corsola de Galar, Eternatus (Dinamax Infinito), Farfetch’d de Galar, Qwilfish de Hisui, Rotom Corte, Tauros (Paldean Form (Aqua Breed)), Terapagos (Forma teracristal), Zigzagoon de Galar |
+| Jhony-Rex | https://www.deviantart.com/jhony-rex | Moltres de Galar, Ponyta de Galar, Rapidash de Galar, Weezing de Galar, Zacian (Espada Suprema), Zapdos de Galar |
+| Limomon | https://twitter.com/TheLimomon | Tauros (Paldean Form (Blaze Breed)), Tauros de Paldea |
+| lokatts | https://twitter.com/lokatts | Rapidash de Galar |
+| Lovi | <@95650095034273792> | Wormadam (Tronco Arena), Wormadam (Tronco Basura) |
+| Morei | https://bsky.app/profile/murpia57.bsky.social | Corsola de Galar, Diglett de Alola, Farfetch’d de Galar, Geodude de Alola, Golem de Alola, Graveler de Alola, Grimer de Alola, Moltres de Galar, Muk de Alola, Rotom Corte, Shaymin (Forma Cielo), Zapdos de Galar, Zorua de Hisui, Zygarde (Forma 10%) |
+| NeroIntruder | https://twitter.com/NeroIntruder | Dugtrio de Alola, Geodude de Alola, Golem de Alola, Graveler de Alola, Muk de Alola, Ninetales de Alola, Raticate de Alola, Rattata de Alola, Vulpix de Alola |
+| NikolaP | nikolasnonsense@gmail.com | Zygarde (Forma 10%) |
+| pi3.14 | https://twitter.com/Pi_y_ranitas | Landorus (Forma Tótem), Ogerpon (Máscara Cimiento), Ogerpon (Máscara Fuente), Ogerpon (Máscara Horno), Tauros de Paldea |
+| Pink_no_tori | https://twitter.com/pink_avian_poke | Persian de Alola, Slowbro de Galar |
+| Pokejavi. | <@823932975916777512> | Yamask de Galar |
+| rhys | https://bsky.app/profile/geckqua.bsky.social | Electrode de Hisui, Sandslash de Alola |
+| Scizivire | <@207188665959448576> | Castform (Forma Lluvia), Castform (Forma Nieve), Castform (Forma Sol) |
+| ShyStarryRain |  | Castform (Forma Lluvia), Castform (Forma Nieve), Castform (Forma Sol), Dugtrio de Alola, Exeggutor de Alola, Growlithe de Hisui, Meowth de Alola, Persian de Alola, Raichu de Alola, Raticate de Alola, Rattata de Alola, Sneasel de Hisui |
+| Smingle | https://twitter.com/TheSmingle | Meowth de Galar |
+| Sonikku_A | https://bsky.app/profile/knopguy.bsky.social | Deoxys (Forma Ataque), Deoxys (Forma Defensa), Deoxys (Forma Velocidad) |
+| Soulja | https://twitter.com/OlSoulja | Braviary de Hisui, Darmanitan de Galar, Lilligant de Hisui, Rotom Calor, Rotom Frío, Slowking de Galar, Ursaluna (Luna Carmesí) |
+| Tacocoa | <@234720295292895232> | Shaymin (Forma Cielo) |
+| teddg | <@255885525204992000> | Electrode de Hisui |
+| Top_Kec | @topkec.bsky.social | Aegislash (Forma Filo), Kyurem Blanco, Kyurem Negro, Sandshrew de Alola, Wishiwashi (Forma Banco) |
+| Uni | https://github.com/ArianaCastro01 | Darumaka de Galar, Wooper de Paldea, Zigzagoon de Galar |
+| XModxGodX |  | Shaymin (Forma Cielo), Zorua de Hisui |
+| ◥θ┴θ◤ | DC:<@215638650434617345> | Ponyta de Galar |
 
 ## Datos
 

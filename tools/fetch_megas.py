@@ -31,6 +31,15 @@ import fetch_sprites as FS  # noqa: E402  (parseo y guardado de las hojas)
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT_JS = os.path.join(ROOT, 'js', 'data', 'megas.js')
 FORMS = {'Mega': '', 'Mega_X': ' X', 'Mega_Y': ' Y', 'Mega_Z': ' Z'}
+# Formas especiales de legendarios (25-10-2026) que se tratan como las megas: se
+# coleccionan en el gacha de su región y, en la partida, el legendario se transforma
+# en ellas al nivel 40. También son la 2.ª fase de esos legendarios como jefes.
+SPECIAL = {
+    'Primal': {'only': {382, 383}, 'slug': '-primal',
+               'names': lambda b, fr, zs, zt: [b + ' Primigenio', 'Primo-' + fr, b + ' Archeo', b + ' Primitivo', '原始' + zs, '原始' + zt, 'Primal ' + b]},
+    'Origin': {'only': {483, 484, 487}, 'slug': '-origin',
+               'names': lambda b, fr, zs, zt: [b + ' Origen', fr + ' Forme Originelle', b + ' Forma Originale', b + ' Forma Original', zs + '（起源形态）', zt + '（起源形態）', b + ' (Origin Forme)']},
+}
 # Formas de PokeAPI que no siguen la regla <nombre>-mega[-x|-y|-z].
 SLUG = {978: 'tatsugiri-curly-mega'}
 # Habilidades de mega que el juego ya sabe nombrar (data/abilities.js) o que se
@@ -106,13 +115,17 @@ def main():
             continue
         for fid, sub in sorted((node.get('subgroups') or {}).items()):
             kind = sub.get('name', '')
-            if kind not in FORMS:
+            spec = SPECIAL.get(kind)
+            if kind not in FORMS and not (spec and dex in spec['only']):
                 continue
             files = set((sub.get('sprite_files') or {}).keys())
             if 'Idle' not in files:
                 continue
             base = DEX[dex]
-            slug = SLUG.get(dex) or re.sub(r'[^a-z0-9]+', '-', base['name'].lower()).strip('-') + '-mega' + FORMS[kind].strip().lower().replace('x', '-x').replace('y', '-y').replace('z', '-z')
+            if spec:
+                slug = re.sub(r'[^a-z0-9]+', '-', base['name'].lower()).strip('-') + spec['slug']
+            else:
+                slug = SLUG.get(dex) or re.sub(r'[^a-z0-9]+', '-', base['name'].lower()).strip('-') + '-mega' + FORMS[kind].strip().lower().replace('x', '-x').replace('y', '-y').replace('z', '-z')
             pid = pidx.get(slug)
             if not pid:
                 print(f'  ! sin datos en PokeAPI: {slug}')
@@ -152,15 +165,20 @@ def main():
             metas[pid] = meta
 
             # --- datos de juego, con las fórmulas de fetch_pokedex.py ---
-            name_en = 'Mega ' + base['name'] + FORMS[kind]
-            name_es = 'Mega-' + base['name'] + FORMS[kind]
-            wide = FORMS[kind].replace('X', 'Ｘ').replace('Y', 'Ｙ').replace('Z', 'Ｚ').strip()
-            langs.append([name_es,
-                          'Méga-' + fr.get(base['name'], base['name']) + FORMS[kind],
-                          name_en, name_en,
-                          '超级' + zhs.get(base['name'], base['name']) + wide,
-                          '超級' + zht.get(base['name'], base['name']) + wide,
-                          name_en])
+            if spec:
+                nm = spec['names'](base['name'], fr.get(base['name'], base['name']), zhs.get(base['name'], base['name']), zht.get(base['name'], base['name']))
+                name_es, name_en = nm[0], nm[6]
+                langs.append(nm)
+            else:
+                name_en = 'Mega ' + base['name'] + FORMS[kind]
+                name_es = 'Mega-' + base['name'] + FORMS[kind]
+                wide = FORMS[kind].replace('X', 'Ｘ').replace('Y', 'Ｙ').replace('Z', 'Ｚ').strip()
+                langs.append([name_es,
+                              'Méga-' + fr.get(base['name'], base['name']) + FORMS[kind],
+                              name_en, name_en,
+                              '超级' + zhs.get(base['name'], base['name']) + wide,
+                              '超級' + zht.get(base['name'], base['name']) + wide,
+                              name_en])
             bst = sum(st.values())
             megas.append({
                 'dex': pid, 'name': name_es, 'base': dex, 'mega': True,
@@ -207,13 +225,13 @@ def main():
           '  G.DEX_BY[m.dex] = m;',
           '}',
           '/** Número de Pokédex que se enseña (las megas, el de su base). */',
-          'G.dexNo = p => (p && p.mega ? p.base : p ? p.dex : 0);',
+          'G.dexNo = p => (p && (p.mega || p.form) ? p.base : p ? p.dex : 0);',
           '/** Orden en la colección: cada mega justo detrás de su base. */',
-          'G.dexOrder = p => (p.mega ? p.base + 0.5 + (p.dex % 1000) / 1e6 : p.dex);',
+          'G.dexOrder = p => (p.mega || p.form ? p.base + (p.form ? 0.7 : 0.5) + (p.dex % 1000) / 1e6 : p.dex);',
           '// Las MT: las de su Pokémon base.',
           'if (G.TM_OF) {',
           '  const of = G.TM_OF;',
-          '  G.TM_OF = dex => { const p = G.DEX_BY[dex]; return of(p && p.mega ? p.base : dex); };',
+          '  G.TM_OF = dex => { const p = G.DEX_BY[dex]; return of(p && (p.mega || p.form) ? p.base : dex); };',
           '}',
           '']
     with io.open(OUT_JS, 'w', encoding='utf-8', newline='\n') as f:

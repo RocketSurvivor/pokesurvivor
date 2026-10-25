@@ -10,7 +10,7 @@
 const fs = require('fs'), path = require('path'), vm = require('vm');
 const ROOT = path.join(__dirname, '..');
 const SOURCES = ['lang-fr.js', 'lang-it.js', 'lang-pt.js', 'lang-zh-cn.js', 'lang-zh-cn-names.js',
-                 'lang-zh-hant.js', 'lang-zh-hant-names.js', 'lang-updates.js', 'lang-megas-i18n.js'].map(f => 'js/data/' + f);
+                 'lang-zh-hant.js', 'lang-zh-hant-names.js', 'lang-updates.js', 'lang-megas-i18n.js', 'lang-forms-i18n.js'].map(f => 'js/data/' + f);
 const LANGS = ['fr', 'it', 'pt-BR', 'zh-Hans', 'zh-Hant'];
 
 /** Ejecuta archivos con un G.I18n.add que sólo apunta: → [[dict, idioma, contexto], ...] */
@@ -48,7 +48,7 @@ function build() {
 /** Textos con traducción inglesa (lang-en.js y los de los datos del juego) que faltan en cada idioma. */
 function missing() {
   const en = {};
-  const files = ['js/data/lang-en.js', 'js/data/lang-megas.js', 'js/core/settings.js', 'js/data/pokedex.js', 'js/data/sprites-meta.js', 'js/data/moves.js', 'js/data/types.js', 'js/data/items.js',
+  const files = ['js/data/lang-en.js', 'js/data/lang-megas.js', 'js/data/lang-forms.js', 'js/core/settings.js', 'js/data/pokedex.js', 'js/data/sprites-meta.js', 'js/data/moves.js', 'js/data/types.js', 'js/data/items.js',
                  'js/data/achievements.js', 'js/world/tiles.js', 'js/data/funding.js'];
   // Los datos del juego necesitan G de verdad (util.js): el mismo entorno que tools/export_data.js.
   const noop = () => {}, fakeCtx = new Proxy({}, { get: () => noop });

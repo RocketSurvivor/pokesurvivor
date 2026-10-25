@@ -424,6 +424,7 @@ G.Coop = (() => {
         G.EnemyMgr.addRemote({ id: ev[1], dex: ev[2], x: ev[3], y: ev[4], boss: !!ev[5], shiny: !!ev[6], hp: ev[7], dmg: ev[8], beh: ev[9], affix: ev[10] });
         break;
       case 'ed': G.EnemyMgr.removeRemote(ev[1], true); break;
+      case 'ef': { const e = G.EnemyMgr.get(ev[1]); if (e && !e.dead) e.morphTo(ev[2]); break; }    // legendario que cambia de forma
       case 'eg': G.EnemyMgr.removeRemote(ev[1], false); break;
       case 'hn': { const e = G.EnemyMgr.get(ev[1]); if (e && !e.dead) e.showHurt(ev[2], ev[3]); break; }
       case 'es':

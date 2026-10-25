@@ -1,6 +1,10 @@
 /* ============ GENERADO por tools/fetch_megas.py: no editar a mano ============
  * Nombres de las megaevoluciones (clave en español). */
 G.I18n.add({
+ "Dialga Origen": "Dialga (Origin Forme)",
+ "Giratina Origen": "Giratina (Origin Forme)",
+ "Groudon Primigenio": "Primal Groudon",
+ "Kyogre Primigenio": "Primal Kyogre",
  "Mega-Absol": "Mega Absol",
  "Mega-Aerodactyl": "Mega Aerodactyl",
  "Mega-Alakazam": "Mega Alakazam",
@@ -42,5 +46,6 @@ G.I18n.add({
  "Mega-Tatsugiri": "Mega Tatsugiri",
  "Mega-Tyranitar": "Mega Tyranitar",
  "Mega-Zeraora": "Mega Zeraora",
- "Mega-Zygarde": "Mega Zygarde"
+ "Mega-Zygarde": "Mega Zygarde",
+ "Palkia Origen": "Palkia (Origin Forme)"
 }, 'en');

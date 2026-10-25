@@ -118,6 +118,25 @@
       G.Sprites.preload([this.dex], 4000, true);
     }
 
+    /**
+     * Cambio de forma (25-10-2026): Groudon y Kyogre Primigenios y Dialga, Palkia y
+     * Giratina Origen como 2.ª fase de esos legendarios (ver enrage). Cambia el sprite,
+     * el nombre y los tipos; la vida y la fuerza siguen (la fase 2 ya los endurece).
+     */
+    static get PHASE_FORM() { return { 382: 10077, 383: 10078, 483: 10245, 484: 10246, 487: 10007 }; }
+    morphTo(dex) {
+      const mon = G.DEX_BY[dex];
+      if (!mon || !G.SPRITE_META[dex]) return false;
+      this.dex = dex;
+      this.name = mon.name;
+      this.anim = new G.Sprites.Animator(dex, this.scale, !!this.shiny);
+      this.r = G.Sprites.bodyRadius(dex, this.scale);
+      this.bodyH = G.Sprites.bodyHeight(dex, this.scale);
+      this.types = mon.types.slice();
+      this.atkType = this.types[0];
+      return true;
+    }
+
     /** Hora dorada (events.js): doble de experiencia y a veces monedas. */
     makeGolden() {
       if (this.golden || this.boss || this.behavior === 'thief') return;
@@ -530,6 +549,8 @@
       let phase2 = null;
       if (this.legend && !this.judge) {
         phase2 = ['rain', 'beam', 'nova', 'volley', 'spiral', 'cage', 'cross', 'storm', 'snipe'];
+        const pf = Enemy.PHASE_FORM[this.dex];
+        if (pf) G.Sprites.preload([pf], 8000, !!this.shiny);      // su forma de la 2.ª fase, lista
         ranged.push(G.U.hash(this.dex, 7, 3) < 0.5 ? 'storm' : 'snipe');
       }
       // Jefe de zona (25-10-2026): su ataque propio de la zona, además de los suyos.
@@ -580,7 +601,11 @@
         this.ai.ranged = this.ai.phase2.slice();
         this.ai.phase2 = null;
         this.ai.cast = null; this.ai.cd = 0.8;
-        G.Spawner.say(G.I18n.f('¡{x} pasa a su segunda fase!', G.T(this.name)), 2.8);
+        const before = this.name, form = Enemy.PHASE_FORM[this.dex];
+        if (form && this.morphTo(form)) {
+          if (G.Coop.isHost) G.Coop.broadcast(['ef', this.id, form]);
+          G.Spawner.say(G.I18n.f('¡{x} se transforma en {x}!', G.T(before), G.T(this.name)), 3);
+        } else G.Spawner.say(G.I18n.f('¡{x} pasa a su segunda fase!', G.T(this.name)), 2.8);
         G.FX.ring(this.x, this.y, this.r, this.r * 8, '#ffd23f', 0.9, 7);
         G.FX.burst(this.x, this.y - (this.bodyH || 40) * 0.5, '#ff4a4a', 40, 260);
         G.Game.flash && G.Game.flash('#ff6a4a', 0.35);

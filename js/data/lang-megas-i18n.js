@@ -1,6 +1,10 @@
 /* ============ GENERADO por tools/fetch_megas.py: no editar a mano ============
  * Nombres de las megaevoluciones (clave en español). */
 G.I18n.add({
+ "Dialga Origen": "Dialga Forme Originelle",
+ "Giratina Origen": "Giratina Forme Originelle",
+ "Groudon Primigenio": "Primo-Groudon",
+ "Kyogre Primigenio": "Primo-Kyogre",
  "Mega-Absol": "Méga-Absol",
  "Mega-Aerodactyl": "Méga-Ptéra",
  "Mega-Alakazam": "Méga-Alakazam",
@@ -42,9 +46,14 @@ G.I18n.add({
  "Mega-Tatsugiri": "Méga-Nigirigon",
  "Mega-Tyranitar": "Méga-Tyranocif",
  "Mega-Zeraora": "Méga-Zeraora",
- "Mega-Zygarde": "Méga-Zygarde"
+ "Mega-Zygarde": "Méga-Zygarde",
+ "Palkia Origen": "Palkia Forme Originelle"
 }, 'fr');
 G.I18n.add({
+ "Dialga Origen": "Dialga Forma Originale",
+ "Giratina Origen": "Giratina Forma Originale",
+ "Groudon Primigenio": "Groudon Archeo",
+ "Kyogre Primigenio": "Kyogre Archeo",
  "Mega-Absol": "Mega Absol",
  "Mega-Aerodactyl": "Mega Aerodactyl",
  "Mega-Alakazam": "Mega Alakazam",
@@ -86,9 +95,14 @@ G.I18n.add({
  "Mega-Tatsugiri": "Mega Tatsugiri",
  "Mega-Tyranitar": "Mega Tyranitar",
  "Mega-Zeraora": "Mega Zeraora",
- "Mega-Zygarde": "Mega Zygarde"
+ "Mega-Zygarde": "Mega Zygarde",
+ "Palkia Origen": "Palkia Forma Originale"
 }, 'it');
 G.I18n.add({
+ "Dialga Origen": "Dialga Forma Original",
+ "Giratina Origen": "Giratina Forma Original",
+ "Groudon Primigenio": "Groudon Primitivo",
+ "Kyogre Primigenio": "Kyogre Primitivo",
  "Mega-Absol": "Mega Absol",
  "Mega-Aerodactyl": "Mega Aerodactyl",
  "Mega-Alakazam": "Mega Alakazam",
@@ -130,9 +144,14 @@ G.I18n.add({
  "Mega-Tatsugiri": "Mega Tatsugiri",
  "Mega-Tyranitar": "Mega Tyranitar",
  "Mega-Zeraora": "Mega Zeraora",
- "Mega-Zygarde": "Mega Zygarde"
+ "Mega-Zygarde": "Mega Zygarde",
+ "Palkia Origen": "Palkia Forma Original"
 }, 'pt-BR');
 G.I18n.add({
+ "Dialga Origen": "帝牙卢卡（起源形态）",
+ "Giratina Origen": "骑拉帝纳（起源形态）",
+ "Groudon Primigenio": "原始固拉多",
+ "Kyogre Primigenio": "原始盖欧卡",
  "Mega-Absol": "超级阿勃梭鲁",
  "Mega-Aerodactyl": "超级化石翼龙",
  "Mega-Alakazam": "超级胡地",
@@ -174,9 +193,14 @@ G.I18n.add({
  "Mega-Tatsugiri": "超级米立龙",
  "Mega-Tyranitar": "超级班基拉斯",
  "Mega-Zeraora": "超级捷拉奥拉",
- "Mega-Zygarde": "超级基格尔德"
+ "Mega-Zygarde": "超级基格尔德",
+ "Palkia Origen": "帕路奇亚（起源形态）"
 }, 'zh-Hans');
 G.I18n.add({
+ "Dialga Origen": "帝牙盧卡（起源形態）",
+ "Giratina Origen": "騎拉帝納（起源形態）",
+ "Groudon Primigenio": "原始固拉多",
+ "Kyogre Primigenio": "原始蓋歐卡",
  "Mega-Absol": "超級阿勃梭魯",
  "Mega-Aerodactyl": "超級化石翼龍",
  "Mega-Alakazam": "超級胡地",
@@ -218,5 +242,6 @@ G.I18n.add({
  "Mega-Tatsugiri": "超級米立龍",
  "Mega-Tyranitar": "超級班基拉斯",
  "Mega-Zeraora": "超級捷拉奧拉",
- "Mega-Zygarde": "超級基格爾德"
+ "Mega-Zygarde": "超級基格爾德",
+ "Palkia Origen": "帕路奇亞（起源形態）"
 }, 'zh-Hant');

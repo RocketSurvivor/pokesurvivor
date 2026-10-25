@@ -13,7 +13,7 @@ TODAY = datetime.date.today().isoformat()
 D = json.load(open(os.path.join(ROOT, 'tools', 'cache', 'gamedata.json'), encoding='utf-8'))
 DEX = D['dex']; BY = {p['dex']: p for p in DEX}
 META = {}
-_meta_src = ''.join(open(os.path.join(ROOT, f), encoding='utf-8').read() for f in ('js/data/sprites-meta.js', 'js/data/megas.js'))
+_meta_src = ''.join(open(os.path.join(ROOT, f), encoding='utf-8').read() for f in ('js/data/sprites-meta.js', 'js/data/megas.js', 'js/data/forms.js'))
 for m in re.finditer(r'^\s*(\d+): (\{.*\}),?\s*$', _meta_src, re.M):
     try: META[int(m.group(1))] = json.loads(m.group(2))
     except Exception: pass
