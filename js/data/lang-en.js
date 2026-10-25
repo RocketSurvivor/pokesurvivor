@@ -1229,5 +1229,20 @@ G.I18n.add({
   "Siempre a la venta. Cualquier Pokémon puede aprender los ataques de tipo Normal con su MT.": "Always for sale. Any Pokémon can learn Normal-type moves with their TM.",
   "{x} ya lo aprende sin MT": "{x} already learns it without a TM",
   "Pokémon de tipo Normal, y cualquiera con su MT": "Normal-type Pokémon, and any Pokémon with its TM",
-  "Nuevo apartado en la Tienda Kecleon: MT de tipo Normal, siempre a la venta. Con ellas cualquier Pokémon puede aprender los ataques de tipo Normal (Placaje, Golpe Cuerpo, Vozarrón, Hiperrayo, Rapidez...).": "New section in the Kecleon Shop: Normal-type TMs, always for sale. With them any Pokémon can learn Normal-type moves (Tackle, Body Slam, Hyper Voice, Hyper Beam, Swift...)."
+  "Nuevo apartado en la Tienda Kecleon: MT de tipo Normal, siempre a la venta. Con ellas cualquier Pokémon puede aprender los ataques de tipo Normal (Placaje, Golpe Cuerpo, Vozarrón, Hiperrayo, Rapidez...).": "New section in the Kecleon Shop: Normal-type TMs, always for sale. With them any Pokémon can learn Normal-type moves (Tackle, Body Slam, Hyper Voice, Hyper Beam, Swift...).",
+  "Olvidar MT": "Forget TM",
+  "{x} ha olvidado {x}. La MT vuelve a tu Mochila.": "{x} forgot {x}. The TM goes back to your Bag.",
+  "Orden de las estadísticas": "Stat order",
+  "Con poca vida coge antes la Baya Zidra.": "With low HP it takes the Sitrus Berry first.",
+  "Orden de los ataques": "Move order",
+  "Para mejorar y para aprender, los de arriba primero. Se guarda para cualquier Pokémon.": "For upgrading and learning, the top ones first. Saved for every Pokémon.",
+  "Volver al orden automático": "Back to automatic order",
+  "Empieza una partida para ordenar sus ataques.": "Start a run to order its moves.",
+  "Administrador": "Admin",
+  "Nivel {x} · minuto {x}": "Level {x} · minute {x}",
+  "nivel": "level",
+  "niveles": "levels",
+  "Ir al minuto": "Go to minute",
+  "Las partidas con estos cambios no cuentan para el ranking.": "Runs with these changes don't count for the leaderboard.",
+  "Ya se pueden olvidar las MT: en la ficha del Pokémon, «Olvidar MT». El ataque deja de salirle y la MT vuelve a tu Mochila. La mejora automática ahora deja ordenar cada estadística y cada ataque: en el menú de pausa, «Orden de las estadísticas» y «Orden de los ataques». Los administradores salen con el nombre en verde y tienen un menú en la pausa para subir niveles y adelantar minutos.": "TMs can now be forgotten: on the Pokémon's card, «Forget TM». The move stops showing up for it and the TM goes back to your Bag. Auto-upgrade now lets you order every stat and every move: in the pause menu, «Stat order» and «Move order». Admins show their name in green and have a pause menu to add levels and skip minutes."
 });

@@ -379,7 +379,7 @@ G.MenuUI = (() => {
       <div class="mx-row"><span>MT</span>${taught.length
         ? `<span class="move-icons">${taught.map(id => `<span title="${G.T(G.Moves.BY_ID[id].name, 'move')}">${G.Icons.html('move:' + id, 16)}</span>`).join('')}</span>`
         : `<small>${G.T('Aún no ha aprendido ninguna')}</small>`}
-        ${btn('tm', 'tm', 'Enseñar MT', tmsHere.length)}</div>
+        ${btn('tm', 'tm', 'Enseñar MT', tmsHere.length)}${taught.length ? `<button class="btn small ghost" data-extra="tmx">${G.T('Olvidar MT')}</button>` : ''}</div>
       <div id="mx-picker"></div>
     </div>`;
   }
@@ -415,6 +415,12 @@ G.MenuUI = (() => {
       chips(list.map(id => ({ v: id, html: `${G.Icons.html('move:' + id, 16)} ${G.T(G.Moves.BY_ID[id].name, 'move')} <small>×${G.Shop.tmCount(id)}</small>` })), '', id => {
         if (!G.Mons.teach(dex, id)) return;
         done(G.I18n.f('¡{x} ha aprendido {x}!', mon.name, G.T(G.Moves.BY_ID[id].name, 'move')));
+      });
+    } else if (extraOpen === 'tmx') {
+      // Olvidar: el ataque deja de salirle y la MT vuelve a la Mochila.
+      chips(G.Mons.taught(dex).map(id => ({ v: id, html: `${G.Icons.html('move:' + id, 16)} ${G.T(G.Moves.BY_ID[id].name, 'move')}` })), '', id => {
+        if (!G.Mons.forget(dex, id)) return;
+        done(G.I18n.f('{x} ha olvidado {x}. La MT vuelve a tu Mochila.', mon.name, G.T(G.Moves.BY_ID[id].name, 'move')));
       });
     }
   }

@@ -89,7 +89,7 @@
 
     function render() {
       const room = G.Social.room;
-      $('fr-me').innerHTML = 'Tu apodo: <b class="gold" translate="no">' + esc(G.Social.me ? G.Social.me.name : '') + '</b> · dáselo a tus amigos para que te añadan.';
+      $('fr-me').innerHTML = 'Tu apodo: <b class="gold" translate="no">' + G.Admin.nameHtml(esc(G.Social.me ? G.Social.me.name : ''), G.Social.uid) + '</b> · dáselo a tus amigos para que te añadan.';
       $('fr-room').classList.toggle('hidden', !room);
       const list = G.Social.friends.sort((a, b) => {
         const rank = f => f.status === 'in' ? 0 : f.status === 'ok' ? 1 : 2;
@@ -106,7 +106,7 @@
         el.className = 'fr-row';
         const dot = f.status !== 'ok' ? 'pend' : 'on';
         const inRoom = room && room.members.some(m => m.uid === f.uid);
-        el.innerHTML = `<i class="dot ${dot}"></i><b translate="no"><a href="#" class="plink" title="Ver su perfil">${esc(f.name)}</a></b><span class="st">${inRoom ? 'En tu sala' : stateText(f)}</span><span class="grow"></span>`;
+        el.innerHTML = `<i class="dot ${dot}"></i><b translate="no"><a href="#" class="plink${G.Admin.isUid(f.uid) ? ' admin-name' : ''}" title="Ver su perfil">${esc(f.name)}</a></b><span class="st">${inRoom ? 'En tu sala' : stateText(f)}</span><span class="grow"></span>`;
         if (f.status === 'ok') el.querySelector('.plink').onclick = e => { e.preventDefault(); G.ProfileUI.show(f.uid); };
         else el.querySelector('.plink').onclick = e => e.preventDefault();
         const btn = (txt, cls, fn) => {
@@ -206,7 +206,7 @@
           if (m) {
             c.style.setProperty('--pc', G.Coop.COLORS[i]);
             c.appendChild(G.UI.spriteCanvas(m.dex, 120, 96, { scale: 2, lively: true, shiny: !!m.shiny }));
-            c.insertAdjacentHTML('beforeend', `<b translate="no">${esc(m.name)}</b><small>${esc((G.DEX_BY[m.dex] || {}).name || '')}</small><span class="conn" data-u="${m.uid}"></span>`);
+            c.insertAdjacentHTML('beforeend', `<b translate="no">${G.Admin.nameHtml(esc(m.name), m.uid)}</b><small>${esc((G.DEX_BY[m.dex] || {}).name || '')}</small><span class="conn" data-u="${m.uid}"></span>`);
           } else c.innerHTML = '<span>Libre</span>';
           box.appendChild(c);
         }
@@ -231,7 +231,7 @@
         for (const f of free) {
           const el = document.createElement('div');
           el.className = 'fr-row';
-          el.innerHTML = `<i class="dot on"></i><b translate="no">${esc(f.name)}</b><span class="grow"></span>`;
+          el.innerHTML = `<i class="dot on"></i><b translate="no">${G.Admin.nameHtml(esc(f.name), f.uid)}</b><span class="grow"></span>`;
           const b = document.createElement('button');
           b.className = 'btn small gold'; b.textContent = 'Invitar';
           b.onclick = async () => { const r = await G.Social.invite(f.uid); G.UI.toast(r.ok ? r.msg : r.error); };
@@ -294,7 +294,7 @@
       if (!list.length || G.Game.state !== 'ui' || !G.DB.loggedIn) { hide(); return; }
       if (cur && cur.from === list[0].from) return;
       cur = list[0];
-      $('inv-text').innerHTML = `${G.Icons.html('friends', 22)} <b class="gold" translate="no">${esc(cur.name)}</b> te invita a jugar en su sala`;
+      $('inv-text').innerHTML = `${G.Icons.html('friends', 22)} <b class="gold" translate="no">${G.Admin.nameHtml(esc(cur.name), cur.from)}</b> te invita a jugar en su sala`;
       $('invite-pop').classList.remove('hidden');
       G.Audio.sfx('shiny');
     }

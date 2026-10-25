@@ -1303,4 +1303,89 @@
     "Pokémon de tipo Normal, y cualquiera con su MT": "一般屬性寶可夢，以及任何使用招式學習器的寶可夢",
     "Nuevo apartado en la Tienda Kecleon: MT de tipo Normal, siempre a la venta. Con ellas cualquier Pokémon puede aprender los ataques de tipo Normal (Placaje, Golpe Cuerpo, Vozarrón, Hiperrayo, Rapidez...).": "凱克商店新增分區：一般屬性招式學習器，一直在售。用它們任何寶可夢都能學會一般屬性招式（撞擊、泰山壓頂、巨聲、破壞光線、高速星星……）。"
   }, 'zh-Hant');
+  G.I18n.add({
+    "Olvidar MT": "Oublier une CT",
+    "{x} ha olvidado {x}. La MT vuelve a tu Mochila.": "{x} a oublié {x}. La CT retourne dans ton Sac.",
+    "Orden de las estadísticas": "Ordre des stats",
+    "Con poca vida coge antes la Baya Zidra.": "Avec peu de PV, il prend d'abord la Baie Sitrus.",
+    "Orden de los ataques": "Ordre des capacités",
+    "Para mejorar y para aprender, los de arriba primero. Se guarda para cualquier Pokémon.": "Pour améliorer et apprendre, celles du haut d'abord. Enregistré pour tous les Pokémon.",
+    "Volver al orden automático": "Revenir à l'ordre automatique",
+    "Empieza una partida para ordenar sus ataques.": "Lance une partie pour ordonner ses capacités.",
+    "Administrador": "Administrateur",
+    "Nivel {x} · minuto {x}": "Niveau {x} · minute {x}",
+    "nivel": "niveau",
+    "niveles": "niveaux",
+    "Ir al minuto": "Aller à la minute",
+    "Las partidas con estos cambios no cuentan para el ranking.": "Les parties avec ces changements ne comptent pas pour le classement.",
+    "Ya se pueden olvidar las MT: en la ficha del Pokémon, «Olvidar MT». El ataque deja de salirle y la MT vuelve a tu Mochila. La mejora automática ahora deja ordenar cada estadística y cada ataque: en el menú de pausa, «Orden de las estadísticas» y «Orden de los ataques». Los administradores salen con el nombre en verde y tienen un menú en la pausa para subir niveles y adelantar minutos.": "Les CT peuvent maintenant être oubliées : sur la fiche du Pokémon, « Oublier une CT ». La capacité ne lui apparaît plus et la CT retourne dans ton Sac. L'amélioration auto permet maintenant d'ordonner chaque stat et chaque capacité : dans le menu pause, « Ordre des stats » et « Ordre des capacités ». Les administrateurs ont leur nom en vert et un menu dans la pause pour monter de niveau et avancer les minutes."
+  }, 'fr');
+  G.I18n.add({
+    "Olvidar MT": "Dimentica MT",
+    "{x} ha olvidado {x}. La MT vuelve a tu Mochila.": "{x} ha dimenticato {x}. La MT torna nella tua Borsa.",
+    "Orden de las estadísticas": "Ordine delle statistiche",
+    "Con poca vida coge antes la Baya Zidra.": "Con pochi PS prende prima la Baccacedro.",
+    "Orden de los ataques": "Ordine delle mosse",
+    "Para mejorar y para aprender, los de arriba primero. Se guarda para cualquier Pokémon.": "Per potenziare e imparare, prima quelle in alto. Vale per tutti i Pokémon.",
+    "Volver al orden automático": "Torna all'ordine automatico",
+    "Empieza una partida para ordenar sus ataques.": "Inizia una partita per ordinare le sue mosse.",
+    "Administrador": "Amministratore",
+    "Nivel {x} · minuto {x}": "Livello {x} · minuto {x}",
+    "nivel": "livello",
+    "niveles": "livelli",
+    "Ir al minuto": "Vai al minuto",
+    "Las partidas con estos cambios no cuentan para el ranking.": "Le partite con queste modifiche non contano per la classifica.",
+    "Ya se pueden olvidar las MT: en la ficha del Pokémon, «Olvidar MT». El ataque deja de salirle y la MT vuelve a tu Mochila. La mejora automática ahora deja ordenar cada estadística y cada ataque: en el menú de pausa, «Orden de las estadísticas» y «Orden de los ataques». Los administradores salen con el nombre en verde y tienen un menú en la pausa para subir niveles y adelantar minutos.": "Ora le MT si possono dimenticare: nella scheda del Pokémon, «Dimentica MT». La mossa non gli esce più e la MT torna nella tua Borsa. Il potenziamento automatico ora permette di ordinare ogni statistica e ogni mossa: nel menu di pausa, «Ordine delle statistiche» e «Ordine delle mosse». Gli amministratori hanno il nome in verde e un menu nella pausa per salire di livello e avanzare i minuti."
+  }, 'it');
+  G.I18n.add({
+    "Olvidar MT": "Esquecer MT",
+    "{x} ha olvidado {x}. La MT vuelve a tu Mochila.": "{x} esqueceu {x}. A MT volta para sua Mochila.",
+    "Orden de las estadísticas": "Ordem dos atributos",
+    "Con poca vida coge antes la Baya Zidra.": "Com pouca vida, pega primeiro a Fruta Sitrus.",
+    "Orden de los ataques": "Ordem dos golpes",
+    "Para mejorar y para aprender, los de arriba primero. Se guarda para cualquier Pokémon.": "Para melhorar e aprender, os de cima primeiro. Vale para qualquer Pokémon.",
+    "Volver al orden automático": "Voltar à ordem automática",
+    "Empieza una partida para ordenar sus ataques.": "Comece uma partida para ordenar os golpes dela.",
+    "Administrador": "Administrador",
+    "Nivel {x} · minuto {x}": "Nível {x} · minuto {x}",
+    "nivel": "nível",
+    "niveles": "níveis",
+    "Ir al minuto": "Ir ao minuto",
+    "Las partidas con estos cambios no cuentan para el ranking.": "Partidas com essas mudanças não contam para o ranking.",
+    "Ya se pueden olvidar las MT: en la ficha del Pokémon, «Olvidar MT». El ataque deja de salirle y la MT vuelve a tu Mochila. La mejora automática ahora deja ordenar cada estadística y cada ataque: en el menú de pausa, «Orden de las estadísticas» y «Orden de los ataques». Los administradores salen con el nombre en verde y tienen un menú en la pausa para subir niveles y adelantar minutos.": "Agora dá para esquecer MT: na ficha do Pokémon, «Esquecer MT». O golpe deixa de aparecer para ele e a MT volta para sua Mochila. A melhoria automática agora deixa ordenar cada atributo e cada golpe: no menu de pausa, «Ordem dos atributos» e «Ordem dos golpes». Os administradores aparecem com o nome em verde e têm um menu na pausa para subir de nível e avançar minutos."
+  }, 'pt-BR');
+  G.I18n.add({
+    "Olvidar MT": "遗忘招式学习器招式",
+    "{x} ha olvidado {x}. La MT vuelve a tu Mochila.": "{x} 忘记了 {x}。招式学习器已放回背包。",
+    "Orden de las estadísticas": "能力顺序",
+    "Con poca vida coge antes la Baya Zidra.": "体力低时会先选文柚果。",
+    "Orden de los ataques": "招式顺序",
+    "Para mejorar y para aprender, los de arriba primero. Se guarda para cualquier Pokémon.": "强化和学习时，越上越优先。对所有宝可梦生效。",
+    "Volver al orden automático": "恢复自动顺序",
+    "Empieza una partida para ordenar sus ataques.": "开始一局游戏后即可排列它的招式。",
+    "Administrador": "管理员",
+    "Nivel {x} · minuto {x}": "等级 {x} · 第 {x} 分钟",
+    "nivel": "级",
+    "niveles": "级",
+    "Ir al minuto": "前往分钟",
+    "Las partidas con estos cambios no cuentan para el ranking.": "使用这些功能的对局不计入排行榜。",
+    "Ya se pueden olvidar las MT: en la ficha del Pokémon, «Olvidar MT». El ataque deja de salirle y la MT vuelve a tu Mochila. La mejora automática ahora deja ordenar cada estadística y cada ataque: en el menú de pausa, «Orden de las estadísticas» y «Orden de los ataques». Los administradores salen con el nombre en verde y tienen un menú en la pausa para subir niveles y adelantar minutos.": "现在可以遗忘用招式学习器学会的招式了：在宝可梦资料页点「遗忘招式学习器招式」。该招式不再出现，招式学习器会放回背包。自动强化现在可以排列每项能力和每个招式：在暂停菜单中的「能力顺序」和「招式顺序」。管理员的名字显示为绿色，并在暂停菜单中可以提升等级和快进时间。"
+  }, 'zh-Hans');
+  G.I18n.add({
+    "Olvidar MT": "遺忘招式學習器招式",
+    "{x} ha olvidado {x}. La MT vuelve a tu Mochila.": "{x} 忘記了 {x}。招式學習器已放回背包。",
+    "Orden de las estadísticas": "能力順序",
+    "Con poca vida coge antes la Baya Zidra.": "體力低時會先選文柚果。",
+    "Orden de los ataques": "招式順序",
+    "Para mejorar y para aprender, los de arriba primero. Se guarda para cualquier Pokémon.": "強化和學習時，越上越優先。對所有寶可夢生效。",
+    "Volver al orden automático": "恢復自動順序",
+    "Empieza una partida para ordenar sus ataques.": "開始一局遊戲後即可排列牠的招式。",
+    "Administrador": "管理員",
+    "Nivel {x} · minuto {x}": "等級 {x} · 第 {x} 分鐘",
+    "nivel": "級",
+    "niveles": "級",
+    "Ir al minuto": "前往分鐘",
+    "Las partidas con estos cambios no cuentan para el ranking.": "使用這些功能的對局不計入排行榜。",
+    "Ya se pueden olvidar las MT: en la ficha del Pokémon, «Olvidar MT». El ataque deja de salirle y la MT vuelve a tu Mochila. La mejora automática ahora deja ordenar cada estadística y cada ataque: en el menú de pausa, «Orden de las estadísticas» y «Orden de los ataques». Los administradores salen con el nombre en verde y tienen un menú en la pausa para subir niveles y adelantar minutos.": "現在可以遺忘用招式學習器學會的招式了：在寶可夢資料頁點「遺忘招式學習器招式」。該招式不再出現，招式學習器會放回背包。自動強化現在可以排列每項能力和每個招式：在暫停選單中的「能力順序」和「招式順序」。管理員的名字顯示為綠色，並在暫停選單中可以提升等級和快轉時間。"
+  }, 'zh-Hant');
 })();

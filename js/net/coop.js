@@ -77,11 +77,11 @@ G.Coop = (() => {
       if (m.uid === me) { pl.x = x; pl.y = y; pl.uid = me; pl.coopHost = host; pl.tagColor = COLORS[i]; return; }
       const mon = G.DEX_BY[m.dex] || G.DEX_BY[25];
       const p = new G.Player(mon, {}, !!m.shiny);
-      p.remote = true; p.uid = m.uid; p.tag = m.name; p.tagColor = COLORS[i]; p.revLabel = 'Quédate a su lado';
+      p.remote = true; p.uid = m.uid; p.tag = m.name; p.tagColor = G.Admin && G.Admin.isUid(m.uid) ? G.Admin.GREEN : COLORS[i]; p.revLabel = 'Quédate a su lado';
       p.x = x; p.y = y;
       p.net = { x, y, ang: Math.PI / 2, walk: 0, hp: p.maxHp, maxHp: p.maxHp, dead: 0, mv: G.baseStartOf(mon.dex), ml: 1, mag: 78, aim: Math.PI / 2, rev: 0 };
       G.Sprites.preload([mon.dex], 8000, p.shiny);
-      mates.set(m.uid, { uid: m.uid, name: m.name, color: COLORS[i], pl: p, connected: true, q: [], flushT: 0, xpMul: 1 });
+      mates.set(m.uid, { uid: m.uid, name: m.name, color: G.Admin && G.Admin.isUid(m.uid) ? G.Admin.GREEN : COLORS[i], pl: p, connected: true, q: [], flushT: 0, xpMul: 1 });
     });
   }
 

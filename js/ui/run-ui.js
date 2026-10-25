@@ -42,15 +42,38 @@ G.RunUI = (() => {
    * Si está activada (menú de pausa), las cartas de nivel se eligen solas en
    * cuanto pasa la protección: primero lo que pongas arriba en la lista.
    *   Evoluciones: evolucionar un ataque (o la estadística que lo evoluciona).
-   *   Mejorar ataques: subir de nivel uno que ya tienes (antes el activo, luego el más bajo).
-   *   Ataques nuevos: mejor de tu lado (físico/especial) y que hagan daño.
-   *   Estadísticas: la que elijas; con poca vida, la Baya Zidra.
+   *   Mejorar ataques / Ataques nuevos: por el orden de ataques que pongas
+   *     (si no has puesto ninguno: el que usas, los de tu lado físico/especial y los que más pegan).
+   *   Estadísticas: por el orden de estadísticas que pongas; con poca vida, la Baya Zidra.
    * Las cartas de objeto y de vínculo se siguen eligiendo a mano.
    */
   const CATS = { evo: 'Evoluciones', up: 'Mejorar ataques', new: 'Ataques nuevos', stat: 'Estadísticas' };
-  const autoCfg = () => G.Settings.get('autoPick') || G.Settings.DEF.autoPick;
+  const STAT_ORDER = ['atk', 'cd', 'hp', 'def', 'spd', 'rgn', 'mag', 'xp'];
+  function autoCfg() {
+    const c = Object.assign({}, G.Settings.DEF.autoPick, G.Settings.get('autoPick') || {});
+    // Orden de estadísticas (antes sólo había una preferida, `stat`: va la primera).
+    if (!Array.isArray(c.stats) || c.stats.length !== STAT_ORDER.length || STAT_ORDER.some(x => !c.stats.includes(x))) {
+      c.stats = [...new Set([c.stat, ...STAT_ORDER].filter(x => STAT_ORDER.includes(x)))];
+    }
+    if (!Array.isArray(c.moves)) c.moves = [];
+    return c;
+  }
   const autoOn = () => !!autoCfg().on;
   let autoT = 0;
+
+  /** Lo que vale un ataque sin orden puesto (el activo, de tu lado, que haga daño). */
+  function moveGuess(id, pl) {
+    const d = G.Moves.BY_ID[id];
+    if (!d) return 0;
+    const act = pl && pl.activeMove && pl.activeMove();
+    return (act && act.id === id ? 60 : 0) + (d.kind === 'buff' ? 0 : 50) + (pl && d.cat && G.Stats.fit(pl.mon, d.cat) >= 0.999 ? 30 : 0)
+         + (d.dmg ? Math.min(19, d.dmg / Math.max(0.2, d.cd) / 10) : 0);
+  }
+  /** Puntos de un ataque: los que has ordenado van por su puesto, por encima del resto. */
+  function moveScore(id, cfg, pl) {
+    const i = cfg.moves.indexOf(id);
+    return i >= 0 ? 1000 - i : moveGuess(id, pl);
+  }
 
   function bestCard(list) {
     const cfg = autoCfg(), pl = G.Game.player;
@@ -61,20 +84,13 @@ G.RunUI = (() => {
     };
     const score = c => {
       const id = c.key.split(':')[1];
-      if (c.type === 'up') {
-        const m = pl && pl.moves.find(x => x.id === id);
-        const act = pl && pl.activeMove && pl.activeMove();
-        return (act && act.id === id ? 100 : 0) + (m ? 20 - m.lvl : 0);
-      }
-      if (c.type === 'new') {
-        const d = G.Moves.BY_ID[id];
-        if (!d) return 0;
-        return (d.kind === 'buff' ? 0 : 50) + (pl && d.cat && G.Stats.fit(pl.mon, d.cat) >= 0.999 ? 30 : 0) + (d.dmg ? Math.min(19, d.dmg / Math.max(0.2, d.cd) / 10) : 0);
-      }
+      if (c.type === 'up' || c.type === 'new' || c.type === 'evo') return moveScore(id, cfg, pl);
       if (c.type === 'stat') {
-        if (c.color === '#ffd23f') return 100;
+        if (c.color === '#ffd23f') return 2000;
         const low = pl && pl.hp < pl.maxHp * 0.35;
-        return id === 'heal' ? (low ? 200 : -50) : id === cfg.stat ? 100 : id === 'atk' ? 10 : 0;
+        if (id === 'heal') return low ? 3000 : -50;
+        const i = cfg.stats.indexOf(id);
+        return i < 0 ? 0 : 100 - i;
       }
       return 0;
     };
@@ -99,27 +115,91 @@ G.RunUI = (() => {
     autoT = setTimeout(tryPick, GUARD * 1000 + 40);
   }
 
+  /** Ataques que puede aprender el Pokémon de esta partida, por el orden de la mejora automática. */
+  function autoMoves(cfg) {
+    const pl = G.Game.player;
+    if (!pl) return [];
+    const ids = [...new Set(pl.moves.map(m => m.id).concat(G.Moves.poolFor(pl.mon)))].filter(id => G.Moves.BY_ID[id]);
+    return ids.sort((a, b) => moveScore(b, cfg, pl) - moveScore(a, cfg, pl));
+  }
+
   /** Controles de la mejora automática en el menú de pausa. */
+  const autoOpen = { stats: false, moves: false };
   function renderAuto() {
     const box = $('pause-auto'), cfg = autoCfg();
     const save = v => { G.Settings.set('autoPick', Object.assign({}, cfg, v)); renderAuto(); };
-    const stats = G.LevelUp.STATS.filter(s => s.id !== 'heal');
+    const STATS = Object.fromEntries(G.LevelUp.STATS.map(s => [s.id, s]));
+    const arrows = (grp, i, n) => `<span>
+          <button type="button" class="btn small ghost" data-g="${grp}" data-up="${i}" ${i === 0 ? 'disabled' : ''}>▲</button>
+          <button type="button" class="btn small ghost" data-g="${grp}" data-dn="${i}" ${i === n - 1 ? 'disabled' : ''}>▼</button></span>`;
+    const moves = autoMoves(cfg);
     box.innerHTML = `
       <div class="auto-row"><b>${G.T('Mejora automática')}</b>
         <button type="button" class="btn small ${cfg.on ? 'gold' : 'ghost'}" id="auto-on">${cfg.on ? G.T('Activada') : G.T('Desactivada')}</button></div>
       <div class="${cfg.on ? '' : 'hidden'}">
         <p class="sub" style="margin:4px 0 0;font-size:12px">${G.T('Elige sola las cartas al subir de nivel. Prioridad (lo de arriba primero):')}</p>
-        <ol>${cfg.order.map((k, i) => `<li><span>${G.T(CATS[k])}</span><span>
-          <button type="button" class="btn small ghost" data-up="${i}" ${i === 0 ? 'disabled' : ''}>▲</button>
-          <button type="button" class="btn small ghost" data-dn="${i}" ${i === cfg.order.length - 1 ? 'disabled' : ''}>▼</button></span></li>`).join('')}</ol>
-        <div class="auto-row"><span>${G.T('Estadística preferida')}</span>
-          <select id="auto-stat">${stats.map(s => `<option value="${s.id}" ${s.id === cfg.stat ? 'selected' : ''}>${G.T(s.title)}</option>`).join('')}</select></div>
+        <ol>${cfg.order.map((k, i) => `<li><span>${G.T(CATS[k])}</span>${arrows('cat', i, cfg.order.length)}</li>`).join('')}</ol>
+        <details id="auto-d-stats" ${autoOpen.stats ? 'open' : ''}><summary>${G.T('Orden de las estadísticas')}</summary>
+          <ol>${cfg.stats.map((id, i) => `<li><span>${G.Icons.html(STATS[id].icon, 14)} ${G.T(STATS[id].title)}</span>${arrows('stat', i, cfg.stats.length)}</li>`).join('')}</ol>
+          <p class="sub" style="margin:0;font-size:11px">${G.T('Con poca vida coge antes la Baya Zidra.')}</p>
+        </details>
+        <details id="auto-d-moves" ${autoOpen.moves ? 'open' : ''}><summary>${G.T('Orden de los ataques')}</summary>
+          ${moves.length ? `<p class="sub" style="margin:4px 0 0;font-size:11px">${G.T('Para mejorar y para aprender, los de arriba primero. Se guarda para cualquier Pokémon.')}</p>
+          <ol class="auto-moves">${moves.map((id, i) => `<li><span>${G.Icons.html('move:' + id, 14)} ${G.T(G.Moves.BY_ID[id].name, 'move')}</span>${arrows('move', i, moves.length)}</li>`).join('')}</ol>
+          ${cfg.moves.length ? `<button type="button" class="btn small ghost" id="auto-mreset">${G.T('Volver al orden automático')}</button>` : ''}`
+          : `<p class="sub" style="margin:4px 0;font-size:12px">${G.T('Empieza una partida para ordenar sus ataques.')}</p>`}
+        </details>
       </div>`;
     box.querySelector('#auto-on').onclick = () => save({ on: !cfg.on });
-    box.querySelector('#auto-stat').onchange = e => save({ stat: e.target.value });
-    const move = (i, j) => { const o = cfg.order.slice(); [o[i], o[j]] = [o[j], o[i]]; save({ order: o }); };
-    box.querySelectorAll('[data-up]').forEach(b => b.onclick = () => move(+b.dataset.up, +b.dataset.up - 1));
-    box.querySelectorAll('[data-dn]').forEach(b => b.onclick = () => move(+b.dataset.dn, +b.dataset.dn + 1));
+    box.querySelector('#auto-d-stats').ontoggle = e => { autoOpen.stats = e.target.open; };
+    box.querySelector('#auto-d-moves').ontoggle = e => { autoOpen.moves = e.target.open; };
+    const reset = box.querySelector('#auto-mreset');
+    if (reset) reset.onclick = () => save({ moves: [] });
+    const swap = (grp, i, j) => {
+      if (grp === 'cat') { const o = cfg.order.slice(); [o[i], o[j]] = [o[j], o[i]]; save({ order: o }); }
+      else if (grp === 'stat') { const o = cfg.stats.slice(); [o[i], o[j]] = [o[j], o[i]]; save({ stats: o }); }
+      else {
+        // Los de esta partida, en su orden nuevo, delante; los de otros Pokémon, detrás como estaban.
+        const o = moves.slice(); [o[i], o[j]] = [o[j], o[i]];
+        save({ moves: o.concat(cfg.moves.filter(id => !o.includes(id))).slice(0, 300) });
+      }
+    };
+    box.querySelectorAll('[data-up]').forEach(b => b.onclick = () => swap(b.dataset.g, +b.dataset.up, +b.dataset.up - 1));
+    box.querySelectorAll('[data-dn]').forEach(b => b.onclick = () => swap(b.dataset.g, +b.dataset.dn, +b.dataset.dn + 1));
+  }
+
+  /* ---- Menú de administrador (pausa) ----
+   * Sólo para las cuentas de administrador (G.Admin.isMe) y en partidas de uno:
+   * subir niveles y adelantar minutos para probar. Esas partidas no cuentan para
+   * el ranking (el juego las marca como de prueba).
+   */
+  function renderAdmin() {
+    const box = $('pause-admin');
+    const on = G.Admin.isMe() && !G.Coop.active && !!G.Game.player;
+    box.classList.toggle('hidden', !on);
+    if (!on) { box.innerHTML = ''; return; }
+    const t = Math.floor(G.Game.st.time || 0);
+    box.innerHTML = `
+      <div class="auto-row"><b class="admin-name">${G.T('Administrador')}</b><small class="sub">${G.I18n.f('Nivel {x} · minuto {x}', G.Game.player.level, G.U.mmss(t))}</small></div>
+      <div class="admin-btns">
+        <button type="button" class="btn small" data-lv="1">+1 ${G.T('nivel')}</button>
+        <button type="button" class="btn small" data-lv="5">+5 ${G.T('niveles')}</button>
+        <button type="button" class="btn small" data-lv="10">+10 ${G.T('niveles')}</button>
+      </div>
+      <div class="admin-btns">
+        <button type="button" class="btn small" data-min="1">+1 min</button>
+        <button type="button" class="btn small" data-min="5">+5 min</button>
+        <button type="button" class="btn small" data-min="10">+10 min</button>
+        <span class="admin-go"><input id="admin-min" type="number" min="0" max="120" step="1" value="${Math.floor(t / 60)}"><button type="button" class="btn small gold" id="admin-go">${G.T('Ir al minuto')}</button></span>
+      </div>
+      <p class="sub" style="margin:4px 0 0;font-size:11px">${G.T('Las partidas con estos cambios no cuentan para el ranking.')}</p>`;
+    box.querySelectorAll('[data-lv]').forEach(b => b.onclick = () => {
+      for (let i = 0; i < +b.dataset.lv; i++) G.Game.debugLevelUp();
+      G.Audio.sfx('select'); renderAdmin();
+    });
+    const go = sec => { G.Game.debugTime(Math.max(0, Math.min(7200, sec))); G.Audio.sfx('select'); renderAdmin(); };
+    box.querySelectorAll('[data-min]').forEach(b => b.onclick = () => go((G.Game.st.time || 0) + 60 * +b.dataset.min));
+    box.querySelector('#admin-go').onclick = () => go(60 * (+box.querySelector('#admin-min').value || 0));
   }
 
   /**
@@ -396,6 +476,7 @@ G.RunUI = (() => {
   function showPause(coop = false) {
     $('pause-sum').innerHTML = pauseSummary();
     renderAuto();
+    renderAdmin();
     G.UI.soundControls($('pause-sound'));
     $('pause-coop').classList.toggle('hidden', !coop);
     $('btn-quit').textContent = coop ? 'Salir de la partida' : 'Abandonar run';

@@ -1021,3 +1021,14 @@ html:lang(zh) .btn, html:lang(zh) .chip { letter-spacing: 0; }
 .pause-auto li { display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 2px 0; }
 .pause-auto li .btn { padding: 0 8px; min-width: 0; }
 .pause-auto select { max-width: 200px; }
+
+/* Nombres de los administradores, en verde (25-10-2026) */
+.admin-name, a.plink.admin-name, b.gold .admin-name, h2 .admin-name { color: #4dff7a !important; text-shadow: 0 0 6px rgba(77,255,122,.45); }
+
+.pause-auto details { margin-top: 6px; }
+.pause-auto summary { cursor: pointer; font-weight: 700; padding: 3px 0; }
+.pause-auto ol.auto-moves { max-height: 240px; overflow-y: auto; padding-right: 4px; }
+.pause-admin { border-color: #4dff7a; }
+.admin-btns { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; align-items: center; }
+.admin-go { display: inline-flex; gap: 4px; align-items: center; }
+.admin-go input { width: 64px; }

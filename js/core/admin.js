@@ -19,6 +19,20 @@ G.Admin = (() => {
   const PASS_HASH = 'ed47f635476b2b792c76724c3fac6897a681b18c784353d557325080ee0b4ecc';
 
   const isAdminName = name => NAMES.includes(String(name || '').trim().toLowerCase());
+  // Administradores (25-10-2026): su nombre sale en verde en el ranking, amigos, salas,
+  // perfiles y cooperativo, y tienen el menú de administrador en la partida.
+  const ADMIN_UIDS = ['o3u87KVZmgecIpACkaWW0HFPlhn1', 'iwfb9nOrIES0lq8ypnW1FmmPtGK2'];   // admin, last
+  const GREEN = '#4dff7a';
+  const isUid = uid => !!uid && ADMIN_UIDS.includes(uid);
+  /** ¿La cuenta con la que juegas ahora es de administrador? */
+  function isMe() {
+    if (!G.DB || !G.DB.loggedIn || G.DB.guest) return false;
+    // En la nube, por el UID (no se puede falsificar). Sin Firebase (modo local), la
+    // cuenta "admin", que sólo se crea con su contraseña.
+    return isUid(G.Social && G.Social.uid) || (G.DB.mode === 'local' && isAdminName(G.DB.user));
+  }
+  /** Nombre para HTML (ya escapado): en verde si es de un administrador. */
+  const nameHtml = (escName, uid) => isUid(uid) ? `<span class="admin-name">${escName}</span>` : escName;
 
   async function checkPass(pass) {
     if (!(window.crypto && crypto.subtle)) return false;
@@ -59,5 +73,5 @@ G.Admin = (() => {
     return s;
   }
 
-  return { NAMES, UIDS, TITLES, isAdminName, checkPass, unlockAll };
+  return { NAMES, UIDS, TITLES, ADMIN_UIDS, GREEN, isAdminName, isUid, isMe, nameHtml, checkPass, unlockAll };
 })();

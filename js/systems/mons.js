@@ -120,9 +120,21 @@ G.Mons = (() => {
     if (!s || !canLearn(dex, id) || !G.Shop.takeTm(id)) return false;
     s.ptm = s.ptm || {};
     s.ptm[dex] = taught(dex).concat([id]);
+    (s.ptmt = s.ptmt || {})[dex] = Object.assign({}, s.ptmt[dex], { [id]: Date.now() });
+    return true;
+  }
+  /** Olvida un movimiento aprendido con MT y la MT vuelve a la Mochila. → true si lo ha olvidado. */
+  function forget(dex, id) {
+    const s = save();
+    if (!s || !taught(dex).includes(id)) return false;
+    s.ptm[dex] = taught(dex).filter(x => x !== id);
+    if (!s.ptm[dex].length) delete s.ptm[dex];
+    (s.ptmf = s.ptmf || {})[dex] = Object.assign({}, s.ptmf[dex], { [id]: Date.now() });
+    s.tms = s.tms || {};
+    s.tms[id] = Math.min(999, (s.tms[id] || 0) + 1);
     return true;
   }
 
   return { name, natureOf, setNature, rolledNature, monFor, abilityOf, abilityChoices, setAbility, abilityName,
-           slots, taught, learnable, canLearn, teach, natural };
+           slots, taught, learnable, canLearn, teach, forget, natural };
 })();
