@@ -59,6 +59,11 @@ G.Raid = (() => {
     const D = DIFF[diff], dex = boss(), mon = G.DEX_BY[dex], last = G.Enemies.BOSS_SLOTS[G.Enemies.BOSS_SLOTS.length - 1];
     const def = { at: AT, dex, name: mon.name, hp: Math.round(last.hp * 1.35 * D.hp), spd: 55, dmg: Math.round(last.dmg * 1.2 * D.dmg),
                   xp: last.xp, behavior: 'chase', shotDmg: Math.round(last.dmg * 0.55 * D.dmg), shotCd: 1.1, range: 260 };
+    // Más jugadores, más duro (25-10-2026): además de lo que ya sube cualquier jefe en grupo,
+    // +45 % de vida y +12 % de daño por cada jugador de más.
+    const n = G.Coop.active ? G.Coop.players().length : 1;
+    def.hp = Math.round(def.hp * (1 + 0.45 * (n - 1)));
+    def.dmg = Math.round(def.dmg * (1 + 0.12 * (n - 1))); def.shotDmg = Math.round(def.shotDmg * (1 + 0.12 * (n - 1)));
     const e = G.Spawner.spawnBossDef(def, AT);
     if (!e) return;
     e.legend = true; e.raid = true; e.ai = null;

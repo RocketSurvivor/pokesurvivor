@@ -3953,4 +3953,29 @@
   G.I18n.add({
     "Sigue a Rocket Petru en YouTube": "在YouTube上追蹤Rocket Petru"
   }, 'zh-Hant');
+  G.I18n.add({
+    "Cuantos más seáis, más vida y daño tiene.": "Plus vous êtes nombreux, plus il a de PV et de puissance.",
+    "Los ataques exclusivos de legendario también evolucionan: al nivel máximo y con la mejora de su condición cogida en la partida sale la carta dorada (Pulso Primigenio +). Ganan algo menos que un ataque normal al evolucionar, porque ya son fuertes.": "Les capacités exclusives des légendaires évoluent aussi : au niveau maximum, avec l'amélioration de leur condition prise pendant la partie, la carte dorée apparaît (Onde Originelle +). Elles gagnent un peu moins qu'une capacité normale, car elles sont déjà fortes.",
+    "Incursiones: cuantos más jugadores, más duras. El legendario tiene un 45 % más de vida y un 12 % más de daño por cada jugador de más.": "Raids : plus il y a de joueurs, plus c'est dur. Le légendaire a 45 % de PV et 12 % de dégâts en plus par joueur supplémentaire."
+  }, 'fr');
+  G.I18n.add({
+    "Cuantos más seáis, más vida y daño tiene.": "Più siete, più PS e danni ha.",
+    "Los ataques exclusivos de legendario también evolucionan: al nivel máximo y con la mejora de su condición cogida en la partida sale la carta dorada (Pulso Primigenio +). Ganan algo menos que un ataque normal al evolucionar, porque ya son fuertes.": "Anche le mosse esclusive dei leggendari si evolvono: al livello massimo, con il potenziamento della loro condizione preso in partita, appare la carta dorata (Primopulsar +). Guadagnano un po' meno di una mossa normale, perché sono già forti.",
+    "Incursiones: cuantos más jugadores, más duras. El legendario tiene un 45 % más de vida y un 12 % más de daño por cada jugador de más.": "Raid: più giocatori, più difficile. Il leggendario ha il 45% di PS e il 12% di danni in più per ogni giocatore in più."
+  }, 'it');
+  G.I18n.add({
+    "Cuantos más seáis, más vida y daño tiene.": "Quanto mais vocês forem, mais HP e dano ele tem.",
+    "Los ataques exclusivos de legendario también evolucionan: al nivel máximo y con la mejora de su condición cogida en la partida sale la carta dorada (Pulso Primigenio +). Ganan algo menos que un ataque normal al evolucionar, porque ya son fuertes.": "Os golpes exclusivos dos lendários também evoluem: no nível máximo e com a melhoria da sua condição pega na partida, aparece a carta dourada (Origin Pulse +). Ganham um pouco menos que um golpe normal ao evoluir, porque já são fortes.",
+    "Incursiones: cuantos más jugadores, más duras. El legendario tiene un 45 % más de vida y un 12 % más de daño por cada jugador de más.": "Reides: quanto mais jogadores, mais difícil. O lendário tem 45% mais HP e 12% mais dano por cada jogador a mais."
+  }, 'pt-BR');
+  G.I18n.add({
+    "Cuantos más seáis, más vida y daño tiene.": "人数越多，它的体力和伤害就越高。",
+    "Los ataques exclusivos de legendario también evolucionan: al nivel máximo y con la mejora de su condición cogida en la partida sale la carta dorada (Pulso Primigenio +). Ganan algo menos que un ataque normal al evolucionar, porque ya son fuertes.": "传说宝可梦的专属招式也能进化了：达到最高等级并在本局中选过对应条件的强化后，会出现金色卡牌（根源波动+）。因为本身已经很强，进化时的提升比普通招式少一些。",
+    "Incursiones: cuantos más jugadores, más duras. El legendario tiene un 45 % más de vida y un 12 % más de daño por cada jugador de más.": "团体战：人数越多越难。每多一名玩家，传说宝可梦的体力增加45%，伤害增加12%。"
+  }, 'zh-Hans');
+  G.I18n.add({
+    "Cuantos más seáis, más vida y daño tiene.": "人數越多，牠的體力和傷害就越高。",
+    "Los ataques exclusivos de legendario también evolucionan: al nivel máximo y con la mejora de su condición cogida en la partida sale la carta dorada (Pulso Primigenio +). Ganan algo menos que un ataque normal al evolucionar, porque ya son fuertes.": "傳說寶可夢的專屬招式也能進化了：達到最高等級並在本局中選過對應條件的強化後，會出現金色卡牌（根源波動+）。因為本身已經很強，進化時的提升比普通招式少一些。",
+    "Incursiones: cuantos más jugadores, más duras. El legendario tiene un 45 % más de vida y un 12 % más de daño por cada jugador de más.": "團體戰：人數越多越難。每多一名玩家，傳說寶可夢的體力增加45%，傷害增加12%。"
+  }, 'zh-Hant');
 })();

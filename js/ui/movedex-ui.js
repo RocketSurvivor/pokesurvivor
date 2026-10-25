@@ -97,7 +97,7 @@ G.MovedexUI = (() => {
     const grid = $('mdx-grid');
     grid.innerHTML = '';
     for (const m of list) {
-      const evo = G.Moves.EVO[m.id];
+      const evo = m.sig ? m.evo : G.Moves.EVO[m.id];
       const ef = effects(m);
       const cat = m.cat ? G.Stats.NAME[m.cat] : '';
       const rows = [];

@@ -281,6 +281,51 @@
   const startFor = M.startFor;
   M.startFor = mon => { const s = sigFor(mon); return s ? s.id : startFor(mon); };
 
+  /*
+   * Evolución de los exclusivos (25-10-2026): como los demás, al nivel máximo y con
+   * la mejora de su condición cogida alguna vez en la partida, sale la carta dorada
+   * (Pulso Primigenio +). La condición sale de su forma de atacar (la de cualquier
+   * exclusivo nuevo también) y ganan algo menos que un ataque normal al evolucionar
+   * (ya son fuertes): el daño extra se queda en un 60 %.
+   * No cuentan para el logro de evolucionar todos los movimientos (sólo los de G.Moves.EVO).
+   */
+  const SIG_NEED = { dash: 'spd', melee: 'atk', beam: 'atk', charge: 'cd', cone: 'atk', nova: 'cd', homing: 'cd', meteor: 'cd',
+                     quake: 'atk', stun: 'def', shove: 'def', vortex: 'mag', aura: 'rgn', spin: 'hp', projectile: 'atk', bounce: 'cd' };
+  const sigEvoMods = kind => {
+    const e = M.EVO_MODS[kind];
+    if (!e) return null;
+    const m = Object.assign({}, e.m);
+    if (m.dmg) m.dmg = +(1 + (m.dmg - 1) * 0.6).toFixed(2);
+    // El texto, ya traducido, con el multiplicador de daño cambiado (×1,8 → ×1,48).
+    const num = (G.I18n && G.I18n.locale ? m.dmg.toLocaleString(G.I18n.locale) : String(m.dmg).replace('.', ','));
+    return { t: (G.T ? G.T(e.t) : e.t).replace(/×\s?1[,.]\d+/, '×' + num), m };
+  };
+  for (const m of SIG) m.evo = SIG_NEED[m.kind] || 'atk';
+
+  const evoInfo = M.evoInfo, evolve = M.evolve;
+  M.evoInfo = (m, statsTaken) => {
+    if (!m || !m.def || !m.def.sig) return evoInfo(m, statsTaken);
+    const em = sigEvoMods(m.kind), needs = m.def.evo;
+    if (!em || m.evolved || m.lvl < m.def.maxLvl) return null;
+    return { name: m.def.name + ' +', needs, needName: M.NEED_NAME[needs], text: em.t, ready: !!(statsTaken && statsTaken[needs]) };
+  };
+  M.evolve = m => {
+    if (!m || !m.def || !m.def.sig) return evolve(m);
+    const em = sigEvoMods(m.kind);
+    if (!em || m.evolved) return false;
+    for (const k in em.m) {
+      const v = em.m[k];
+      if (['count', 'pierce', 'stacks', 'bounce'].includes(k)) m[k] = (m[k] || 0) + v;
+      else if (m[k] != null) m[k] *= v;
+      else if (k === 'arc') m[k] = v;
+    }
+    m.baseName = m.name;
+    m.name = m.def.name + ' +';
+    m.evolved = true;
+    return true;
+  };
+  M.sigEvoText = kind => (sigEvoMods(kind) || {}).t || '';
+
   M.SIG = SIG;
   M.sigFor = sigFor;
 })();

@@ -1101,5 +1101,5 @@
   const NORMAL_TM = RAW.filter(m => m.type === 'normal' && !ANYONE.has(m.id)).map(m => m.id);
 
   G.Moves = { ALL: RAW, BY_ID, POOL, poolFor, instance, levelUp, nextUpText, startFor,
-              EVO, NEED_NAME, evoInfo, evolve, ANYONE, NORMAL_TM };
+              EVO, EVO_MODS, NEED_NAME, evoInfo, evolve, ANYONE, NORMAL_TM };
 })();

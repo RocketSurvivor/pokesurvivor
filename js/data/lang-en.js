@@ -1733,5 +1733,8 @@ G.I18n.add({
   "El nivel y la incursión los controla el anfitrión.": "The level and the raid are controlled by the host.",
   "En grupo, el aviso «Pausa: … está eligiendo» se quedaba en pantalla para siempre aunque ya se hubiera elegido.": "In co-op, the “Paused: … is choosing” notice stayed on screen forever even after the choice was made.",
   "Revivir más visible: si llevas uno, un halo dorado late a tus pies, su icono flota encima de tu Pokémon y sale «REVIVIR» junto a tus efectos.": "Revive is easier to see: if you carry one, a golden halo pulses at your feet, its icon floats above your Pokémon and «REVIVE» shows next to your effects.",
-  "Sigue a Rocket Petru en YouTube": "Follow Rocket Petru on YouTube"
+  "Sigue a Rocket Petru en YouTube": "Follow Rocket Petru on YouTube",
+  "Cuantos más seáis, más vida y daño tiene.": "The more of you there are, the more HP and damage it has.",
+  "Los ataques exclusivos de legendario también evolucionan: al nivel máximo y con la mejora de su condición cogida en la partida sale la carta dorada (Pulso Primigenio +). Ganan algo menos que un ataque normal al evolucionar, porque ya son fuertes.": "Legendary signature moves can evolve too: at max level, with their condition upgrade taken during the run, the golden card appears (Origin Pulse +). They gain a bit less than a normal move when evolving, since they're already strong.",
+  "Incursiones: cuantos más jugadores, más duras. El legendario tiene un 45 % más de vida y un 12 % más de daño por cada jugador de más.": "Raids: the more players, the harder. The legendary has 45% more HP and 12% more damage for each extra player."
 });

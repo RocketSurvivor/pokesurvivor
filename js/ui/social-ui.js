@@ -152,7 +152,7 @@
       const prize = d => G.Icons.html('ticket10', 12) + ' ' + D[d].t10 + ' ×10 · <span class="coin"></span> ' + D[d].coins + (D[d].ts ? ' · ' + G.Icons.html('shiny', 12) + ' 1' : '');
       box.innerHTML = `<div class="raid-row"><canvas width="96" height="80"></canvas><div class="grow">
           <b class="gold">${G.I18n.f('Incursión de la semana: {x} Dinamax', G.T(mon.name))}</b>
-          <small>${G.T('Un legendario gigante en el minuto 6, con 4 minutos para vencerlo. La partida acaba con la incursión.')}</small>
+          <small>${G.T('Un legendario gigante en el minuto 6, con 4 minutos para vencerlo. La partida acaba con la incursión.')} ${G.T('Cuantos más seáis, más vida y daño tiene.')}</small>
           ${room.isHost ? `<div class="chips raid-chips"><button class="chip ${raidPick ? '' : 'on'}" data-r="0">${G.T('Partida normal')}</button>${[1, 2, 3].map(d =>
             `<button class="chip ${raidPick === d ? 'on' : ''}" data-r="${d}">${D[d].stars} ${G.T(D[d].name)}</button>`).join('')}</div>
             ${raidPick ? `<small>${G.T('Premio para cada uno')}: ${prize(raidPick)}</small>` : ''}`
