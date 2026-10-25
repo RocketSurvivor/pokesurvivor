@@ -3148,4 +3148,19 @@
     "Segundo golpe": "追加攻擊",
     "Ataques exclusivos de legendario: 27 legendarios (Mewtwo, Lugia, Ho-Oh, Kyogre, Groudon, Rayquaza, Dialga, Palkia, Giratina, Reshiram, Zekrom, Zacian, Eternatus, Koraidon…) empiezan con su ataque propio, como Pulso Primigenio, Distorsión, Corte Vacío o Golpe Umbrío. Nadie más puede aprenderlo, tiene efectos propios (detener el tiempo, segundo golpe, curarte…) y con su forma especial (Primigenio, Origen, mega…) pega más. Como jefes también lo usan, con aviso y su nombre en pantalla. En la Movedex salen marcados como «Exclusivo».": "傳說寶可夢的專屬招式：27隻傳說寶可夢（超夢、洛奇亞、鳳王、蓋歐卡、固拉多、烈空坐、帝牙盧卡、帕路奇亞、騎拉帝納、萊希拉姆、捷克羅姆、蒼響、無極汰那、故勒頓……）開局就帶著自己的招式，例如根源波動、時光咆哮、亞空裂斬或暗影潛襲。其他寶可夢都學不會，牠們有獨特的效果（停止時間、追加攻擊、治療你……），以特殊形態（原始、起源、超級……）使用時威力更大。作為首領時牠們也會使用，並會提前警告並在螢幕上顯示招式名。在招式圖鑑中標記為「專屬」。"
   }, 'zh-Hant');
+  G.I18n.add({
+    "Los Pokémon muy grandes del escaparate del gacha (como Zygarde o Eternatus Dinamax Infinito) ya no salen cortados: se encogen lo justo para caber.": "Les très grands Pokémon de la vitrine du gacha (comme Zygarde ou Éthernatos Infinimax) ne sont plus coupés : ils rétrécissent juste assez pour rentrer."
+  }, 'fr');
+  G.I18n.add({
+    "Los Pokémon muy grandes del escaparate del gacha (como Zygarde o Eternatus Dinamax Infinito) ya no salen cortados: se encogen lo justo para caber.": "I Pokémon molto grandi nella vetrina del gacha (come Zygarde o Eternatus Dynamax Infinito) non vengono più tagliati: si rimpiccioliscono quanto basta per entrare."
+  }, 'it');
+  G.I18n.add({
+    "Los Pokémon muy grandes del escaparate del gacha (como Zygarde o Eternatus Dinamax Infinito) ya no salen cortados: se encogen lo justo para caber.": "Os Pokémon muito grandes da vitrine do gacha (como Zygarde ou Eternatus Eternamax) não aparecem mais cortados: diminuem só o suficiente para caber."
+  }, 'pt-BR');
+  G.I18n.add({
+    "Los Pokémon muy grandes del escaparate del gacha (como Zygarde o Eternatus Dinamax Infinito) ya no salen cortados: se encogen lo justo para caber.": "扭蛋展示中体型很大的宝可梦（如基格尔德、无极巨化无极汰那）不再被截断：会稍微缩小以完整显示。"
+  }, 'zh-Hans');
+  G.I18n.add({
+    "Los Pokémon muy grandes del escaparate del gacha (como Zygarde o Eternatus Dinamax Infinito) ya no salen cortados: se encogen lo justo para caber.": "扭蛋展示中體型很大的寶可夢（如基格爾德、無極巨化無極汰那）不再被截斷：會稍微縮小以完整顯示。"
+  }, 'zh-Hant');
 })();

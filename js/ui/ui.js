@@ -228,6 +228,17 @@ G.UI = (() => {
     return s;
   }
 
+  function fitScale(dex, k, cv) {
+    let up = 0, side = 0;
+    for (const an of ['Idle', 'Attack', 'Shoot', 'Charge']) {
+      const m = G.Sprites.animMeta(dex, an);
+      if (m) { up = Math.max(up, m.ay); side = Math.max(side, m.ax, m.w - m.ax); }
+    }
+    if (!up) return k;
+    const room = Math.min(cv.height * 0.95 / up, cv.width * 0.6 / side);
+    return room >= k ? k : Math.max(1, Math.floor(room * 2) / 2);
+  }
+
   function tick(dt) {
     for (const s of live) {
       if (!s.cv.isConnected) { live.delete(s); if (io) io.unobserve(s.cv); continue; }
@@ -254,6 +265,9 @@ G.UI = (() => {
       const ay = m ? m.ay : 24;
       let k = s.opts.scale || 2;
       if (s.opts.hero) k = Math.max(1, Math.min(k, Math.floor(cv.height * 0.8 / ay)));
+      // opts.fit: los muy grandes (Zygarde Completo, Eternatus Dinamax Infinito…) se encogen
+      // lo justo (de medio en medio) para que ninguna animación se salga del recuadro.
+      if (s.opts.fit) k = s.fitK || (s.fitK = fitScale(s.dex, k, cv));
       s.a.scale = k / G.Sprites.PX;
       // Si no cabe de pie, se centra el cuerpo en el recuadro.
       const big = ay * k > cv.height * 0.8;

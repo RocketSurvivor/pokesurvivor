@@ -56,7 +56,7 @@ G.GachaUI = (() => {
     const feat = $('gacha-feat');
     feat.innerHTML = '';
     for (const dex of G.Gacha.featured(gen)) {
-      feat.appendChild(G.UI.spriteCanvas(dex, 170, 190, { lively: true, scale: 2, dir: 1 }));
+      feat.appendChild(G.UI.spriteCanvas(dex, 170, 190, { lively: true, scale: 2, dir: 1, fit: true }));
     }
 
     const pity = (s.pity && s.pity[gen]) || 0;
@@ -100,7 +100,7 @@ G.GachaUI = (() => {
     $('gacha-owned').innerHTML = `${G.Icons.html('shiny', 12)} ` + G.I18n.f('Tienes {x} de {x} shiny', d.have, d.total);
     const feat = $('gacha-feat');
     feat.innerHTML = '';
-    for (const dex of G.Gacha.featured(gen)) feat.appendChild(G.UI.spriteCanvas(dex, 170, 190, { lively: true, scale: 2, dir: 1, shiny: true }));
+    for (const dex of G.Gacha.featured(gen)) feat.appendChild(G.UI.spriteCanvas(dex, 170, 190, { lively: true, scale: 2, dir: 1, shiny: true, fit: true }));
     const pity = (s.pity && s.pity[gen]) || 0;
     $('gacha-pity').textContent = G.I18n.f('Tiradas sin legendaria en el gacha shiny: {x} / {x}', pity, G.Gacha.PITY_5);
     $('gacha-rates').innerHTML = '<h3>Probabilidades</h3>' + G.Gacha.RATES.slice().reverse().map(([r, w]) => `
