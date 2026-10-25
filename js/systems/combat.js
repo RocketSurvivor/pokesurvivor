@@ -47,8 +47,8 @@ G.Combat = (() => {
 
   function run(pl, m) {
     // Exclusivos de legendario (data/signature.js): con su forma especial (Primigenio,
-    // Origen, mega…) pegan un 25 % más y sueltan 2 más; algunos dan un segundo golpe a la vez.
-    if (m.sig && pl.mon && (pl.mon.mega || pl.mon.form)) m = Object.assign({}, m, { root: m.root || m, dmg: m.dmg * 1.25, count: m.count != null ? m.count + 2 : m.count });
+    // Origen, mega…) pegan un 15 % más y sueltan 1 más; algunos dan un segundo golpe a la vez.
+    if (m.sig && pl.mon && (pl.mon.mega || pl.mon.form)) m = Object.assign({}, m, { root: m.root || m, dmg: m.dmg * 1.15, count: m.count != null ? m.count + 1 : m.count });
     switch (m.kind) {
       case 'projectile': fireProjectiles(pl, m); break;
       case 'melee':      melee(pl, m); break;
@@ -531,7 +531,7 @@ G.Combat = (() => {
       if (!f.ghost) {
         for (const e of G.EnemyMgr.queryCircle(f.x, f.y, f.r)) {
           hit(pl, e, f.dmg, f.col, e.x - f.x, e.y - f.y, 0, m);
-          if (!e.dead) e.applyStun((m.stun || 1) * (e.boss || e.judge ? 0.35 : 1));
+          if (!e.dead) e.applyStun(m.stun || 1);          // (a los jefes no les afecta: ver Enemy.applyStun)
         }
         for (const p of G.World.propsInCircle(f.x, f.y, f.r)) G.World.damageProp(p, f.dmg, f.col);
       }

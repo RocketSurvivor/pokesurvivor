@@ -342,9 +342,10 @@ G.Player = class Player {
       target.push(m);
     }
     this.arrange();
-    // Se pasa al grupo, salvo con la Cinta Elección (sigues en el hueco que tenías, si queda).
+    // Sigues en el hueco que tenías seleccionado (25-10-2026: antes se pasaba solo al grupo
+    // nuevo). Sólo si tu ataque se ha ido a ese grupo, pasas a él.
     const a = this.slots.indexOf(cur);
-    this.active = this.hasItem('choiceband') && a >= 0 ? a : this.slots.indexOf(target);
+    this.active = a >= 0 ? a : Math.max(0, this.slots.indexOf(target));
     this.bonds = Math.max(0, this.bonds - 1);
     G.Projectiles.clearOrbs(this);
     return target;

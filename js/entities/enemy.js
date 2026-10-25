@@ -206,18 +206,21 @@
     /** Aturdido: se queda quieto y no ataca `dur` s (Onda Trueno, Tumba Rocas...). */
     applyStun(dur) {
       if (this.arceus) return;          // (a Arceus no le afectan los estados)
+      // Jefes, legendarios y jefes de zona no se aturden (25-10-2026: se quedaban quietos sin poder hacer nada).
+      if (this.boss || this.judge || this.legend) return;
       if (this.remote) { G.Coop.status(this, 't', dur); return; }
       this.stunT = Math.max(this.stunT || 0, dur);
     }
 
     /** Dormido (Soporesfera): quieto, sin atacar ni hacer daño al tocarte, aunque le peguen. */
     applySleep(dur) {
-      if (this.remote || this.arceus) return;
+      if (this.remote || this.arceus || this.boss || this.judge || this.legend) return;
       this.sleepT = Math.max(this.sleepT || 0, dur);
     }
 
     applySlow(factor, dur = 1.2) {
       if (this.arceus) return;
+      if (this.boss || this.judge || this.legend) factor = Math.min(factor, 0.3);    // a los jefes sólo un poco
       if (this.remote) { G.Coop.status(this, 's', factor); return; }
       this.slow = Math.max(this.slow, factor);
       this.slowT = Math.max(this.slowT, dur);

@@ -6,8 +6,8 @@
  *
  * Usan las mismas formas de atacar que el resto (kind, ver moves.js) y, algunos,
  * un segundo golpe a la vez (`also`: otra forma, con `dmgK` del daño del ataque).
- * Con la forma especial (Primigenio, Origen, mega…) pegan un 25 % más y, si
- * disparan varios, sueltan 2 más (ver combat.js).
+ * Con la forma especial (Primigenio, Origen, mega…) pegan un 15 % más y, si
+ * disparan varios, sueltan 1 más (ver combat.js).
  *
  * Como jefes también lo usan, avisando (`boss`, ver enemy.js):
  *   beam  un rayo enorme hacia ti        fan   abanico ancho de disparos
@@ -134,16 +134,128 @@
       desc: 'Una carrera brutal hacia el enemigo que acaba en una onda que aparta a todos.',
       cd: 1.3, dmg: 40, radius: 230, width: 54, knock: 100,
       also: { kind: 'shove', dmgK: 0.4, radius: 100, knock: 300 },
-      vis: { proj: 'impact', trail: 'dirt' } }
+      vis: { proj: 'impact', trail: 'dirt' } },
+
+    // ---- 25 más (25-10-2026, segunda tanda): 33 legendarios ----
+    { id: 'luster-purge', name: 'Resplandor', type: 'psychic', kind: 'beam', who: [380, 381], boss: 'beam',
+      desc: 'Un rayo de luz que lo atraviesa todo y suelta destellos alrededor.',
+      cd: 1.3, dmg: 34, radius: 400, width: 40,
+      also: { kind: 'nova', dmgK: 0.3, count: 8, speed: 260, life: 0.8, size: 7, pierce: 1 },
+      vis: { beam: 'ring', proj: 'star' } },
+    { id: 'mystical-power', name: 'Poder Místico', type: 'psychic', kind: 'homing', who: [480, 481, 482], boss: 'ring',
+      desc: 'Esferas místicas que persiguen solas a los enemigos y los atraviesan.',
+      cd: 1.2, dmg: 22, count: 3, spread: 0.4, speed: 300, life: 2.0, size: 10, homing: 4, pierce: 1,
+      vis: { proj: 'ring', trail: 'spark' } },
+    { id: 'magma-storm', name: 'Lluvia Ígnea', type: 'fire', kind: 'vortex', who: [485], boss: 'zone',
+      desc: 'Un remolino de lava que atrapa a los enemigos y los quema.',
+      cd: 2.8, dmg: 11, radius: 95, dur: 3.2, pull: 170, burn: 3,
+      vis: { proj: 'fire', trail: 'ember' } },
+    { id: 'crush-grip', name: 'Agarrón', type: 'normal', kind: 'melee', who: [486], boss: 'dash',
+      desc: 'Un apretón gigante que machaca y lanza lejos a lo que tienes delante.',
+      cd: 1.1, dmg: 46, radius: 90, arc: 2.6, knock: 200,
+      vis: { melee: 'impact' } },
+    { id: 'lunar-blessing', name: 'Plegaria Lunar', type: 'psychic', kind: 'aura', who: [488], boss: 'ring',
+      desc: 'Luz de luna a tu alrededor que daña a los enemigos y te cura.',
+      cd: 0.5, dmg: 9, radius: 120, drain: 0.7,
+      vis: { aura: 'star', inward: true } },
+    { id: 'v-create', name: 'V de Fuego', type: 'fire', kind: 'dash', who: [494], boss: 'dash',
+      desc: 'Te lanzas envuelto en llamas en forma de V y sueltas un abanico de fuego.',
+      cd: 1.5, dmg: 46, radius: 230, width: 58, burn: 3,
+      also: { kind: 'cone', dmgK: 0.35, count: 7, arc: 0.8, speed: 340, life: 0.5, size: 8, pierce: 1 },
+      vis: { proj: 'fire', trail: 'ember' } },
+    { id: 'sacred-sword', name: 'Espada Santa', type: 'fighting', kind: 'melee', who: [638, 639, 640], boss: 'dash',
+      desc: 'Un tajo de espada amplio y rápido que corta todo lo que tienes delante.',
+      cd: 0.8, dmg: 34, radius: 100, arc: 3.2, knock: 120,
+      vis: { melee: 'claw' } },
+    { id: 'bleakwind-storm', name: 'Vendaval Gélido', type: 'flying', kind: 'cone', who: [641], boss: 'fan',
+      desc: 'Un vendaval helado en abanico que atraviesa y ralentiza.',
+      cd: 1.4, dmg: 14, count: 12, arc: 1.6, speed: 320, life: 0.8, size: 9, pierce: 2, slow: 0.3,
+      vis: { proj: 'wind', trail: 'wisp' } },
+    { id: 'wildbolt-storm', name: 'Electormenta', type: 'electric', kind: 'meteor', who: [642], boss: 'rain',
+      desc: 'Una tormenta: caen rayos sobre los enemigos cercanos.',
+      cd: 1.6, dmg: 20, count: 6, radius: 46,
+      vis: { proj: 'bolt', trail: 'spark' } },
+    { id: 'sandsear-storm', name: 'Simún de Arena', type: 'ground', kind: 'nova', who: [645], boss: 'ring',
+      desc: 'Arena ardiente que sale en todas direcciones, atraviesa y quema.',
+      cd: 1.5, dmg: 18, count: 14, speed: 280, life: 1.0, size: 9, pierce: 2, burn: 2,
+      vis: { proj: 'rock', trail: 'dirt' } },
+    { id: 'springtide-storm', name: 'Ciclón Primavera', type: 'fairy', kind: 'vortex', who: [905], boss: 'zone',
+      desc: 'Un ciclón de pétalos que atrae a los enemigos y los va dañando.',
+      cd: 2.6, dmg: 11, radius: 100, dur: 3, pull: 160, slow: 0.3,
+      vis: { proj: 'heart', trail: 'spark' } },
+    { id: 'secret-sword', name: 'Sable Místico', type: 'fighting', kind: 'dash', who: [647], boss: 'dash',
+      desc: 'Cruzas con tu cuerno como un sable y das un tajo al llegar.',
+      cd: 1.3, dmg: 32, radius: 220, width: 50, knock: 90,
+      also: { kind: 'spin', dmgK: 0.3, radius: 80, count: 1 },
+      vis: { proj: 'streak' } },
+    { id: 'techno-blast', name: 'Tecno Shock', type: 'normal', kind: 'charge', who: [649], boss: 'beam',
+      desc: 'Carga su cañón un momento y dispara un rayo enorme.',
+      cd: 2.4, charge: 0.6, dmg: 78, radius: 340, width: 54,
+      vis: { beam: 'star', proj: 'bolt', pal: 'electric' } },
+    { id: 'diamond-storm', name: 'Tormenta de Diamantes', type: 'rock', kind: 'meteor', who: [719], boss: 'rain',
+      desc: 'Caen diamantes afilados sobre los enemigos cercanos.',
+      cd: 1.8, dmg: 24, count: 6, radius: 48,
+      vis: { proj: 'shard', trail: 'spark' } },
+    { id: 'hyperspace-hole', name: 'Paso Dimensional', type: 'psychic', kind: 'dash', who: [720], boss: 'dash',
+      desc: 'Abres un aro y apareces al otro lado (invulnerable) golpeando a tu alrededor.',
+      cd: 1.6, dmg: 44, radius: 260, width: 46, invuln: 0.7,
+      also: { kind: 'shove', dmgK: 0.4, radius: 100, knock: 220 },
+      vis: { proj: 'ring', trail: 'wisp' } },
+    { id: 'steam-eruption', name: 'Chorro de Vapor', type: 'water', kind: 'beam', who: [721], boss: 'beam',
+      desc: 'Un chorro de vapor hirviendo en línea recta que lo atraviesa todo y quema.',
+      cd: 1.5, dmg: 38, radius: 380, width: 56, burn: 3,
+      vis: { beam: 'drop', proj: 'drop' } },
+    { id: 'natures-madness', name: 'Furia Natural', type: 'fairy', kind: 'stun', who: [785, 786, 787, 788], boss: 'zone',
+      desc: 'La furia de la naturaleza cae en una zona: daña y deja quietos a los enemigos.',
+      cd: 2.4, dmg: 38, radius: 120, stun: 1.4,
+      vis: { proj: 'star', trail: 'spark' } },
+    { id: 'spectral-thief', name: 'Robasombra', type: 'ghost', kind: 'dash', who: [802], boss: 'dash',
+      desc: 'Te deslizas por las sombras hasta el enemigo y golpeas a tu alrededor.',
+      cd: 1.3, dmg: 42, radius: 210, width: 48,
+      also: { kind: 'spin', dmgK: 0.4, radius: 80, count: 2 },
+      vis: { proj: 'shadow', trail: 'wisp' } },
+    { id: 'plasma-fists', name: 'Puños Plasma', type: 'electric', kind: 'spin', who: [807], boss: 'zone',
+      desc: 'Una ráfaga de puñetazos eléctricos alrededor; la descarga salta a otros enemigos.',
+      cd: 1.2, dmg: 22, count: 4, radius: 80,
+      also: { kind: 'chain', dmgK: 0.35, count: 3 },
+      vis: { melee: 'impact', proj: 'bolt' } },
+    { id: 'double-iron-bash', name: 'Ferropuño Doble', type: 'steel', kind: 'shove', who: [809], boss: 'dash',
+      desc: 'Dos puñetazos de acero: uno alrededor que aparta y otro que remata.',
+      cd: 1.2, dmg: 34, radius: 110, knock: 360,
+      also: { kind: 'melee', dmgK: 0.5, radius: 90, arc: 9, knock: 0 },
+      vis: { proj: 'impact', melee: 'impact' } },
+    { id: 'thunder-cage', name: 'Electrojaula', type: 'electric', kind: 'vortex', who: [894], boss: 'zone',
+      desc: 'Una jaula eléctrica que encierra a los enemigos y les va dando descargas.',
+      cd: 2.8, dmg: 10, radius: 105, dur: 3.4, pull: 120,
+      vis: { proj: 'bolt', trail: 'spark' } },
+    { id: 'dragon-energy', name: 'Dracoenergía', type: 'dragon', kind: 'beam', who: [895], boss: 'beam',
+      desc: 'Un rayo de energía dragón larguísimo y muy grueso.',
+      cd: 1.8, dmg: 44, radius: 420, width: 66,
+      vis: { beam: 'fire', proj: 'fire', pal: 'dragon' } },
+    { id: 'glacial-lance', name: 'Lanza Glacial', type: 'ice', kind: 'meteor', who: [896], boss: 'rain',
+      desc: 'Lanzas de hielo gigantes caen sobre los enemigos y los ralentizan.',
+      cd: 2.0, dmg: 42, count: 3, radius: 64, slow: 0.4,
+      vis: { proj: 'shard', trail: 'wisp' } },
+    { id: 'astral-barrage', name: 'Orbes Espectro', type: 'ghost', kind: 'nova', who: [897], boss: 'ring',
+      desc: 'Una ráfaga de espíritus que sale en todas direcciones y atraviesa.',
+      cd: 1.4, dmg: 20, count: 18, speed: 300, life: 1.1, size: 9, pierce: 2,
+      vis: { proj: 'shadow', trail: 'wisp' } },
+    { id: 'ivy-cudgel', name: 'Garrote Liana', type: 'grass', kind: 'melee', who: [1017], boss: 'dash',
+      desc: 'Un garrotazo de lianas en arco que golpea fuerte y aparta.',
+      cd: 0.9, dmg: 40, radius: 105, arc: 2.8, knock: 160,
+      vis: { melee: 'vine' } }
   ];
 
   const M = G.Moves;
   const PHYS = new Set(['sacred-fire', 'precipice-blades', 'dragon-ascent', 'shadow-force', 'fusion-bolt', 'thousand-arrows',
-    'sunsteel-strike', 'behemoth-blade', 'behemoth-bash', 'collision-course']);
+    'sunsteel-strike', 'behemoth-blade', 'behemoth-bash', 'collision-course',
+    'crush-grip', 'v-create', 'sacred-sword', 'diamond-storm', 'spectral-thief', 'plasma-fists', 'double-iron-bash', 'glacial-lance', 'ivy-cudgel']);
   const SIG_OF = {};
   for (const m of SIG) {
     if ((m.kind === 'homing' || m.kind === 'projectile' || m.kind === 'bounce') && m.count == null) m.count = 1;
     m.sig = true;
+    // Equilibrio (25-10-2026): pegaban demasiado comparados con los normales; un 18 % menos todos.
+    m.dmg = Math.round(m.dmg * 0.82);
     m.cat = PHYS.has(m.id) ? 'physical' : 'special';
     m.ups = M.ALL.find(x => x.kind === m.kind).ups;    // la escalera de mejoras de su forma
     m.maxLvl = m.ups.length + 1;
