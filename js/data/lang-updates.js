@@ -2313,4 +2313,19 @@
     "Partidas más variadas: cada zona tiene su suceso (niebla en el Bosque Umbrío, derrumbes en la Cueva Cristal y erupciones en el Volcán Ceniza); a veces sale un cofre dorado con 5 guardianes de élite que da a elegir un objeto, entrenamiento o tesoro; y en el minuto 10 eliges un camino (más daño, más vida, más recarga, más experiencia...) con su contra para toda la partida. Los jefes pueden soltar un Revivir, que te levanta con la mitad de vida si caes. En cooperativo, los compañeros con tipos que combinan (Fuego y Planta, Agua y Eléctrico...) pegan un 12 % más cuando están cerca.": "對局更多變化：每個區域都有自己的事件（幽暗森林起霧、水晶洞窟塌方、灰燼火山爆發）；有時會出現由5名精英守衛看守的金色寶箱，可以選擇道具、訓練或寶藏；第10分鐘時你要選擇一條道路（更多傷害、體力、冷卻、經驗……），整局都有對應的代價。首領可能掉落活力碎片，倒下時會讓你以一半體力重新站起。合作模式中，屬性相配的隊友（火與草、水與電……）靠近時傷害提高12%。",
     "La Movedex marca los ataques que has usado (✓) y evolucionado (★), y tiene filtro «Sin usar» y logros. La ficha de cada Pokémon enseña su mejor tiempo, nivel máximo, partidas, derrotados y su ataque que más pega. Cada rango de maestría pide ahora también un reto con ese Pokémon. Botón «Jugar otra vez» al acabar. En Ajustes > Accesibilidad: modo daltónico y texto de la partida más grande. Los administradores tienen un panel con estadísticas de los rankings.": "招式圖鑑會標記你用過（✓）和進化過（★）的招式，並有「未使用」篩選和成就。每隻寶可夢的資料頁會顯示最佳時間、最高等級、對局數、擊敗數和傷害最高的招式。每個熟練度等級現在還需要用該寶可夢完成一項挑戰。對局結束時有「再玩一次」按鈕。設定 > 無障礙：色盲模式和更大的遊戲內文字。管理員有排行榜統計面板。"
   }, 'zh-Hant');
+  G.I18n.add({
+    "El juego ya no se puede quedar parado esperando una elección que no se ve (por ejemplo, al recoger el premio de la grieta verde): si pasa, sigue solo al segundo y medio.": "Le jeu ne peut plus rester bloqué en attendant un choix qui n'est pas affiché (par exemple en récupérant la récompense de la faille verte) : si ça arrive, il reprend tout seul au bout d'une seconde et demie."
+  }, 'fr');
+  G.I18n.add({
+    "El juego ya no se puede quedar parado esperando una elección que no se ve (por ejemplo, al recoger el premio de la grieta verde): si pasa, sigue solo al segundo y medio.": "Il gioco non può più restare bloccato in attesa di una scelta che non si vede (per esempio raccogliendo il premio del varco verde): se succede, riparte da solo dopo un secondo e mezzo."
+  }, 'it');
+  G.I18n.add({
+    "El juego ya no se puede quedar parado esperando una elección que no se ve (por ejemplo, al recoger el premio de la grieta verde): si pasa, sigue solo al segundo y medio.": "O jogo não pode mais ficar travado esperando uma escolha que não aparece (por exemplo, ao pegar o prêmio da fenda verde): se acontecer, ele continua sozinho depois de um segundo e meio."
+  }, 'pt-BR');
+  G.I18n.add({
+    "El juego ya no se puede quedar parado esperando una elección que no se ve (por ejemplo, al recoger el premio de la grieta verde): si pasa, sigue solo al segundo y medio.": "游戏不会再因为等待一个没有显示的选择而卡住（例如领取绿色裂缝奖励时）：如果发生，一秒半后会自动继续。"
+  }, 'zh-Hans');
+  G.I18n.add({
+    "El juego ya no se puede quedar parado esperando una elección que no se ve (por ejemplo, al recoger el premio de la grieta verde): si pasa, sigue solo al segundo y medio.": "遊戲不會再因為等待一個沒有顯示的選擇而卡住（例如領取綠色裂縫獎勵時）：如果發生，一秒半後會自動繼續。"
+  }, 'zh-Hant');
 })();

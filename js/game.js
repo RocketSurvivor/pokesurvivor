@@ -809,6 +809,27 @@ G.Game = (() => {
     }
   }
 
+  /*
+   * Red de seguridad (25-10-2026): si el juego está parado esperando una elección
+   * (cartas, objeto, vínculo, cofre...) pero no se ve ninguna pantalla para elegir,
+   * a los 1,5 s se sigue jugando. Antes podía quedarse "pillado" para siempre
+   * (p. ej. al recoger el premio de la grieta verde con varias cosas a la vez).
+   */
+  let stuckT = 0;
+  const CHOICE_SCR = ['scr-levelup', 'scr-item', 'scr-bond', 'scr-evo', 'scr-continue'];
+  function unstick(real) {
+    const waiting = pl && !pl.dead && (state === 'levelup' || state === 'choice') && !(pl.evoFx);
+    if (!waiting || CHOICE_SCR.some(G.UI.isOpen)) { stuckT = 0; return; }
+    stuckT += real;
+    if (stuckT < 1.5) return;
+    stuckT = 0;
+    console.warn('[Game] parado sin pantalla de elección (' + state + '): se sigue jugando');
+    // (Si había un objeto por elegir, afterLevelUp vuelve a enseñar su pantalla.)
+    if (G.Coop.active) { try { G.Coop.holdEnd(); } catch (e) { /* nada */ } }
+    state = holdBy.length ? 'held' : 'playing';
+    afterLevelUp();
+  }
+
   function frame(ts) {
     const real = (ts - last) / 1000 || 0;
     const dt = Math.min(1 / 30, real) * speedK;
@@ -823,6 +844,7 @@ G.Game = (() => {
 
     if (state === 'playing') update(dt);
     else if (pl && state !== 'ui') { G.FX.update(dt * 0.25); pl.anim.update(dt * 0.25); }
+    unstick(real);
     // La red se atiende siempre (también con las cartas de nivel abiertas).
     if (G.Coop.active && pl && state !== 'ui' && state !== 'over') G.Coop.tick(dt);
 
