@@ -125,6 +125,14 @@ G.Raid = (() => {
     return r;
   }
 
-  return { AT, LIMIT, DIFF, boss, reset, update, remote, drawHud, finish,
+  /** Menú de administrador (sólo quien manda la partida). */
+  function debugStart() { if (diff && phase === 'wait' && host()) G.Game.debugTime(Math.max(G.Game.st.time || 0, AT)); }
+  function debugHurt() {
+    const e = phase === 'fight' && host() && G.EnemyMgr.get(bossId);
+    if (e && !e.dead) e.hp = Math.max(1, Math.round(e.hp - e.maxHp * 0.25));
+  }
+
+  return { AT, LIMIT, DIFF, boss, reset, update, remote, drawHud, finish, debugStart, debugHurt,
+           get phase() { return phase; },
            get active() { return diff > 0; }, get diff() { return diff; } };
 })();

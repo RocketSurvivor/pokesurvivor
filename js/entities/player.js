@@ -802,6 +802,25 @@ G.Player = class Player {
       i++;
     }
 
+    // Revivir guardado (25-10-2026): halo dorado que late en el suelo y su icono encima de la cabeza.
+    if (this.revives > 0 && !this.dead) {
+      const t = performance.now() / 1000, p = 0.5 + Math.sin(t * 3) * 0.5;
+      ctx.save();
+      ctx.globalAlpha = 0.3 + p * 0.3;
+      ctx.strokeStyle = '#ffe680';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.ellipse(this.x, this.y, this.r * 2.1, this.r * 0.9, 0, 0, 6.2832); ctx.stroke();
+      ctx.globalAlpha = 0.18 + p * 0.12;
+      ctx.fillStyle = '#ffe680';
+      ctx.beginPath(); ctx.ellipse(this.x, this.y, this.r * 2.1, this.r * 0.9, 0, 0, 6.2832); ctx.fill();
+      ctx.globalAlpha = 1;
+      const y = this.y - this.bodyH - (this.tag ? 30 : 18) - Math.sin(t * 2.5) * 3;
+      ctx.globalAlpha = 0.35 + p * 0.25; ctx.fillStyle = '#fff3b0';
+      ctx.beginPath(); ctx.arc(this.x, y, 13, 0, 6.2832); ctx.fill(); ctx.globalAlpha = 1;
+      G.Icons.draw(ctx, 'revive', Math.round(this.x - 10), Math.round(y - 10), 20);
+      ctx.restore();
+    }
+
     // Cooperativo: anillo de "reviviendo" y nombre encima.
     if (this.dead && this.reviveT > 0) {
       ctx.save();

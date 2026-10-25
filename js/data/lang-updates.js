@@ -3893,4 +3893,49 @@
     "Los jefes, legendarios y jefes de zona ya no se pueden aturdir ni dormir, y a los ralentizadores sólo les afectan un poco (se quedaban quietos sin poder hacer nada).": "首領、傳說寶可夢和區域首領不會再被擊暈或睡著，減速效果對牠們也只有一點作用（牠們之前會停在原地什麼都做不了）。",
     "Al usar un vínculo (al salir de una grieta) para juntar ataques, ya no se cambia solo el hueco que tenías seleccionado.": "使用羈絆（離開裂縫時）合併招式後，你之前選中的欄位不會再自動切換。"
   }, 'zh-Hant');
+  G.I18n.add({
+    "REVIVIR": "RAPPEL",
+    "Incursión": "Raid",
+    "Empezar la incursión ya": "Lancer le raid maintenant",
+    "Quitar 25 % de vida al jefe": "Retirer 25 % des PV du boss",
+    "El nivel y la incursión los controla el anfitrión.": "Le niveau et le raid sont gérés par l'hôte.",
+    "En grupo, el aviso «Pausa: … está eligiendo» se quedaba en pantalla para siempre aunque ya se hubiera elegido.": "En groupe, l'annonce « Pause : … est en train de choisir » restait à l'écran pour toujours même après le choix.",
+    "Revivir más visible: si llevas uno, un halo dorado late a tus pies, su icono flota encima de tu Pokémon y sale «REVIVIR» junto a tus efectos.": "Rappel plus visible : si tu en as un, un halo doré pulse à tes pieds, son icône flotte au-dessus de ton Pokémon et « RAPPEL » s'affiche avec tes effets."
+  }, 'fr');
+  G.I18n.add({
+    "REVIVIR": "REVITALIZZANTE",
+    "Incursión": "Raid",
+    "Empezar la incursión ya": "Inizia subito il raid",
+    "Quitar 25 % de vida al jefe": "Togli il 25% dei PS al boss",
+    "El nivel y la incursión los controla el anfitrión.": "Il livello e il raid li controlla l'host.",
+    "En grupo, el aviso «Pausa: … está eligiendo» se quedaba en pantalla para siempre aunque ya se hubiera elegido.": "In gruppo, l'avviso «Pausa: … sta scegliendo» restava sullo schermo per sempre anche dopo aver scelto.",
+    "Revivir más visible: si llevas uno, un halo dorado late a tus pies, su icono flota encima de tu Pokémon y sale «REVIVIR» junto a tus efectos.": "Revitalizzante più visibile: se ne hai uno, un alone dorato pulsa ai tuoi piedi, la sua icona fluttua sopra il tuo Pokémon e compare «REVITALIZZANTE» tra i tuoi effetti."
+  }, 'it');
+  G.I18n.add({
+    "REVIVIR": "REVIVER",
+    "Incursión": "Reide",
+    "Empezar la incursión ya": "Começar a reide agora",
+    "Quitar 25 % de vida al jefe": "Tirar 25% do HP do chefe",
+    "El nivel y la incursión los controla el anfitrión.": "O nível e a reide são controlados pelo anfitrião.",
+    "En grupo, el aviso «Pausa: … está eligiendo» se quedaba en pantalla para siempre aunque ya se hubiera elegido.": "Em grupo, o aviso “Pausa: … está escolhendo” ficava na tela para sempre mesmo depois de escolher.",
+    "Revivir más visible: si llevas uno, un halo dorado late a tus pies, su icono flota encima de tu Pokémon y sale «REVIVIR» junto a tus efectos.": "Reviver mais visível: se você tiver um, um halo dourado pulsa aos seus pés, o ícone flutua sobre o seu Pokémon e aparece «REVIVER» junto aos seus efeitos."
+  }, 'pt-BR');
+  G.I18n.add({
+    "REVIVIR": "活力碎片",
+    "Incursión": "团体战",
+    "Empezar la incursión ya": "立即开始团体战",
+    "Quitar 25 % de vida al jefe": "扣除首领25%体力",
+    "El nivel y la incursión los controla el anfitrión.": "等级和团体战由房主控制。",
+    "En grupo, el aviso «Pausa: … está eligiendo» se quedaba en pantalla para siempre aunque ya se hubiera elegido.": "组队时，“暂停：……正在选择”的提示即使已经选完也会一直留在屏幕上。",
+    "Revivir más visible: si llevas uno, un halo dorado late a tus pies, su icono flota encima de tu Pokémon y sale «REVIVIR» junto a tus efectos.": "活力碎片更醒目了：持有时脚下会有金色光环闪烁，图标会漂浮在宝可梦头上，效果栏里也会显示“活力碎片”。"
+  }, 'zh-Hans');
+  G.I18n.add({
+    "REVIVIR": "活力碎片",
+    "Incursión": "團體戰",
+    "Empezar la incursión ya": "立即開始團體戰",
+    "Quitar 25 % de vida al jefe": "扣除首領25%體力",
+    "El nivel y la incursión los controla el anfitrión.": "等級和團體戰由房主控制。",
+    "En grupo, el aviso «Pausa: … está eligiendo» se quedaba en pantalla para siempre aunque ya se hubiera elegido.": "組隊時，「暫停：……正在選擇」的提示即使已經選完也會一直留在螢幕上。",
+    "Revivir más visible: si llevas uno, un halo dorado late a tus pies, su icono flota encima de tu Pokémon y sale «REVIVIR» junto a tus efectos.": "活力碎片更醒目了：持有時腳下會有金色光環閃爍，圖示會漂浮在寶可夢頭上，效果欄裡也會顯示「活力碎片」。"
+  }, 'zh-Hant');
 })();

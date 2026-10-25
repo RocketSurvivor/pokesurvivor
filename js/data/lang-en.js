@@ -1725,5 +1725,12 @@ G.I18n.add({
   "Un garrotazo de lianas en arco que golpea fuerte y aparta.": "A sweeping vine club that hits hard and knocks back.",
   "Ataques exclusivos de legendario: un 18 % menos de daño y la forma especial (Primigenio, Origen, mega…) da un 15 % más en vez de un 25 %. Y 25 ataques exclusivos nuevos para 33 legendarios más: Latias y Latios, el trío del lago, Heatran, Regigigas, Cresselia, Victini, los Espadachines Místicos, Tornadus, Thundurus, Landorus, Enamorus, Keldeo, Genesect, Diancie, Hoopa, Volcanion, los Tapus, Marshadow, Zeraora, Melmetal, Regieleki, Regidrago, Glastrier, Spectrier y Ogerpon.": "Legendary signature moves: 18% less damage, and their special form (Primal, Origin, Mega…) adds 15% instead of 25%. Plus 25 new signature moves for 33 more legendaries: Latias and Latios, the lake trio, Heatran, Regigigas, Cresselia, Victini, the Swords of Justice, Tornadus, Thundurus, Landorus, Enamorus, Keldeo, Genesect, Diancie, Hoopa, Volcanion, the Tapus, Marshadow, Zeraora, Melmetal, Regieleki, Regidrago, Glastrier, Spectrier and Ogerpon.",
   "Los jefes, legendarios y jefes de zona ya no se pueden aturdir ni dormir, y a los ralentizadores sólo les afectan un poco (se quedaban quietos sin poder hacer nada).": "Bosses, legendaries and zone bosses can no longer be stunned or put to sleep, and slowing effects only affect them a little (they were left standing still, unable to do anything).",
-  "Al usar un vínculo (al salir de una grieta) para juntar ataques, ya no se cambia solo el hueco que tenías seleccionado.": "When using a bond (after leaving a rift) to merge moves, the slot you had selected no longer changes by itself."
+  "Al usar un vínculo (al salir de una grieta) para juntar ataques, ya no se cambia solo el hueco que tenías seleccionado.": "When using a bond (after leaving a rift) to merge moves, the slot you had selected no longer changes by itself.",
+  "REVIVIR": "REVIVE",
+  "Incursión": "Raid",
+  "Empezar la incursión ya": "Start the raid now",
+  "Quitar 25 % de vida al jefe": "Take 25% of the boss's HP",
+  "El nivel y la incursión los controla el anfitrión.": "The level and the raid are controlled by the host.",
+  "En grupo, el aviso «Pausa: … está eligiendo» se quedaba en pantalla para siempre aunque ya se hubiera elegido.": "In co-op, the “Paused: … is choosing” notice stayed on screen forever even after the choice was made.",
+  "Revivir más visible: si llevas uno, un halo dorado late a tus pies, su icono flota encima de tu Pokémon y sale «REVIVIR» junto a tus efectos.": "Revive is easier to see: if you carry one, a golden halo pulses at your feet, its icon floats above your Pokémon and «REVIVE» shows next to your effects."
 });

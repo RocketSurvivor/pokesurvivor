@@ -245,6 +245,7 @@ G.HUD = (() => {
       ctx.fillText(label, bx + 6 + (icon ? 13 : 0), py + 45);
       bx += tw + 5;
     };
+    if (pl.revives > 0) chip(G.T('REVIVIR') + (pl.revives > 1 ? ' ×' + pl.revives : ''), '#ffe680', 'revive');
     if (pl.item && G.Items.BY[pl.item]) chip(G.T(G.Items.BY[pl.item].name).toUpperCase(), '#ffd23f', pl.item);
     if (pl.path) { const pa = G.Paths.PATHS.find(x => x.id === pl.path); if (pa) chip(G.T(pa.title).toUpperCase(), pa.color, pa.icon); }
     if (pl.season) chip(G.T('TEMPORADA') + ' +10%', '#c9a6ff', 'medal3');

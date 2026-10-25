@@ -219,6 +219,14 @@ G.Spawner = (() => {
    */
   let msgs = [];                  // [{ text, t }]
   function say(text, secs = 2.6, local = false) {
+    // Avisos fijos (pausa en grupo, anfitrión ausente: 999 s). Uno vacío o con 0 s los
+    // quita, y uno fijo nuevo sustituye al anterior. (25-10-2026: desde que los avisos se
+    // apilan, "Pausa: … está eligiendo" se quedaba para siempre.)
+    if (!text || secs <= 0 || secs >= 100) {
+      msgs = msgs.filter(m => m.t < 100);
+      if (announceT >= 100) { announce = null; announceT = 0; }
+      if (!text || secs <= 0) { if (G.Coop.isHost && !local) G.Coop.say(text, secs); return; }
+    }
     announce = text; announceT = secs;
     const same = msgs.find(m => m.text === text);
     if (same) same.t = Math.max(same.t, secs);

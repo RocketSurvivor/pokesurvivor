@@ -255,11 +255,25 @@ G.RunUI = (() => {
    */
   function renderAdmin() {
     const box = $('pause-admin');
-    const on = G.Admin.isMe() && !G.Coop.active && !!G.Game.player;
+    // (25-10-2026) También en las incursiones en grupo, con lo que tiene sentido allí.
+    const raid = G.Coop.active && G.Raid.active, host = !G.Coop.active || G.Coop.isHost;
+    const on = G.Admin.isMe() && (!G.Coop.active || raid) && !!G.Game.player;
     box.classList.toggle('hidden', !on);
     if (!on) { box.innerHTML = ''; return; }
     const t = Math.floor(G.Game.st.time || 0);
-    box.innerHTML = `
+    if (raid) {
+      box.innerHTML = `
+      <div class="auto-row"><b class="admin-name">${G.T('Administrador')}</b><small class="sub">${G.T('Incursión')} ${G.Raid.DIFF[G.Raid.diff].stars} · ${G.I18n.f('Nivel {x} · minuto {x}', G.Game.player.level, G.U.mmss(t))}</small></div>
+      <div class="admin-btns">
+        ${host ? `<button type="button" class="btn small" data-lv="1">+1 ${G.T('nivel')}</button>
+        <button type="button" class="btn small" data-lv="5">+5 ${G.T('niveles')}</button>
+        <button type="button" class="btn small gold" data-adm="raidgo" ${G.Raid.phase === 'wait' ? '' : 'disabled'}>${G.T('Empezar la incursión ya')}</button>
+        <button type="button" class="btn small" data-adm="raidhit" ${G.Raid.phase === 'fight' ? '' : 'disabled'}>${G.T('Quitar 25 % de vida al jefe')}</button>` : ''}
+        <button type="button" class="btn small" data-adm="heal">${G.T('Curar')}</button>
+        <button type="button" class="btn small ${G.Game.player.god ? 'gold' : ''}" data-adm="god">${G.T('Invencible')}: ${G.Game.player.god ? G.T('Sí') : G.T('No')}</button>
+      </div>
+      ${host ? '' : `<p class="sub" style="margin:4px 0 0;font-size:11px">${G.T('El nivel y la incursión los controla el anfitrión.')}</p>`}`;
+    } else box.innerHTML = `
       <div class="auto-row"><b class="admin-name">${G.T('Administrador')}</b><small class="sub">${G.I18n.f('Nivel {x} · minuto {x}', G.Game.player.level, G.U.mmss(t))}</small></div>
       <div class="admin-btns">
         <button type="button" class="btn small" data-lv="1">+1 ${G.T('nivel')}</button>
@@ -289,7 +303,7 @@ G.RunUI = (() => {
     });
     const go = sec => { G.Game.debugTime(Math.max(0, Math.min(7200, sec))); G.Audio.sfx('select'); renderAdmin(); };
     box.querySelectorAll('[data-min]').forEach(b => b.onclick = () => go((G.Game.st.time || 0) + 60 * +b.dataset.min));
-    box.querySelector('#admin-go').onclick = () => go(60 * (+box.querySelector('#admin-min').value || 0));
+    if (box.querySelector('#admin-go')) box.querySelector('#admin-go').onclick = () => go(60 * (+box.querySelector('#admin-min').value || 0));
     box.querySelectorAll('[data-adm]').forEach(b => b.onclick = () => {
       const pl = G.Game.player, t = G.Game.st.time || 0, k = b.dataset.adm;
       G.Game.debugMark();
@@ -299,6 +313,8 @@ G.RunUI = (() => {
       else if (k === 'aipom') G.Events.debugAipom();
       else if (k === 'heal') pl.hp = pl.maxHp;
       else if (k === 'stairs') G.Dungeon.debugStairs();
+      else if (k === 'raidgo') G.Raid.debugStart();
+      else if (k === 'raidhit') G.Raid.debugHurt();
       else if (k === 'zone') G.World.setBiome((G.Tiles.zoneOf(G.World.biome) + 1) % G.Tiles.NORMAL);
       else if (k === 'god') pl.god = !pl.god;
       G.Audio.sfx('select');
