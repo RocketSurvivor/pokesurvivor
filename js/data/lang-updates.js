@@ -1223,4 +1223,49 @@
     "Movedex: un botón arriba a la izquierda en los menús con todos los ataques del juego (daño, daño por segundo, recarga, área, grosor, efectos, quién los aprende y cómo evolucionan), con buscador, filtro por tipo y orden. Mejora automática: actívala o desactívala en el menú de pausa y elige qué priorizar (evoluciones, mejorar ataques, ataques nuevos o estadísticas, y tu estadística preferida); las cartas de nivel se eligen solas. Los tickets shiny se ven en la barra de arriba, al lado de los demás.": "招式圖鑑：選單左上角的按鈕，列出遊戲中的全部招式（傷害、每秒傷害、冷卻、範圍、寬度、效果、誰能學會以及如何進化），可搜尋、依屬性篩選和排序。自動強化：在暫停選單中開啟或關閉，並選擇優先項（進化、強化招式、新招式或能力，以及你偏好的能力）；升級卡牌會自動選擇。閃光券現在顯示在頂部欄，與其他券並列。",
     "La Defensa Especial del menú de pausa salía con decimales infinitos (55,0000000001).": "暫停選單中的特防會顯示無限小數（55.0000000001）。"
   }, 'zh-Hant');
+  G.I18n.add({
+    "¡SE HA ABIERTO UNA GRIETA VERDE!": "UNE FAILLE VERTE S'EST OUVERTE !",
+    "Sigue la flecha verde: dentro te esperan 3 legendarios": "Suis la flèche verte : 3 légendaires t'attendent à l'intérieur",
+    "Has entrado en la grieta verde…": "Tu es entré dans la faille verte…",
+    "¡Tres legendarios te esperaban en la grieta verde!": "Trois légendaires t'attendaient dans la faille verte !",
+    "¡Has vencido a los tres legendarios! Recoge el premio…": "Tu as vaincu les trois légendaires ! Récupère la récompense…",
+    "La Grieta de legendarios es ahora una grieta verde: en el minuto 15 (y cada 15 min, menos en el 30) se abre cerca de ti, y si entras te lleva a una arena donde te esperan los 3 legendarios a la vez. Tienes 3 min y 30 s para vencerlos y, al ganar, también te llevas un vínculo. La barra del jefe dice cuántos quedan.": "La Faille des légendaires est maintenant une faille verte : à la minute 15 (et toutes les 15 min, sauf à la 30e) elle s'ouvre près de toi, et si tu entres elle t'emmène dans une arène où les 3 légendaires t'attendent en même temps. Tu as 3 min 30 s pour les vaincre et, si tu gagnes, tu obtiens aussi un lien. La barre du boss indique combien il en reste.",
+    "El juego podía quedarse congelado en el minuto 15, al salir los 3 legendarios en el mapa entre todos los enemigos.": "Le jeu pouvait se figer à la minute 15, quand les 3 légendaires apparaissaient sur la carte au milieu de tous les ennemis."
+  }, 'fr');
+  G.I18n.add({
+    "¡SE HA ABIERTO UNA GRIETA VERDE!": "SI È APERTO UN VARCO VERDE!",
+    "Sigue la flecha verde: dentro te esperan 3 legendarios": "Segui la freccia verde: dentro ti aspettano 3 leggendari",
+    "Has entrado en la grieta verde…": "Sei entrato nel varco verde…",
+    "¡Tres legendarios te esperaban en la grieta verde!": "Tre leggendari ti aspettavano nel varco verde!",
+    "¡Has vencido a los tres legendarios! Recoge el premio…": "Hai sconfitto tutti e tre i leggendari! Prendi il premio…",
+    "La Grieta de legendarios es ahora una grieta verde: en el minuto 15 (y cada 15 min, menos en el 30) se abre cerca de ti, y si entras te lleva a una arena donde te esperan los 3 legendarios a la vez. Tienes 3 min y 30 s para vencerlos y, al ganar, también te llevas un vínculo. La barra del jefe dice cuántos quedan.": "Il Varco dei leggendari ora è un varco verde: al minuto 15 (e ogni 15 min, tranne al 30) si apre vicino a te e, se entri, ti porta in un'arena dove ti aspettano i 3 leggendari insieme. Hai 3 min e 30 s per sconfiggerli e, se vinci, ottieni anche un legame. La barra del boss indica quanti ne restano.",
+    "El juego podía quedarse congelado en el minuto 15, al salir los 3 legendarios en el mapa entre todos los enemigos.": "Il gioco poteva bloccarsi al minuto 15, quando i 3 leggendari comparivano sulla mappa in mezzo a tutti i nemici."
+  }, 'it');
+  G.I18n.add({
+    "¡SE HA ABIERTO UNA GRIETA VERDE!": "UMA FENDA VERDE SE ABRIU!",
+    "Sigue la flecha verde: dentro te esperan 3 legendarios": "Siga a seta verde: 3 lendários esperam lá dentro",
+    "Has entrado en la grieta verde…": "Você entrou na fenda verde…",
+    "¡Tres legendarios te esperaban en la grieta verde!": "Três lendários esperavam por você na fenda verde!",
+    "¡Has vencido a los tres legendarios! Recoge el premio…": "Você venceu os três lendários! Pegue o prêmio…",
+    "La Grieta de legendarios es ahora una grieta verde: en el minuto 15 (y cada 15 min, menos en el 30) se abre cerca de ti, y si entras te lleva a una arena donde te esperan los 3 legendarios a la vez. Tienes 3 min y 30 s para vencerlos y, al ganar, también te llevas un vínculo. La barra del jefe dice cuántos quedan.": "A Fenda dos lendários agora é uma fenda verde: no minuto 15 (e a cada 15 min, menos no 30) ela se abre perto de você e, se você entrar, leva a uma arena onde os 3 lendários esperam ao mesmo tempo. Você tem 3 min e 30 s para vencê-los e, se ganhar, também leva um vínculo. A barra do chefe mostra quantos faltam.",
+    "El juego podía quedarse congelado en el minuto 15, al salir los 3 legendarios en el mapa entre todos los enemigos.": "O jogo podia travar no minuto 15, quando os 3 lendários apareciam no mapa no meio de todos os inimigos."
+  }, 'pt-BR');
+  G.I18n.add({
+    "¡SE HA ABIERTO UNA GRIETA VERDE!": "绿色裂缝出现了！",
+    "Sigue la flecha verde: dentro te esperan 3 legendarios": "跟着绿色箭头：里面有3只传说宝可梦在等你",
+    "Has entrado en la grieta verde…": "你进入了绿色裂缝……",
+    "¡Tres legendarios te esperaban en la grieta verde!": "三只传说宝可梦在绿色裂缝中等着你！",
+    "¡Has vencido a los tres legendarios! Recoge el premio…": "你击败了三只传说宝可梦！领取奖励吧……",
+    "La Grieta de legendarios es ahora una grieta verde: en el minuto 15 (y cada 15 min, menos en el 30) se abre cerca de ti, y si entras te lleva a una arena donde te esperan los 3 legendarios a la vez. Tienes 3 min y 30 s para vencerlos y, al ganar, también te llevas un vínculo. La barra del jefe dice cuántos quedan.": "传说裂缝现在是绿色裂缝：在第15分钟（之后每15分钟一次，第30分钟除外）会在你附近打开，进入后会把你带到竞技场，3只传说宝可梦同时在那里等你。你有3分30秒击败它们，获胜后还能获得一个羁绊。首领血条会显示还剩几只。",
+    "El juego podía quedarse congelado en el minuto 15, al salir los 3 legendarios en el mapa entre todos los enemigos.": "在第15分钟，3只传说宝可梦在地图上和所有敌人一起出现时，游戏可能会卡死。"
+  }, 'zh-Hans');
+  G.I18n.add({
+    "¡SE HA ABIERTO UNA GRIETA VERDE!": "綠色裂縫出現了！",
+    "Sigue la flecha verde: dentro te esperan 3 legendarios": "跟著綠色箭頭：裡面有3隻傳說寶可夢在等你",
+    "Has entrado en la grieta verde…": "你進入了綠色裂縫……",
+    "¡Tres legendarios te esperaban en la grieta verde!": "三隻傳說寶可夢在綠色裂縫中等著你！",
+    "¡Has vencido a los tres legendarios! Recoge el premio…": "你擊敗了三隻傳說寶可夢！領取獎勵吧……",
+    "La Grieta de legendarios es ahora una grieta verde: en el minuto 15 (y cada 15 min, menos en el 30) se abre cerca de ti, y si entras te lleva a una arena donde te esperan los 3 legendarios a la vez. Tienes 3 min y 30 s para vencerlos y, al ganar, también te llevas un vínculo. La barra del jefe dice cuántos quedan.": "傳說裂縫現在是綠色裂縫：在第15分鐘（之後每15分鐘一次，第30分鐘除外）會在你附近打開，進入後會把你帶到競技場，3隻傳說寶可夢同時在那裡等你。你有3分30秒擊敗牠們，獲勝後還能獲得一個羈絆。首領血條會顯示還剩幾隻。",
+    "El juego podía quedarse congelado en el minuto 15, al salir los 3 legendarios en el mapa entre todos los enemigos.": "在第15分鐘，3隻傳說寶可夢在地圖上和所有敵人一起出現時，遊戲可能會卡住。"
+  }, 'zh-Hant');
 })();

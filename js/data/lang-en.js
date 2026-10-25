@@ -1217,5 +1217,12 @@ G.I18n.add({
   "Ataques nuevos": "New moves",
   "Estadísticas": "Stats",
   "Movedex: un botón arriba a la izquierda en los menús con todos los ataques del juego (daño, daño por segundo, recarga, área, grosor, efectos, quién los aprende y cómo evolucionan), con buscador, filtro por tipo y orden. Mejora automática: actívala o desactívala en el menú de pausa y elige qué priorizar (evoluciones, mejorar ataques, ataques nuevos o estadísticas, y tu estadística preferida); las cartas de nivel se eligen solas. Los tickets shiny se ven en la barra de arriba, al lado de los demás.": "Movedex: a button at the top left of the menus with every move in the game (damage, damage per second, cooldown, area, width, effects, who learns them and how they evolve), with search, type filter and sorting. Auto-upgrade: turn it on or off in the pause menu and choose what to prioritize (evolutions, upgrading moves, new moves or stats, plus your preferred stat); level-up cards are picked for you. Shiny tickets now show in the top bar, next to the others.",
-  "La Defensa Especial del menú de pausa salía con decimales infinitos (55,0000000001).": "Special Defense in the pause menu showed endless decimals (55.0000000001)."
+  "La Defensa Especial del menú de pausa salía con decimales infinitos (55,0000000001).": "Special Defense in the pause menu showed endless decimals (55.0000000001).",
+  "¡SE HA ABIERTO UNA GRIETA VERDE!": "A GREEN RIFT HAS OPENED!",
+  "Sigue la flecha verde: dentro te esperan 3 legendarios": "Follow the green arrow: 3 legendaries await inside",
+  "Has entrado en la grieta verde…": "You entered the green rift…",
+  "¡Tres legendarios te esperaban en la grieta verde!": "Three legendaries were waiting in the green rift!",
+  "¡Has vencido a los tres legendarios! Recoge el premio…": "You beat all three legendaries! Grab the reward…",
+  "La Grieta de legendarios es ahora una grieta verde: en el minuto 15 (y cada 15 min, menos en el 30) se abre cerca de ti, y si entras te lleva a una arena donde te esperan los 3 legendarios a la vez. Tienes 3 min y 30 s para vencerlos y, al ganar, también te llevas un vínculo. La barra del jefe dice cuántos quedan.": "The Legendary Rift is now a green rift: at minute 15 (and every 15 min, except at 30) it opens near you, and if you go in it takes you to an arena where all 3 legendaries are waiting. You have 3 min 30 s to beat them and, if you win, you also get a bond. The boss bar shows how many are left.",
+  "El juego podía quedarse congelado en el minuto 15, al salir los 3 legendarios en el mapa entre todos los enemigos.": "The game could freeze at minute 15, when the 3 legendaries came out on the map among all the enemies."
 });

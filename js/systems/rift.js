@@ -16,6 +16,11 @@
  * Cooperativo: lo decide el anfitrión. Mensajes (ver coop.js):
  *   'rift' x y ttl · 'riftx' · 'arena' cfg · 'aw' (ganada) · 'al' (perdida)
  *   y del invitado al anfitrión 're' (he entrado en la grieta).
+ *
+ * GRIETA VERDE (legendrift.js, minuto 15, 45, 60...): igual, pero dentro
+ * esperan 3 legendarios a la vez (cada uno con el 75 % de vida) y hay más
+ * tiempo. Se gana al vencer a los tres. (Antes salían los tres en el mapa,
+ * entre todos los enemigos, y el juego podía quedarse congelado.)
  */
 G.Rift = (() => {
   // (0.14 hasta el 11-10-2026: más grietas para que se vean los vínculos)
@@ -24,7 +29,8 @@ G.Rift = (() => {
   // Desde 2 min antes de la Sentencia de Arceus (minuto 30) ya no se abren.
   const CHECK = 30, CHANCE = 0.2, TTL = 45;
   const ARENA_R = 11, ARENA_TIME = 120, FROM = 75;
-  let rift = null;          // { x, y, ttl, t }
+  const TRIO_TTL = 60, TRIO_TIME = 210, TRIO_R = 13;
+  let rift = null;          // { x, y, ttl, t, trio }
   let arena = null;         // { tx, ty, r, dex, shiny, x, y, back, biome, t, phase, endT, bossId }
   let zone = null;          // dónde estaba la última arena { x, y, r } (ver leftBehind)
   let checkT = CHECK, asked = false, downT = 0, misses = 0;
@@ -63,32 +69,34 @@ G.Rift = (() => {
     if (arena) arenaTick(dt, pl);
   }
 
-  function open() {
+  function open(trio = false) {
     const alive = G.Game.everyone().filter(p => !p.dead);
     const near = G.U.pick(alive.length ? alive : [G.Game.player]);
     for (let i = 0; i < 24; i++) {
-      const a = Math.random() * 6.2832, d = G.U.rand(380, 560);
+      const a = Math.random() * 6.2832, d = trio ? G.U.rand(260, 380) : G.U.rand(380, 560);
       const x = near.x + Math.cos(a) * d, y = near.y + Math.sin(a) * d * 0.85;
       if (!G.World.isFree(x, y, 22)) continue;
-      show(x, y, TTL);
-      if (G.Coop.isHost) G.Coop.broadcast(['rift', Math.round(x), Math.round(y), TTL]);
-      return;
+      const ttl = trio ? TRIO_TTL : TTL;
+      show(x, y, ttl, trio);
+      if (G.Coop.isHost) G.Coop.broadcast(['rift', Math.round(x), Math.round(y), ttl, trio ? 1 : 0]);
+      return true;
     }
+    return false;
   }
 
   /** Aparece la grieta (también la que manda el anfitrión). */
-  function show(x, y, ttl) {
-    rift = { x, y, ttl, t: 0 };
+  function show(x, y, ttl, trio = false) {
+    rift = { x, y, ttl, t: 0, trio: !!trio };
     asked = false;
     // (El aviso grande lo dibuja hud.js mientras rift.t < 4,5 s.)
     G.Audio.sfx('rift');
-    G.FX.ring(x, y, 6, 80, '#b48aff', 0.7, 5);
+    G.FX.ring(x, y, 6, 80, trio ? '#6dff8a' : '#b48aff', 0.7, 5);
   }
 
   function enter() {
     if (asked) return;
     asked = true;
-    if (authority()) start();
+    if (authority()) start(null, rift && rift.trio);
     else G.Coop.toHost(['re']);
   }
 
@@ -97,10 +105,22 @@ G.Rift = (() => {
   /** Quien manda: elige legendario y lugar, y avisa a todos. */
   let nextType = null;          // pruebas/vídeos: tipo de la próxima arena
 
-  function start(forceType) {
+  function start(forceType, trio = false) {
     if (arena) return;
     forceType = forceType || nextType; nextType = null;
     let pool = G.DEX.filter(p => p.leg && G.SPRITE_META[p.dex]);
+    if (trio) {
+      // Grieta verde: 3 legendarios distintos (Arceus no, que tiene su Sentencia).
+      const q = G.U.pickN(pool.filter(p => p.dex !== 493), 3);
+      const cfg = {
+        tx: 5000 + Math.floor(Math.random() * 3000), ty: 5000 + Math.floor(Math.random() * 3000), r: TRIO_R,
+        dex: q[0].dex, trio: q.map(p => p.dex), shiny: false, type: G.U.pick(q[0].types)
+      };
+      if (G.Coop.isHost) G.Coop.broadcast(['arena', cfg]);
+      begin(cfg);
+      spawnTrio();
+      return;
+    }
     if (forceType && pool.some(p => p.types.includes(forceType))) pool = pool.filter(p => p.types.includes(forceType));
     // Los legendarios que aún no has vencido salen 4 veces más (menos repetidos).
     const beaten = (G.DB.save && G.DB.save.legends) || {};
@@ -125,8 +145,10 @@ G.Rift = (() => {
     const ts = TS();
     arena = Object.assign({}, cfg, {
       x: cfg.tx * ts + ts / 2, y: cfg.ty * ts + ts / 2,
-      back: { x: pl.x, y: pl.y }, biome: G.World.biome, t: 0, phase: 'fight', endT: 0, bossId: 0
+      back: { x: pl.x, y: pl.y }, biome: G.World.biome, t: 0, phase: 'fight', endT: 0, bossId: 0, bossIds: [],
+      time: cfg.trio ? TRIO_TIME : ARENA_TIME
     });
+    if (cfg.trio) G.Sprites.preload(cfg.trio, 10000);
     zone = { x: arena.x, y: arena.y, r: (cfg.r + 10) * ts };
     rift = null; asked = false; downT = 0;
     if (authority()) G.EnemyMgr.stash(); else G.EnemyMgr.clearRemote();
@@ -137,14 +159,47 @@ G.Rift = (() => {
     G.World.setBiome(G.Tiles.arenaBiome(cfg.type), true);
     // Cada arena trae su clima (el volcán, sol; el glaciar, nieve...).
     const th = G.Tiles.ARENA_THEMES[cfg.type];
-    if (th && th.weather) G.Weather.force(th.weather, ARENA_TIME + 15);
+    if (th && th.weather) G.Weather.force(th.weather, arena.time + 15);
     // Todos al sur de la arena, en fila; el legendario aparece al norte.
     const ps = G.Game.everyone();
     ps.forEach((p, i) => { p.x = arena.x + (i - (ps.length - 1) / 2) * 34; p.y = arena.y + ts * 3; });
     G.Camera.x = pl.x; G.Camera.y = pl.y;
-    G.Game.flash('#c9a6ff', 0.9);
+    G.Game.flash(cfg.trio ? '#9dffb0' : '#c9a6ff', 0.9);
     G.Audio.sfx('rift');
-    G.Spawner.say('Has entrado en la grieta…', 2.4, true);
+    G.Spawner.say(cfg.trio ? 'Has entrado en la grieta verde…' : 'Has entrado en la grieta…', 2.4, true);
+  }
+
+  function legendDef(mon, hpK = 1) {
+    const t = G.Game.st.time;
+    const n = G.Game.everyone().length;
+    return {
+      dex: mon.dex, name: mon.name,
+      // (25-10-2026: +30 % de vida y +15 % de daño; caían demasiado rápido.)
+      hp: Math.round((3200 + t * 9) * 1.3 * hpK * G.Coop.scaleHp(n) * (n > 1 ? 1.4 : 1)),
+      spd: Math.round(G.U.clamp(48 + (mon.spd - 78) * 0.6, 48, 105)),
+      dmg: Math.round((36 + t / 20) * 1.15), xp: Math.round(500 + t * 1.2),
+      behavior: mon.types.some(x => ['psychic', 'electric', 'ghost', 'fairy', 'fire', 'water', 'ice', 'dragon'].includes(x)) ? 'ranged' : 'charger',
+      shotDmg: Math.round((18 + t / 40) * 1.15), shotCd: 0.9, range: 300
+    };
+  }
+
+  /** Grieta verde: los tres legendarios, en fila al norte de la arena. */
+  function spawnTrio() {
+    const ts = TS();
+    arena.trio.forEach((dex, i) => {
+      const mon = G.DEX_BY[dex];
+      if (!mon) return;
+      const e = new G.Enemy(legendDef(mon, 0.75), arena.x + (i - 1) * ts * 3.2, arena.y - ts * (i === 1 ? 4.5 : 3.2), { hp: 1, spd: 1, dmg: 1 }, true);
+      e.legend = true;
+      e.flying = false;
+      e.bossInit();
+      e.ai.cd = 1.6 + i * 1.5;                   // que no ataquen los tres a la vez al empezar
+      G.EnemyMgr.add(e);
+      arena.bossIds.push(e.id);
+    });
+    G.Spawner.say('¡Tres legendarios te esperaban en la grieta verde!', 3.4);
+    G.Camera.kick(1.1);
+    G.Audio.sfx('boss');
   }
 
   function spawnLegend() {
@@ -189,11 +244,12 @@ G.Rift = (() => {
     if (arena.phase === 'fight') {
       if (!authority()) return;
       keepInside();
-      const boss = G.EnemyMgr.get(arena.bossId);
-      if (!boss || boss.dead) { G.Coop.isHost && G.Coop.broadcast(['aw']); won(); return; }
+      const alive = id => { const b = G.EnemyMgr.get(id); return b && !b.dead; };
+      const done = arena.trio ? !arena.bossIds.some(alive) : !alive(arena.bossId);
+      if (done) { G.Coop.isHost && G.Coop.broadcast(['aw']); won(); return; }
       const allDown = G.Game.everyone().every(p => p.dead);
       downT = allDown ? downT + dt : 0;
-      if (downT > 1.4 || arena.t > ARENA_TIME) { G.Coop.isHost && G.Coop.broadcast(['al']); lost(); }
+      if (downT > 1.4 || arena.t > arena.time) { G.Coop.isHost && G.Coop.broadcast(['al']); lost(); }
       return;
     }
     arena.endT -= dt;
@@ -205,7 +261,8 @@ G.Rift = (() => {
     arena.phase = 'won'; arena.endT = 5;
     G.Progress.event('rift', { type: arena.type });
     G.Pickups.pullAll();
-    G.Spawner.say('¡Has vencido a ' + G.DEX_BY[arena.dex].name + '! Recoge el premio…', 3.4, true);
+    G.Spawner.say(arena.trio ? '¡Has vencido a los tres legendarios! Recoge el premio…'
+      : '¡Has vencido a ' + G.DEX_BY[arena.dex].name + '! Recoge el premio…', 3.4, true);
     G.Audio.sfx('legend');
     const pl = G.Game.player;
     if (pl) {
@@ -241,11 +298,30 @@ G.Rift = (() => {
     pl.x = a.back.x; pl.y = a.back.y;
     if (pl.dead) pl.revive(0.3);
     G.Camera.x = pl.x; G.Camera.y = pl.y;
-    G.Game.flash('#c9a6ff', 0.8);
+    G.Game.flash(a.trio ? '#9dffb0' : '#c9a6ff', 0.8);
     if (pl.bonds > 0) G.Game.offerBond();
   }
 
   // ---------------- dibujo ----------------
+
+  /** El dibujo de la grieta, en verde (se hace una vez por fotograma de la animación). */
+  const greenCache = new Map();
+  function green(img) {
+    let c = greenCache.get(img);
+    if (c) return c;
+    c = document.createElement('canvas');
+    c.width = img.width; c.height = img.height;
+    const x = c.getContext('2d');
+    x.drawImage(img, 0, 0);
+    const d = x.getImageData(0, 0, c.width, c.height), p = d.data;
+    for (let i = 0; i < p.length; i += 4) {        // morado → verde: se cambian el rojo y el verde
+      const r = p[i], g = p[i + 1], b = p[i + 2];
+      p[i] = Math.round(g * 0.6); p[i + 1] = Math.max(r, b); p[i + 2] = Math.round(g * 0.7);
+    }
+    x.putImageData(d, 0, 0);
+    greenCache.set(img, c);
+    return c;
+  }
 
   /** La grieta, para ordenarla por Y con el resto de la escena. */
   function drawable() {
@@ -254,17 +330,18 @@ G.Rift = (() => {
       y: rift.y,
       draw(ctx) {
         const P = G.Sprites.PX;
-        const img = G.Tiles.propSprite(0, 'rift', Math.floor(rift.t * 8) % 4);
+        let img = G.Tiles.propSprite(0, 'rift', Math.floor(rift.t * 8) % 4);
+        if (rift.trio) img = green(img);
         const w = img.width * P, h = img.height * P;
         const fadeIn = Math.min(1, rift.t * 2), fadeOut = Math.min(1, rift.ttl / 1.5);
         ctx.save();
         ctx.globalAlpha = 0.25 * fadeIn * fadeOut;
-        ctx.fillStyle = '#7b3cff';
+        ctx.fillStyle = rift.trio ? '#2fd65a' : '#7b3cff';
         ctx.beginPath(); ctx.ellipse(rift.x, rift.y, 34, 12, 0, 0, 6.2832); ctx.fill();
         ctx.globalAlpha = fadeIn * fadeOut;
         ctx.drawImage(img, Math.round(rift.x - w / 2), Math.round(rift.y - h + 4), w, h);
         ctx.restore();
-        if (Math.random() < 0.3) G.FX.px(rift.x + G.U.rand(-14, 14), rift.y - G.U.rand(10, 80), '#d9c2ff', { vy: -40, life: 0.6 });
+        if (Math.random() < 0.3) G.FX.px(rift.x + G.U.rand(-14, 14), rift.y - G.U.rand(10, 80), rift.trio ? '#c2ffd0' : '#d9c2ff', { vy: -40, life: 0.6 });
       }
     };
   }
@@ -273,7 +350,7 @@ G.Rift = (() => {
 
   function onEvent(ev) {
     switch (ev[0]) {
-      case 'rift': show(ev[1], ev[2], ev[3]); break;
+      case 'rift': show(ev[1], ev[2], ev[3], !!ev[4]); break;
       case 'riftx': rift = null; break;
       case 'arena': begin(ev[1]); break;
       case 'aw': won(); break;
@@ -282,10 +359,12 @@ G.Rift = (() => {
   }
 
   return {
-    reset, update, drawable, onEvent, leftBehind, enterRequest() { if (!arena) start(); },
+    reset, update, drawable, onEvent, leftBehind, enterRequest() { if (!arena) start(null, !!(rift && rift.trio)); },
     get rift() { return rift; }, get arena() { return arena; },
     get inArena() { return !!arena; },
-    get timeLeft() { return arena ? Math.max(0, ARENA_TIME - arena.t) : 0; },
+    get timeLeft() { return arena ? Math.max(0, arena.time - arena.t) : 0; },
+    /** Grieta verde de legendrift.js: true si se ha podido abrir. */
+    openTrio() { return !rift && !arena && open(true); },
     debugOpen() { open(); },
     /** Para pruebas: arena de un tipo ya. */
     debugArena(type) { start(type); },

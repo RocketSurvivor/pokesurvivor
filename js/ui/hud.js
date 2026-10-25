@@ -138,7 +138,9 @@ G.HUD = (() => {
       bar(ctx, (w - bw) / 2, 70, bw, 12, boss.hp / boss.maxHp, '#ffcb3d');
       ctx.font = F(800, 10);
       ctx.fillStyle = '#20160a';
-      ctx.fillText(boss.name.toUpperCase(), w / 2, 80);
+      // Grieta verde: cuántos legendarios quedan.
+      const ar = G.Rift.arena, left = ar && ar.trio ? G.EnemyMgr.all().filter(e => e.legend && !e.dead).length : 0;
+      ctx.fillText(boss.name.toUpperCase() + (left > 1 ? ' (+' + (left - 1) + ')' : ''), w / 2, 80);
     }
 
     // ---------- aviso ----------
@@ -187,6 +189,8 @@ G.HUD = (() => {
       const now = performance.now() / 1000, beat = 0.5 + Math.sin(now * 7) * 0.5;
       const label = 'GRIETA · ' + Math.round(G.U.dist(pl.x, pl.y, rift.x, rift.y) / 32) + ' m · ' + Math.ceil(rift.ttl) + ' s';
       const off = sx < 0 || sx > w || sy < 0 || sy > h;
+      // Grieta verde (3 legendarios): los mismos avisos, en verde.
+      const C1 = rift.trio ? '#6dff8a' : '#b48aff', C2 = rift.trio ? '#d0ffd9' : '#e2d0ff', C3 = rift.trio ? '#2fd65a' : '#a06bff', CD = rift.trio ? '#06240f' : '#1a0b33';
       ctx.save();
       if (off) {
         const M = 52, ex = G.U.clamp(sx, M, w - M), ey = G.U.clamp(sy, M + 70, h - M - 80);
@@ -194,7 +198,7 @@ G.HUD = (() => {
         ctx.translate(ex, ey);
         // Halo que late.
         ctx.globalAlpha = 0.18 + beat * 0.22;
-        ctx.fillStyle = '#b48aff';
+        ctx.fillStyle = C1;
         ctx.beginPath(); ctx.arc(0, 0, 30 + beat * 8, 0, 6.2832); ctx.fill();
         ctx.globalAlpha = 1;
         const tri = (k) => {
@@ -204,33 +208,34 @@ G.HUD = (() => {
           ctx.lineTo(Math.cos(a - 2.45) * 20 * k, Math.sin(a - 2.45) * 20 * k);
           ctx.closePath();
         };
-        tri(1.12); ctx.fillStyle = '#1a0b33'; ctx.fill();
-        tri(1); ctx.fillStyle = beat > 0.5 ? '#e2d0ff' : '#a06bff'; ctx.fill();
+        tri(1.12); ctx.fillStyle = CD; ctx.fill();
+        tri(1); ctx.fillStyle = beat > 0.5 ? C2 : C3; ctx.fill();
         ctx.font = F(800, 12);
         ctx.textAlign = ca > 0.3 ? 'right' : ca < -0.3 ? 'left' : 'center';
         const lx = -ca * 34, ly = -sa * 30 + 4;
         ctx.lineWidth = 4; ctx.strokeStyle = 'rgba(0,0,0,.85)';
         ctx.strokeText(label, lx, ly);
-        ctx.fillStyle = '#e2d0ff';
+        ctx.fillStyle = C2;
         ctx.fillText(label, lx, ly);
       } else {
         // Encima de la grieta: flecha hacia abajo que bota.
         const by = sy - 46 - Math.abs(Math.sin(now * 4)) * 10;
         ctx.translate(sx, by);
         ctx.beginPath(); ctx.moveTo(-15, -12); ctx.lineTo(15, -12); ctx.lineTo(0, 8); ctx.closePath();
-        ctx.lineWidth = 4; ctx.strokeStyle = '#1a0b33'; ctx.stroke();
-        ctx.fillStyle = beat > 0.5 ? '#e2d0ff' : '#a06bff'; ctx.fill();
+        ctx.lineWidth = 4; ctx.strokeStyle = CD; ctx.stroke();
+        ctx.fillStyle = beat > 0.5 ? C2 : C3; ctx.fill();
         ctx.font = F(800, 11); ctx.textAlign = 'center';
         ctx.lineWidth = 4; ctx.strokeStyle = 'rgba(0,0,0,.85)';
         const l2 = 'GRIETA · ' + Math.ceil(rift.ttl) + ' s';
-        ctx.strokeText(l2, 0, -18); ctx.fillStyle = '#e2d0ff'; ctx.fillText(l2, 0, -18);
+        ctx.strokeText(l2, 0, -18); ctx.fillStyle = C2; ctx.fillText(l2, 0, -18);
       }
       ctx.restore();
     }
     if (G.Rift.inArena) {
       ctx.textAlign = 'center';
       ctx.font = F(800, 12);
-      ctx.fillStyle = '#d9c2ff';
+      const ar = G.Rift.arena;
+      ctx.fillStyle = ar && ar.trio ? '#c2ffd0' : '#d9c2ff';
       ctx.fillText('GRIETA · ' + G.U.mmss(G.Rift.timeLeft), w / 2, boss ? 98 : 76);
     }
 
@@ -245,14 +250,15 @@ G.HUD = (() => {
       ctx.globalAlpha = a;
       ctx.translate(w / 2, y0); ctx.scale(pop, pop);
       ctx.font = F(800, 20);
-      const t1 = '¡SE HA ABIERTO UNA GRIETA!', t2 = 'Sigue la flecha morada: dentro te espera un legendario';
+      const t1 = rift.trio ? '¡SE HA ABIERTO UNA GRIETA VERDE!' : '¡SE HA ABIERTO UNA GRIETA!';
+      const t2 = rift.trio ? 'Sigue la flecha verde: dentro te esperan 3 legendarios' : 'Sigue la flecha morada: dentro te espera un legendario';
       const bw = Math.min(w - 24, Math.max(ctx.measureText(t1).width, (ctx.font = F(700, 11), ctx.measureText(t2).width)) + 36);
       roundRect(ctx, -bw / 2, -26, bw, 52, 10);
-      ctx.fillStyle = 'rgba(26,11,51,.88)'; ctx.fill();
-      ctx.lineWidth = 2; ctx.strokeStyle = '#b48aff'; ctx.stroke();
+      ctx.fillStyle = rift.trio ? 'rgba(6,36,15,.9)' : 'rgba(26,11,51,.88)'; ctx.fill();
+      ctx.lineWidth = 2; ctx.strokeStyle = rift.trio ? '#6dff8a' : '#b48aff'; ctx.stroke();
       ctx.textAlign = 'center';
-      ctx.font = F(800, 20); ctx.fillStyle = '#e2d0ff'; ctx.fillText(t1, 0, -2);
-      ctx.font = F(700, 11); ctx.fillStyle = '#c9b0ff'; ctx.fillText(t2, 0, 16);
+      ctx.font = F(800, 20); ctx.fillStyle = rift.trio ? '#d0ffd9' : '#e2d0ff'; ctx.fillText(t1, 0, -2);
+      ctx.font = F(700, 11); ctx.fillStyle = rift.trio ? '#a6f5b6' : '#c9b0ff'; ctx.fillText(t2, 0, 16);
       ctx.restore();
     }
 
