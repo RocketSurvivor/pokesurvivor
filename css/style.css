@@ -1139,10 +1139,11 @@ html:lang(zh) .btn, html:lang(zh) .chip { letter-spacing: 0; }
 .guide-card .gh { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
 .guide-card .gh b { font-size: 16px; }
 .guide-card p { margin: 0; font-size: 13px; color: var(--muted); line-height: 1.4; }
-.guide-tip { position: fixed; left: 50%; top: 92px; transform: translateX(-50%); z-index: 31; width: min(460px, calc(100vw - 32px));
+.guide-tip { position: fixed; left: 16px; top: 84px; z-index: 31; width: min(360px, calc(100vw - 32px));
   background: rgba(12,22,52,.95); border: 2px solid #ffd23f; border-radius: 12px; padding: 10px 14px; box-shadow: 0 6px 18px rgba(0,0,0,.5);
   display: flex; gap: 10px; align-items: flex-start; animation: autoIn .25s ease-out; transition: opacity .5s; }
 .guide-tip.out { opacity: 0; }
 .guide-tip b { display: block; color: #ffd23f; margin-bottom: 2px; }
 .guide-tip small { font-size: 12px; color: #e8eef8; line-height: 1.35; display: block; }
 @media (max-width: 600px) { .hub-cards { grid-template-columns: 1fr; } .guide-tip { top: 64px; } }
+@media (max-height: 500px) { .guide-tip { top: 74px; width: min(300px, 40vw); padding: 6px 10px; } .guide-tip small { font-size: 11px; } }

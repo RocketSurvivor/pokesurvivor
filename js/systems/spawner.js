@@ -26,6 +26,7 @@ G.Spawner = (() => {
   let forceShiny = 0;           // para pruebas: los N próximos salen shiny
 
   function reset() {
+    msgs = [];
     acc = 0; bossIdx = 0; surgeT = 32; announce = null; announceT = 0; preloadT = 0; extraT = 0; extraNext = null;
     G.Enemies.rollRun();
     G.Sprites.preload(G.Enemies.upcomingDex(0, 80));
@@ -115,6 +116,8 @@ G.Spawner = (() => {
     if (G.EnemyMgr.count >= CAP * ELITE_FROM) { e.maxHp = e.hp = Math.round(e.maxHp * 1.6); e.dmg *= 1.25; e.xp = Math.round(e.xp * 1.6); }
     if (shiny) e.makeShiny();
     if (G.Events.golden) e.makeGolden();
+    // Élite con rasgo (25-10-2026): desde el minuto 3, del 4 % al 9 % según avanza la partida.
+    else if (t > 180 && !shiny && Math.random() < Math.min(0.09, 0.04 + t / 18000)) e.makeElite(G.U.pick(Object.keys(G.Enemy.AFFIX)));
     G.EnemyMgr.add(e);
     if (shiny) {
       say('¡Un ' + e.name + ' shiny anda cerca!', 3.4);
@@ -138,6 +141,7 @@ G.Spawner = (() => {
   function update(dt, who, t) {
     players = Array.isArray(who) ? who : [who];
     if (announceT > 0) announceT -= dt;
+    tickMsgs(dt);
     // En la arena de la grieta no sale nada más (y el reloj de jefes espera).
     // En la Sentencia de Arceus, sólo sus legendarios (systems/judgment.js).
     if (G.Rift.inArena || G.Judgment.active) return;
@@ -207,17 +211,31 @@ G.Spawner = (() => {
 
   /** Aviso grande en pantalla (también lo usan el bioma y los shinies). */
   /** @param local  sólo en este ordenador (no se manda a los compañeros) */
+  /*
+   * Avisos del centro (25-10-2026): se apilan hasta 3 en vez de taparse unos a
+   * otros. Si llega el mismo texto otra vez, sólo se alarga el que ya hay.
+   */
+  let msgs = [];                  // [{ text, t }]
   function say(text, secs = 2.6, local = false) {
     announce = text; announceT = secs;
+    const same = msgs.find(m => m.text === text);
+    if (same) same.t = Math.max(same.t, secs);
+    else { msgs.push({ text, t: secs, age: 0 }); if (msgs.length > 3) msgs.shift(); }
     if (G.Coop.isHost && !local) G.Coop.say(text, secs);
+  }
+  function tickMsgs(dt) {
+    for (const m of msgs) { m.t -= dt; m.age += dt; }
+    msgs = msgs.filter(m => m.t > 0);
   }
 
   function banner() { return announceT > 0 ? { text: announce, t: announceT } : null; }
+  /** Todos los avisos que se ven ahora (el más antiguo arriba). */
+  function banners() { return msgs; }
 
   /** Invitado en cooperativo: sólo corre el reloj del aviso. */
-  function tickBanner(dt) { if (announceT > 0) announceT -= dt; }
+  function tickBanner(dt) { if (announceT > 0) announceT -= dt; tickMsgs(dt); }
 
-  return { reset, update, ahead, burst, tickBanner, banner, say, rate, SHINY_RATE, CAP,
+  return { reset, update, ahead, burst, tickBanner, banner, banners, say, rate, SHINY_RATE, CAP,
            debugForceShiny(n = 1) { forceShiny = n; },
            /** Un jefe con su ficha ya hecha (jefes de zona, ver systems/extras.js). */
            spawnBossDef(def) { const p = G.Game.player; return p ? spawnBoss(p, G.Game.st.time || 0, def) : null; },

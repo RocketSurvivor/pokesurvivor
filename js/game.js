@@ -41,6 +41,10 @@ G.Game = (() => {
     G.Touch.init(cv);
     // En móvil: al cambiar de app o girarlo en vertical, la partida se pausa.
     document.addEventListener('visibilitychange', () => { if (document.hidden) autoPause(); });
+    // (25-10-2026) También al perder el foco sin ocultarse la página: una notificación o una
+    // llamada que tapa el juego en el móvil, o cambiar de ventana en el ordenador.
+    addEventListener('blur', () => autoPause());
+    addEventListener('pagehide', () => autoPause());
     G.RunUI.wirePause(() => { state = 'playing'; G.UI.hideAll(); }, quitRun);
     Backdrop.init();
     last = performance.now();

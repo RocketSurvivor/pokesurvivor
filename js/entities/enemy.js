@@ -206,8 +206,42 @@
       this.poison = Math.min(8, this.poison + stacks); this.poisonT = 4;
     }
 
+    /**
+     * Élite con rasgo (25-10-2026): un aura de color y algo distinto.
+     *   swift   rápido (+50 % de velocidad)      tough   duro (×2,5 de vida)
+     *   shield  escudo (absorbe el 80 % de su vida antes de dañarle)
+     *   bomb    explota al caer (una zona que hace daño)
+     *   split   al caer se parte en dos más pequeños
+     * Dan el triple de experiencia. En cooperativo el rasgo llega a los invitados (ver coop 'ne').
+     */
+    static get AFFIX() {
+      return { swift: { color: '#7fe0ff', name: 'Veloz' }, tough: { color: '#ff9a4d', name: 'Duro' }, shield: { color: '#9fb7ff', name: 'Escudo' },
+               bomb: { color: '#ff5f3a', name: 'Explosivo' }, split: { color: '#b6ff6a', name: 'Divisible' } };
+    }
+
+    makeElite(affix) {
+      if (!Enemy.AFFIX[affix]) return;
+      this.affix = affix;
+      if (this.remote) return;
+      if (affix === 'swift') this.spd *= 1.5;
+      if (affix === 'tough') { this.maxHp = this.hp = Math.round(this.maxHp * 2.5); }
+      if (affix === 'shield') this.shield = Math.round(this.maxHp * 0.8);
+      this.xp = Math.round(this.xp * 3);
+    }
+
     die() {
       if (this.dead) return;
+      if (!this.remote && this.affix === 'bomb') {
+        G.Hazards.add({ kind: 'zone', x: this.x, y: this.y, r: 70, delay: 0.7, dmg: this.dmg * 1.4, type: this.atkType, color: '#ff5f3a', boom: true, by: this.name });
+      }
+      if (!this.remote && this.affix === 'split' && !this.mini) {
+        for (let i = 0; i < 2; i++) {
+          const m = new Enemy(this.def, this.x + (i ? 14 : -14), this.y, { hp: 1, spd: 1.15, dmg: 0.6 });
+          m.maxHp = m.hp = Math.max(1, Math.round(this.maxHp * 0.3)); m.dmg = this.dmg * 0.6; m.xp = Math.round(this.xp * 0.15);
+          m.mini = true; m.scale = (m.scale || 1) * 0.8;
+          G.EnemyMgr.add(m);
+        }
+      }
       this.dead = true;
       this.fade = 0.9;
       this.anim.play('Faint', { hold: true });
@@ -869,6 +903,18 @@
       const alpha = this.dead ? G.U.clamp(this.fade / 0.5, 0, 1) : 1;
       if (alpha <= 0) return;
 
+      // Élite con rasgo: aura de su color y un anillo que gira.
+      if (this.affix && !this.dead) {
+        const A = Enemy.AFFIX[this.affix], t = this.bob * 0.4;
+        ctx.save();
+        ctx.globalAlpha = 0.3 + Math.sin(t) * 0.08;
+        ctx.fillStyle = A.color;
+        ctx.beginPath(); ctx.ellipse(this.x, this.y, this.r * 1.7, this.r * 0.65, 0, 0, 6.2832); ctx.fill();
+        ctx.globalAlpha = 0.85; ctx.strokeStyle = A.color; ctx.lineWidth = 2;
+        ctx.setLineDash([5, 5]); ctx.lineDashOffset = -t * 8;
+        ctx.beginPath(); ctx.ellipse(this.x, this.y, this.r * 1.9, this.r * 0.75, 0, 0, 6.2832); ctx.stroke();
+        ctx.restore();
+      }
       const gold = this.golden || this.behavior === 'thief' || (this.remote && !this.boss && G.Events.golden);
       if ((this.boss || this.shiny || gold) && !this.dead) {
         ctx.save();
@@ -976,6 +1022,7 @@
       e.id = o.id;
       e.remote = true;
       if (o.shiny) e.makeShiny();
+      if (o.affix) e.makeElite(o.affix);
       e.maxHp = o.hp; e.hp = o.hp;
       if (o.beh === 'arceus') G.Judgment.dress(e);
       e.net = { x: o.x, y: o.y, vx: 0, vy: 0, age: 0, dir: 0, anim: 0, st: 0 };

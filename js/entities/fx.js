@@ -73,11 +73,26 @@ G.FX = (() => {
     }
   }
 
+  let bigHit = 0, bigAt = 0;
   function dmgText(x, y, value, color = '#ffffff', big = false) {
     // Con cientos de golpes por segundo no se leen igual: tope de 70 (los
     // grandes, como "¡Muy eficaz!" o los de jefe, siempre entran).
     // Ajustes → "Números de daño": los números se ocultan; los avisos de texto no.
     if ((typeof value === 'number' || /^-\d/.test(value)) && !G.Settings.get('dmgNumbers')) return;
+    // Menos ruido con muchos golpes (25-10-2026): los números pequeños que caen en el mismo
+    // sitio casi a la vez se suman en uno, y con mucho texto en pantalla los muy pequeños
+    // (menos de una quinta parte del golpe más fuerte reciente) no salen.
+    if (typeof value === 'number' && !big) {
+      const now = performance.now();
+      bigHit = Math.max(value, bigHit * Math.pow(0.5, (now - bigAt) / 3000)); bigAt = now;
+      for (let i = texts.length - 1, k = 0; i >= 0 && k < 14; i--, k++) {
+        const o = texts[i];
+        if (typeof o.s === 'number' && !o.big && o.color === color && o.t < 0.22 && Math.abs(o.x - x) < 24 && Math.abs(o.y - y) < 24) {
+          o.s = Math.round(o.s + value); return;
+        }
+      }
+      if (texts.length > 24 && value < bigHit * 0.2) return;
+    }
     if (texts.length >= CAP_TEXTS[q()]) { if (!big) return; texts.shift(); }
     texts.push({ x: x + G.U.rand(-6, 6), y, vy: -46, t: 0, life: big ? 0.95 : 0.62, s: value, color, big });
   }

@@ -64,13 +64,23 @@ G.HUD = (() => {
     const touch = G.Touch.active;
 
     // ---------- barra de experiencia (borde superior) ----------
-    const xpF = pl.xp / pl.xpNext;
-    ctx.fillStyle = 'rgba(0,0,0,.5)';
-    ctx.fillRect(0, 0, w, 7);
+    // (25-10-2026: más gruesa, y destella cuando estás a punto de subir.)
+    const xpF = pl.xp / pl.xpNext, XH = 10;
+    ctx.fillStyle = 'rgba(0,0,0,.55)';
+    ctx.fillRect(0, 0, w, XH);
     const g = ctx.createLinearGradient(0, 0, w, 0);
     g.addColorStop(0, '#4fd1ff'); g.addColorStop(1, '#a98bff');
     ctx.fillStyle = g;
-    ctx.fillRect(0, 0, w * G.U.clamp(xpF, 0, 1), 7);
+    ctx.fillRect(0, 0, w * G.U.clamp(xpF, 0, 1), XH);
+    if (xpF > 0.88) {
+      ctx.save();
+      ctx.globalAlpha = 0.25 + Math.sin(performance.now() / 110) * 0.2;
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, w * G.U.clamp(xpF, 0, 1), XH);
+      ctx.restore();
+    }
+    ctx.fillStyle = 'rgba(255,255,255,.18)';
+    ctx.fillRect(0, XH - 1, w, 1);
 
     // ---------- vida + nivel ----------
     const sa = G.Touch.safeArea();
@@ -135,15 +145,26 @@ G.HUD = (() => {
     }
 
     // ---------- barra del jefe ----------
-    const boss = G.EnemyMgr.all().find(e => e.boss && !e.dead);
+    // (25-10-2026: una barra por jefe, hasta 3 a la vez: grieta verde, jefe de zona + jefe...)
+    const bosses = G.EnemyMgr.all().filter(e => e.boss && !e.dead && !e.arceus)
+      .sort((a, b) => (b.legend ? 1 : 0) - (a.legend ? 1 : 0) || b.maxHp - a.maxHp);
+    const boss = bosses[0];
+    let bossBottom = 0;
     if (boss) {
-      const bw = Math.min(420, w - 80);
-      bar(ctx, (w - bw) / 2, 70, bw, 12, boss.hp / boss.maxHp, '#ffcb3d');
-      ctx.font = F(800, 10);
-      ctx.fillStyle = '#20160a';
-      // Grieta verde: cuántos legendarios quedan.
-      const ar = G.Rift.arena, left = ar && ar.trio ? G.EnemyMgr.all().filter(e => e.legend && !e.dead).length : 0;
-      ctx.fillText(boss.name.toUpperCase() + (left > 1 ? ' (+' + (left - 1) + ')' : ''), w / 2, 80);
+      const n = Math.min(3, bosses.length), bw = Math.min(420, w - 80) * (n > 1 ? 0.8 : 1);
+      for (let i = 0; i < n; i++) {
+        const e = bosses[i], bh = n > 1 ? 10 : 12, y = 70 + i * (bh + 6);
+        bar(ctx, (w - bw) / 2, y, bw, bh, e.hp / e.maxHp, e.zoneBoss != null ? G.ZoneBoss.color(e.zoneBoss) : e.legend ? '#c9a6ff' : '#ffcb3d');
+        ctx.font = F(800, n > 1 ? 9 : 10);
+        ctx.fillStyle = '#20160a';
+        ctx.textAlign = 'center';
+        ctx.fillText(e.name.toUpperCase() + (e.ai && e.ai.fury ? ' !' : ''), w / 2, y + bh - 2);
+        bossBottom = y + bh;
+      }
+      if (bosses.length > 3) {
+        ctx.font = F(700, 9); ctx.fillStyle = '#ffcb3d';
+        ctx.fillText('+' + (bosses.length - 3), w / 2 + bw / 2 + 14, bossBottom - 2);
+      }
     }
 
     // ---------- aviso ----------
@@ -168,6 +189,36 @@ G.HUD = (() => {
       G.Icons.draw(ctx, 'shiny', -12, -12, 24);
       ctx.restore();
     }
+    // Cofre dorado y jefes fuera de pantalla: flecha en el borde con su icono y distancia (25-10-2026).
+    const edge = (wx, wy, color, icon, label) => {
+      const sx = (wx - cam.left()) * cam.scale, sy = (wy - cam.top()) * cam.scale;
+      if (sx > 0 && sx < w && sy > 0 && sy < h) return;
+      const M = 40, ex = G.U.clamp(sx, M, w - M), ey = G.U.clamp(sy, M + 70, h - 150), a = Math.atan2(sy - ey, sx - ex);
+      ctx.save();
+      ctx.translate(ex, ey);
+      ctx.globalAlpha = 0.85;
+      ctx.fillStyle = 'rgba(0,0,0,.6)';
+      ctx.beginPath(); ctx.arc(0, 0, 17, 0, 6.2832); ctx.fill();
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.moveTo(Math.cos(a) * 28, Math.sin(a) * 28);
+      ctx.lineTo(Math.cos(a + 0.5) * 17, Math.sin(a + 0.5) * 17);
+      ctx.lineTo(Math.cos(a - 0.5) * 17, Math.sin(a - 0.5) * 17);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+      G.Icons.draw(ctx, icon, -11, -11, 22);
+      ctx.font = F(800, 9); ctx.textAlign = 'center';
+      ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(0,0,0,.85)';
+      ctx.strokeText(label, 0, 30); ctx.fillStyle = color; ctx.fillText(label, 0, 30);
+      ctx.restore();
+    };
+    const dist = (x, y) => Math.round(G.U.dist(pl.x, pl.y, x, y) / 32) + ' m';
+    const gc = G.GoldChest.chest;
+    if (gc) edge(gc.x, gc.y - 20, '#ffd23f', 'gchest', dist(gc.x, gc.y));
+    for (const e of bosses) {
+      if (e.legend && G.Rift.inArena) continue;
+      edge(e.x, e.y - 20, e.zoneBoss != null ? G.ZoneBoss.color(e.zoneBoss) : '#ff8a5a', 'crown', dist(e.x, e.y));
+    }
 
     // Poder de altar activo.
     if (pl.power) {
@@ -181,6 +232,22 @@ G.HUD = (() => {
       ctx.fillText(txt, bx + 6, py + 45);
       bx += tw + 5;
     }
+    // Más efectos activos (25-10-2026): objeto, camino, temporada, talento y maestría.
+    const chip = (label, color, icon) => {
+      ctx.font = F(800, 9); ctx.textAlign = 'left';
+      const tw = ctx.measureText(label).width + 12 + (icon ? 14 : 0);
+      if (bx + tw > px + 330) return;
+      roundRect(ctx, bx, py + 34, tw, 15, 7);
+      ctx.fillStyle = 'rgba(0,0,0,.55)'; ctx.fill();
+      if (icon) G.Icons.draw(ctx, icon, bx + 3, py + 35, 13);
+      ctx.fillStyle = color;
+      ctx.fillText(label, bx + 6 + (icon ? 13 : 0), py + 45);
+      bx += tw + 5;
+    };
+    if (pl.item && G.Items.BY[pl.item]) chip(G.T(G.Items.BY[pl.item].name).toUpperCase(), '#ffd23f', pl.item);
+    if (pl.path) { const pa = G.Paths.PATHS.find(x => x.id === pl.path); if (pa) chip(G.T(pa.title).toUpperCase(), pa.color, pa.icon); }
+    if (pl.season) chip(G.T('TEMPORADA') + ' +10%', '#c9a6ff', 'medal3');
+    if (pl.mastery > 0) chip(G.T('MAESTRÍA') + ' +' + pl.mastery + '%', '#7dffa0', null);
 
     if (G.Coop.active) drawCoop(ctx, w, h, pl, px, py + (bx > px ? 56 : 40));
 
@@ -239,7 +306,7 @@ G.HUD = (() => {
       ctx.font = F(800, 12);
       const ar = G.Rift.arena;
       ctx.fillStyle = ar && ar.trio ? '#c2ffd0' : '#d9c2ff';
-      ctx.fillText('GRIETA · ' + G.U.mmss(G.Rift.timeLeft), w / 2, boss ? 98 : 76);
+      ctx.fillText('GRIETA · ' + G.U.mmss(G.Rift.timeLeft), w / 2, boss ? bossBottom + 16 : 76);
     }
 
     // Eventos: cuenta atrás, flecha al Pokémon perdido / a la marca y a los duendes.
@@ -265,21 +332,24 @@ G.HUD = (() => {
       ctx.restore();
     }
 
-    const ban = G.Spawner.banner();
-    if (ban) {
-      const a = Math.min(1, ban.t * 1.6);
+    // Avisos apilados (el más nuevo abajo, más grande).
+    const bans = G.Spawner.banners();
+    bans.forEach((ban, i) => {
+      const last = i === bans.length - 1;
+      const a = Math.min(1, ban.t * 1.6, ban.age * 5);
       ctx.save();
-      ctx.globalAlpha = a;
+      ctx.globalAlpha = a * (last ? 1 : 0.85);
       // Siempre centrado (antes heredaba la alineación de lo último dibujado, p.
       // ej. la flecha de un duende del tesoro, y salía descolocado).
       ctx.textAlign = 'center';
-      ctx.font = F(800, 22);
+      ctx.font = F(800, last ? 22 : 17);
       ctx.fillStyle = '#ffcb3d';
       ctx.strokeStyle = 'rgba(0,0,0,.7)'; ctx.lineWidth = 4;
-      ctx.strokeText(ban.text, w / 2, h * 0.3);
-      ctx.fillText(ban.text, w / 2, h * 0.3);
+      const y = h * 0.3 - (bans.length - 1 - i) * 26;
+      ctx.strokeText(ban.text, w / 2, y);
+      ctx.fillText(ban.text, w / 2, y);
       ctx.restore();
-    }
+    });
 
     // ---------- ranura de movimientos ----------
     const S = 54, GAP = 9;

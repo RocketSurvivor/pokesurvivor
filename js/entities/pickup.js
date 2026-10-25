@@ -121,8 +121,38 @@ G.Pickups = (() => {
    * @param players  un jugador o la lista de jugadores (los caídos no recogen)
    * @param onCollect(pickup, jugador)
    */
+  /*
+   * Unir orbes (25-10-2026): con muchos orbes de experiencia en el suelo, los que
+   * están juntos (y quietos) se funden en uno grande cada segundo. Menos que dibujar
+   * y la pantalla se ve más limpia. (En cooperativo lo hace el anfitrión.)
+   */
+  let mergeT = 0;
+  function mergeOrbs() {
+    if (G.Coop.active && !G.Coop.isHost) return;
+    const xp = list.filter(p => (p.kind === 'xp' || p.kind === 'xpBig') && !p.pulled);
+    if (xp.length < 80) return;
+    const cell = new Map(), C = 46, gone = new Set(), grown = new Set();
+    for (const p of xp) {
+      const k = Math.floor(p.x / C) + ',' + Math.floor(p.y / C);
+      const o = cell.get(k);
+      if (!o) { cell.set(k, p); continue; }
+      o.value += p.value;
+      o.kind = 'xpBig';
+      o.x = (o.x + p.x) / 2; o.y = (o.y + p.y) / 2;
+      gone.add(p); grown.add(o);
+    }
+    if (!gone.size) return;
+    list = list.filter(p => !gone.has(p));
+    // Invitados: se quitan los fundidos y el que crece se vuelve a mandar con su valor nuevo.
+    if (G.Coop.isHost) {
+      for (const p of gone) G.Coop.pickupGone(p.id);
+      for (const o of grown) { G.Coop.pickupGone(o.id); G.Coop.pickupAdded(o); }
+    }
+  }
+
   function update(dt, players, onCollect) {
     if (!Array.isArray(players)) players = [players];
+    if ((mergeT -= dt) <= 0) { mergeT = 1; mergeOrbs(); }
     for (let i = list.length - 1; i >= 0; i--) {
       const p = list[i];
       p.t += dt * 4;
