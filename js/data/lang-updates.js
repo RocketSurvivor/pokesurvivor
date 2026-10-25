@@ -1388,4 +1388,24 @@
     "Las partidas con estos cambios no cuentan para el ranking.": "使用這些功能的對局不計入排行榜。",
     "Ya se pueden olvidar las MT: en la ficha del Pokémon, «Olvidar MT». El ataque deja de salirle y la MT vuelve a tu Mochila. La mejora automática ahora deja ordenar cada estadística y cada ataque: en el menú de pausa, «Orden de las estadísticas» y «Orden de los ataques». Los administradores salen con el nombre en verde y tienen un menú en la pausa para subir niveles y adelantar minutos.": "現在可以遺忘用招式學習器學會的招式了：在寶可夢資料頁點「遺忘招式學習器招式」。該招式不再出現，招式學習器會放回背包。自動強化現在可以排列每項能力和每個招式：在暫停選單中的「能力順序」和「招式順序」。管理員的名字顯示為綠色，並在暫停選單中可以提升等級和快轉時間。"
   }, 'zh-Hant');
+  G.I18n.add({
+    "Para cambiar el orden, toca uno y luego otro: se intercambian.": "Pour changer l'ordre, touche un élément puis un autre : ils s'échangent.",
+    "Mejora automática: para cambiar el orden ya no hay flechas; tocas una estadística o un ataque y luego otro, y se intercambian.": "Amélioration auto : plus de flèches pour changer l'ordre ; touche une stat ou une capacité puis une autre, et elles s'échangent."
+  }, 'fr');
+  G.I18n.add({
+    "Para cambiar el orden, toca uno y luego otro: se intercambian.": "Per cambiare l'ordine, tocca uno e poi un altro: si scambiano.",
+    "Mejora automática: para cambiar el orden ya no hay flechas; tocas una estadística o un ataque y luego otro, y se intercambian.": "Potenziamento automatico: niente più frecce per cambiare l'ordine; tocchi una statistica o una mossa e poi un'altra, e si scambiano."
+  }, 'it');
+  G.I18n.add({
+    "Para cambiar el orden, toca uno y luego otro: se intercambian.": "Para mudar a ordem, toque em um e depois em outro: eles trocam de lugar.",
+    "Mejora automática: para cambiar el orden ya no hay flechas; tocas una estadística o un ataque y luego otro, y se intercambian.": "Melhoria automática: não há mais setas para mudar a ordem; toque em um atributo ou golpe e depois em outro, e eles trocam de lugar."
+  }, 'pt-BR');
+  G.I18n.add({
+    "Para cambiar el orden, toca uno y luego otro: se intercambian.": "要更改顺序，先点一个再点另一个：两者会互换。",
+    "Mejora automática: para cambiar el orden ya no hay flechas; tocas una estadística o un ataque y luego otro, y se intercambian.": "自动强化：不再用箭头调整顺序；点一个能力或招式，再点另一个，两者就会互换。"
+  }, 'zh-Hans');
+  G.I18n.add({
+    "Para cambiar el orden, toca uno y luego otro: se intercambian.": "要更改順序，先點一個再點另一個：兩者會互換。",
+    "Mejora automática: para cambiar el orden ya no hay flechas; tocas una estadística o un ataque y luego otro, y se intercambian.": "自動強化：不再用箭頭調整順序；點一個能力或招式，再點另一個，兩者就會互換。"
+  }, 'zh-Hant');
 })();

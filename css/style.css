@@ -1032,3 +1032,12 @@ html:lang(zh) .btn, html:lang(zh) .chip { letter-spacing: 0; }
 .admin-btns { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; align-items: center; }
 .admin-go { display: inline-flex; gap: 4px; align-items: center; }
 .admin-go input { width: 64px; }
+
+/* Mejora automática: tocar para intercambiar (25-10-2026) */
+.pause-auto ol.auto-list { list-style: none; padding-left: 0; }
+.pause-auto li.auto-it { cursor: pointer; justify-content: flex-start; gap: 8px; padding: 4px 8px; margin: 2px 0; border-radius: 8px;
+  border: 2px solid transparent; background: rgba(255,255,255,.04); user-select: none; }
+.pause-auto li.auto-it:hover { background: rgba(255,255,255,.1); }
+.pause-auto li.auto-it.sel { border-color: #ffd23f; background: rgba(255,210,63,.18); }
+.pause-auto .auto-n { min-width: 18px; color: #ffd23f; font-size: 12px; }
+.pause-auto .auto-hint { margin: 2px 0 0; font-size: 11px; color: #ffd23f; }

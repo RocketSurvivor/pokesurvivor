@@ -125,27 +125,29 @@ G.RunUI = (() => {
 
   /** Controles de la mejora automática en el menú de pausa. */
   const autoOpen = { stats: false, moves: false };
+  // Para ordenar: tocas uno (se marca) y luego otro de la misma lista, y se cambian de sitio.
+  let autoSel = null;            // { g: 'cat' | 'stat' | 'move', i }
   function renderAuto() {
     const box = $('pause-auto'), cfg = autoCfg();
     const save = v => { G.Settings.set('autoPick', Object.assign({}, cfg, v)); renderAuto(); };
     const STATS = Object.fromEntries(G.LevelUp.STATS.map(s => [s.id, s]));
-    const arrows = (grp, i, n) => `<span>
-          <button type="button" class="btn small ghost" data-g="${grp}" data-up="${i}" ${i === 0 ? 'disabled' : ''}>▲</button>
-          <button type="button" class="btn small ghost" data-g="${grp}" data-dn="${i}" ${i === n - 1 ? 'disabled' : ''}>▼</button></span>`;
+    const item = (grp, i, html) => `<li class="auto-it${autoSel && autoSel.g === grp && autoSel.i === i ? ' sel' : ''}" data-g="${grp}" data-i="${i}">
+          <b class="auto-n">${i + 1}</b><span>${html}</span></li>`;
     const moves = autoMoves(cfg);
     box.innerHTML = `
       <div class="auto-row"><b>${G.T('Mejora automática')}</b>
         <button type="button" class="btn small ${cfg.on ? 'gold' : 'ghost'}" id="auto-on">${cfg.on ? G.T('Activada') : G.T('Desactivada')}</button></div>
       <div class="${cfg.on ? '' : 'hidden'}">
         <p class="sub" style="margin:4px 0 0;font-size:12px">${G.T('Elige sola las cartas al subir de nivel. Prioridad (lo de arriba primero):')}</p>
-        <ol>${cfg.order.map((k, i) => `<li><span>${G.T(CATS[k])}</span>${arrows('cat', i, cfg.order.length)}</li>`).join('')}</ol>
+        <p class="sub auto-hint">${G.T('Para cambiar el orden, toca uno y luego otro: se intercambian.')}</p>
+        <ol class="auto-list">${cfg.order.map((k, i) => item('cat', i, G.T(CATS[k]))).join('')}</ol>
         <details id="auto-d-stats" ${autoOpen.stats ? 'open' : ''}><summary>${G.T('Orden de las estadísticas')}</summary>
-          <ol>${cfg.stats.map((id, i) => `<li><span>${G.Icons.html(STATS[id].icon, 14)} ${G.T(STATS[id].title)}</span>${arrows('stat', i, cfg.stats.length)}</li>`).join('')}</ol>
+          <ol class="auto-list">${cfg.stats.map((id, i) => item('stat', i, `${G.Icons.html(STATS[id].icon, 14)} ${G.T(STATS[id].title)}`)).join('')}</ol>
           <p class="sub" style="margin:0;font-size:11px">${G.T('Con poca vida coge antes la Baya Zidra.')}</p>
         </details>
         <details id="auto-d-moves" ${autoOpen.moves ? 'open' : ''}><summary>${G.T('Orden de los ataques')}</summary>
           ${moves.length ? `<p class="sub" style="margin:4px 0 0;font-size:11px">${G.T('Para mejorar y para aprender, los de arriba primero. Se guarda para cualquier Pokémon.')}</p>
-          <ol class="auto-moves">${moves.map((id, i) => `<li><span>${G.Icons.html('move:' + id, 14)} ${G.T(G.Moves.BY_ID[id].name, 'move')}</span>${arrows('move', i, moves.length)}</li>`).join('')}</ol>
+          <ol class="auto-list auto-moves">${moves.map((id, i) => item('move', i, `${G.Icons.html('move:' + id, 14)} ${G.T(G.Moves.BY_ID[id].name, 'move')}`)).join('')}</ol>
           ${cfg.moves.length ? `<button type="button" class="btn small ghost" id="auto-mreset">${G.T('Volver al orden automático')}</button>` : ''}`
           : `<p class="sub" style="margin:4px 0;font-size:12px">${G.T('Empieza una partida para ordenar sus ataques.')}</p>`}
         </details>
@@ -164,8 +166,18 @@ G.RunUI = (() => {
         save({ moves: o.concat(cfg.moves.filter(id => !o.includes(id))).slice(0, 300) });
       }
     };
-    box.querySelectorAll('[data-up]').forEach(b => b.onclick = () => swap(b.dataset.g, +b.dataset.up, +b.dataset.up - 1));
-    box.querySelectorAll('[data-dn]').forEach(b => b.onclick = () => swap(b.dataset.g, +b.dataset.dn, +b.dataset.dn + 1));
+    // La lista de ataques se desplaza sola: se guarda dónde estaba para que no salte al redibujar.
+    const ml = box.querySelector('.auto-moves');
+    if (ml) { ml.scrollTop = autoOpen.scroll || 0; ml.onscroll = () => { autoOpen.scroll = ml.scrollTop; }; }
+    box.querySelectorAll('.auto-it').forEach(li => li.onclick = () => {
+      const g = li.dataset.g, i = +li.dataset.i;
+      G.Audio.sfx('select');
+      if (!autoSel || autoSel.g !== g) { autoSel = { g, i }; renderAuto(); return; }
+      const j = autoSel.i;
+      autoSel = null;
+      if (i === j) { renderAuto(); return; }
+      swap(g, i, j);
+    });
   }
 
   /* ---- Menú de administrador (pausa) ----
@@ -475,6 +487,7 @@ G.RunUI = (() => {
 
   function showPause(coop = false) {
     $('pause-sum').innerHTML = pauseSummary();
+    autoSel = null;
     renderAuto();
     renderAdmin();
     G.UI.soundControls($('pause-sound'));
