@@ -3938,4 +3938,19 @@
     "En grupo, el aviso «Pausa: … está eligiendo» se quedaba en pantalla para siempre aunque ya se hubiera elegido.": "組隊時，「暫停：……正在選擇」的提示即使已經選完也會一直留在螢幕上。",
     "Revivir más visible: si llevas uno, un halo dorado late a tus pies, su icono flota encima de tu Pokémon y sale «REVIVIR» junto a tus efectos.": "活力碎片更醒目了：持有時腳下會有金色光環閃爍，圖示會漂浮在寶可夢頭上，效果欄裡也會顯示「活力碎片」。"
   }, 'zh-Hant');
+  G.I18n.add({
+    "Sigue a Rocket Petru en YouTube": "Suis Rocket Petru sur YouTube"
+  }, 'fr');
+  G.I18n.add({
+    "Sigue a Rocket Petru en YouTube": "Segui Rocket Petru su YouTube"
+  }, 'it');
+  G.I18n.add({
+    "Sigue a Rocket Petru en YouTube": "Siga o Rocket Petru no YouTube"
+  }, 'pt-BR');
+  G.I18n.add({
+    "Sigue a Rocket Petru en YouTube": "在YouTube上关注Rocket Petru"
+  }, 'zh-Hans');
+  G.I18n.add({
+    "Sigue a Rocket Petru en YouTube": "在YouTube上追蹤Rocket Petru"
+  }, 'zh-Hant');
 })();

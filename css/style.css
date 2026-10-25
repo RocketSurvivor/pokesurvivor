@@ -282,7 +282,7 @@ label { display: block; font-size: 14px; color: var(--muted); margin: 8px 0 4px;
 .splash {
   position: absolute; right: 0; top: 82%; width: max-content; max-width: 14em;
   font-size: clamp(10px, 1.2vw, 15px); font-weight: 700; line-height: 1.15; letter-spacing: 0;
-  color: #ffff40; text-shadow: 2px 2px 0 #3f3f00; pointer-events: none; z-index: 3;
+  color: #ffff40; text-shadow: 2px 2px 0 #3f3f00; pointer-events: none; z-index: 3; text-decoration: none;
   transform: translateX(62%) rotate(-14deg); animation: splash-pulse .9s ease-in-out infinite alternate;
 }
 @keyframes splash-pulse {
@@ -290,6 +290,11 @@ label { display: block; font-size: 14px; color: var(--muted); margin: 8px 0 4px;
   to { transform: translateX(62%) rotate(-14deg) scale(1.06); }
 }
 @media (prefers-reduced-motion: reduce) { .splash { animation: none; } }
+/* (25-10-2026) La frase lleva al canal de YouTube de Rocket Petru, con su icono. */
+a.splash { pointer-events: auto; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; }
+@media (min-width: 900px) { a.splash { max-width: 20em; white-space: nowrap; } }
+a.splash:hover { color: #ffffa0; }
+a.splash .ico { flex: none; filter: drop-shadow(1px 1px 0 #3f3f00); }
 .partner-card { text-align: center; margin-top: 10px; }
 .partner-card .nm { font-size: 24px; font-weight: 700; text-shadow: 3px 3px 0 var(--shadow); }
 .partner-card .lv { color: var(--muted); font-size: 14px; text-shadow: 2px 2px 0 var(--shadow); }

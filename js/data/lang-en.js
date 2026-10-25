@@ -1732,5 +1732,6 @@ G.I18n.add({
   "Quitar 25 % de vida al jefe": "Take 25% of the boss's HP",
   "El nivel y la incursión los controla el anfitrión.": "The level and the raid are controlled by the host.",
   "En grupo, el aviso «Pausa: … está eligiendo» se quedaba en pantalla para siempre aunque ya se hubiera elegido.": "In co-op, the “Paused: … is choosing” notice stayed on screen forever even after the choice was made.",
-  "Revivir más visible: si llevas uno, un halo dorado late a tus pies, su icono flota encima de tu Pokémon y sale «REVIVIR» junto a tus efectos.": "Revive is easier to see: if you carry one, a golden halo pulses at your feet, its icon floats above your Pokémon and «REVIVE» shows next to your effects."
+  "Revivir más visible: si llevas uno, un halo dorado late a tus pies, su icono flota encima de tu Pokémon y sale «REVIVIR» junto a tus efectos.": "Revive is easier to see: if you carry one, a golden halo pulses at your feet, its icon floats above your Pokémon and «REVIVE» shows next to your effects.",
+  "Sigue a Rocket Petru en YouTube": "Follow Rocket Petru on YouTube"
 });

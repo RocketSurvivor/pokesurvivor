@@ -15,6 +15,9 @@ G.LiveUI = (() => {
   let live = null, lastT = 0;
 
   function init() {
+    // Frase amarilla del título: «Sigue a Rocket Petru en YouTube», con el icono de YouTube.
+    const sp = $('menu-splash');
+    if (sp && !sp.querySelector('.ico')) sp.insertAdjacentHTML('afterbegin', G.Icons.html('yt', 16, 'ico'));
     const b = $('btn-yt');
     b.onclick = () => window.open(live ? 'https://www.youtube.com/watch?v=' + live : CHANNEL, '_blank', 'noopener');
     draw();
