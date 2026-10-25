@@ -615,7 +615,8 @@ G.Player = class Player {
 
     // --- movimiento con colisiones ---
     // (En cooperativo la pausa no para el juego: sólo te quedas quieto.)
-    const [ax, ay] = this.frozen ? [0, 0] : G.Input.axis();
+    let [ax, ay] = this.frozen ? [0, 0] : G.Input.axis();
+    if (this.inverted) { ax = -ax; ay = -ay; }          // Mundo Distorsión: gravedad al revés
     this.walking = ax !== 0 || ay !== 0;
     const s = this.spd;
     // Hielo: resbalas (la velocidad cambia despacio).

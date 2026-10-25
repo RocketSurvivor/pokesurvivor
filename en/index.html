@@ -77,8 +77,8 @@
   ]
 }
 </script>
-<link rel="stylesheet" href="css/style.css?v=6bcfe2f401">
-<script src="js/core/locales.js?v=ff0e8434ea"></script>
+<link rel="stylesheet" href="css/style.css?v=26e7a464c0">
+<script src="js/core/locales.js?v=7fe85c1e99"></script>
 <script src="js/noframe.js"></script>
 </head>
 <body>
@@ -178,6 +178,7 @@
     </div>
   </div>
   <div class="menu-right">
+    <div id="menu-notice" class="menu-notice hidden"></div>
     <div class="box">
       <div class="menu-list">
         <button class="menu-item play" data-go="play">Jugar<small>Entra en la mazmorra</small></button>
@@ -378,6 +379,7 @@
     <div id="lobby-members" class="lobby-members"></div>
     <h3 id="lobby-inv-title" style="margin:14px 0 6px">Invitar amigos</h3>
     <div id="lobby-invite" class="fr-list"></div>
+    <div id="lobby-raid" class="lobby-raid panel"></div>
     <div class="row" style="margin-top:14px">
       <button id="lobby-start" class="btn gold grow">Empezar partida</button>
     </div>
@@ -467,6 +469,16 @@
   </div>
 </section>
 
+<section id="scr-daily" class="scr dim hidden">
+  <div class="box">
+    <div class="row between"><h2>Premio diario</h2><button id="daily-close" class="btn small ghost">Cerrar</button></div>
+    <p id="daily-sub" class="gold" style="margin:4px 0 0"></p>
+    <p class="sub" style="margin:4px 0 0">Entra cada día para no perder la racha. El séptimo día, ¡un ticket shiny!</p>
+    <div id="daily-days" class="daily-days"></div>
+    <div class="row" style="margin-top:12px"><button id="daily-claim" class="btn gold grow">Recoger</button></div>
+  </div>
+</section>
+
 <section id="scr-mode" class="scr dim hidden">
   <div class="box">
     <div class="row between"><h2>Elige el modo</h2><button class="btn small ghost" data-back>Volver</button></div>
@@ -479,6 +491,11 @@
       <button class="panel mode-card inf" data-mode="infinite" type="button">
         <b>Infinito</b>
         <small>Sin Arceus. Las oleadas, jefes y grietas siguen para siempre y cada vez son más fuertes. ¿Cuánto aguantas? Tiene su propio ranking.</small>
+      </button>
+      <button class="panel mode-card dgn" data-mode="dungeon" type="button">
+        <b>Mazmorra</b>
+        <small>Baja piso a piso: vence a los Pokémon y busca la escalera. Salas de tesoro, tienda y trampas, un jefe cada 5 pisos y un legendario cada 10. Ganas tickets por cada piso.</small>
+        <small id="mode-dgbest" class="gold"></small>
       </button>
     </div>
   </div>
@@ -705,6 +722,6 @@
 </section>
 
 <!-- datos generados -->
-<script defer src="js/app.min.js?v=aac889d43c"></script>
+<script defer src="js/app.min.js?v=8a46a3fd0d"></script>
 </body>
 </html>

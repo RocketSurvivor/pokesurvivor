@@ -7,7 +7,7 @@
  */
 G.AdminStatsUI = (() => {
   const $ = G.UI.$;
-  const P = [['d', 'Hoy'], ['w', 'Esta semana'], ['m', 'Este mes'], ['a', 'Histórico'], ['errs', 'Fallos']];
+  const P = [['d', 'Hoy'], ['w', 'Esta semana'], ['m', 'Este mes'], ['a', 'Histórico'], ['errs', 'Fallos'], ['news', 'Avisos']];
   const esc = v => String(v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   let period = 'w';
 
@@ -38,10 +38,35 @@ G.AdminStatsUI = (() => {
     box.querySelectorAll('[data-del]').forEach(b => b.onclick = async () => { b.disabled = true; try { await G.ErrLog.remove(b.dataset.del); } catch (e) { /* nada */ } render(); });
   }
 
+  /** Avisos para todos (ui/notice-ui.js): escribir, cuánto dura y publicar o quitar. */
+  async function renderNews(box) {
+    const n = await G.NoticeUI.fetchNow();
+    const live = n && n.text && n.until > Date.now();
+    box.innerHTML = `<p class="sub">${G.T('Lo que escribas sale a todos los jugadores arriba del menú (y como aviso la primera vez).')}</p>
+      ${live ? `<div class="panel as-err"><b>${esc(n.text)}</b><small>${esc(n.by)} · ${G.T('hasta')} ${esc(new Date(n.until).toLocaleString(G.I18n.locale))}</small></div>` : `<p class="sub">${G.T('Ahora no hay ningún aviso.')}</p>`}
+      <textarea id="nt-text" class="field" maxlength="240" rows="3" style="width:100%;margin-top:8px" placeholder="${G.T('Ej.: ¡Evento de shiny este fin de semana!')}">${live ? esc(n.text) : ''}</textarea>
+      <div class="row" style="gap:8px;margin-top:8px;flex-wrap:wrap">
+        <select id="nt-hours" class="field"><option value="6">6 h</option><option value="24" selected>1 ${G.T('día')}</option><option value="72">3 ${G.T('días')}</option><option value="168">7 ${G.T('días')}</option></select>
+        <button id="nt-pub" class="btn gold">${G.T('Publicar aviso')}</button>
+        ${live ? `<button id="nt-del" class="btn ghost">${G.T('Quitar aviso')}</button>` : ''}
+      </div><p id="nt-msg" class="note"></p>`;
+    const msg = t => { $('nt-msg').textContent = t; };
+    $('nt-pub').onclick = async () => {
+      const t = $('nt-text').value.trim();
+      if (!t) { msg(G.T('Escribe algo primero.')); return; }
+      try { await G.NoticeUI.publish(t, +$('nt-hours').value); msg(G.T('¡Publicado!')); renderNews(box); }
+      catch (e) { msg(G.T('No se ha podido publicar. ¿Has publicado las reglas nuevas de Firestore?')); }
+    };
+    if ($('nt-del')) $('nt-del').onclick = async () => {
+      try { await G.NoticeUI.publish('', 0); renderNews(box); } catch (e) { msg(G.T('No se ha podido quitar.')); }
+    };
+  }
+
   async function render() {
     const box = $('as-body');
     box.innerHTML = `<p class="sub">${G.T('Cargando…')}</p>`;
     if (period === 'errs') { renderErrs(box); return; }
+    if (period === 'news') { renderNews(box); return; }
     let solo = [], group = [];
     try { [solo, group] = await Promise.all([G.Ranking.top('s', period), G.Ranking.top('g', period)]); }
     catch (e) { box.innerHTML = `<p class="sub">${G.T('No se ha podido leer el ranking.')}</p>`; return; }

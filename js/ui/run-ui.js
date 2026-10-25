@@ -278,6 +278,8 @@ G.RunUI = (() => {
         <button type="button" class="btn small" data-adm="green">${G.T('Grieta verde')}</button>
         <button type="button" class="btn small" data-adm="aipom">${G.T('Aipom shiny')}</button>
         <button type="button" class="btn small" data-adm="heal">${G.T('Curar')}</button>
+        <button type="button" class="btn small" data-adm="zone">${G.T('Siguiente zona')}</button>
+        ${G.Dungeon.active ? `<button type="button" class="btn small gold" data-adm="stairs">${G.T('Abrir escalera')}</button>` : ''}
         <button type="button" class="btn small ${G.Game.player.god ? 'gold' : ''}" data-adm="god">${G.T('Invencible')}: ${G.Game.player.god ? G.T('Sí') : G.T('No')}</button>
       </div>
       <p class="sub" style="margin:4px 0 0;font-size:11px">${G.T('Las partidas con estos cambios no cuentan para el ranking.')}</p>`;
@@ -296,6 +298,8 @@ G.RunUI = (() => {
       else if (k === 'green') G.Rift.openTrio();
       else if (k === 'aipom') G.Events.debugAipom();
       else if (k === 'heal') pl.hp = pl.maxHp;
+      else if (k === 'stairs') G.Dungeon.debugStairs();
+      else if (k === 'zone') G.World.setBiome((G.Tiles.zoneOf(G.World.biome) + 1) % G.Tiles.NORMAL);
       else if (k === 'god') pl.god = !pl.god;
       G.Audio.sfx('select');
       G.UI.toast(G.T('Hecho: vuelve a la partida para verlo'), 1500);
@@ -454,12 +458,16 @@ G.RunUI = (() => {
       <div style="grid-column:1/-1"><span>Daño de cada ataque</span>${overMoves(r)}</div>
       ${overTaken(r)}
       ${r.mode === 'infinite' ? `<div style="grid-column:1/-1;text-align:center" class="gold">${G.T('Modo Infinito')}</div>` : ''}
+      ${r.dungeon ? `<div style="grid-column:1/-1"><span>${G.T('Mazmorra')}</span><b class="gold">${G.I18n.f('Llegaste al piso {x}', r.dungeon.floor)} · ${G.I18n.f('récord: {x} pisos superados', r.dungeon.best)}</b>
+        ${r.dungeon.record ? `<div class="gold" style="font-size:12px">${G.T('¡Nuevo récord de la mazmorra!')}</div>` : ''}</div>` : ''}
+      ${r.raid ? `<div style="grid-column:1/-1;text-align:center" class="gold">${r.raid.won ? G.I18n.f('¡Incursión {x} superada contra {x}!', r.raid.stars, esc(G.T(G.DEX_BY[r.raid.dex].name)))
+        : G.I18n.f('Incursión {x}: {x} se escapó', r.raid.stars, esc(G.T(G.DEX_BY[r.raid.dex].name)))}</div>` : ''}
       ${r.weekly ? `<div style="grid-column:1/-1;text-align:center" class="gold">${r.weeklyRec ? G.T('Desafío semanal: ¡tu mejor marca de la semana!') : G.T('Desafío semanal terminado')}</div>` : ''}
       ${r.mastUp ? `<div style="grid-column:1/-1;text-align:center" class="gold">${G.I18n.f('¡Maestría de {x}: {x}! Ahora hace un {x} % más de daño.', esc(G.T(G.DEX_BY[r.mastDex].name)), G.T(r.mastUp.name), r.mastUp.rank)}</div>` : ''}
       ${r.caught && r.caught.length ? `<div style="grid-column:1/-1" class="caught"><span>${G.Icons.html('shiny', 12)} Shinies conseguidos</span>
         <div class="caught-row" id="over-caught"></div></div>` : ''}
       ${r.fall ? `<div style="grid-column:1/-1"><span>Marca para el ranking (primera caída)</span><b>${G.U.mmss(r.fall.time)} · ${(r.fall.dmg || 0).toLocaleString(G.I18n.locale)}</b></div>` : ''}
-      ${r.record ? '<div style="grid-column:1/-1;text-align:center" class="gold">¡Nuevo récord de tiempo!</div>' : ''}
+      ${r.record && !r.dungeon ? '<div style="grid-column:1/-1;text-align:center" class="gold">¡Nuevo récord de tiempo!</div>' : ''}
       ${askSupport(r) ? `<div class="support-ask" id="over-ask" style="grid-column:1/-1">
         <button class="x" type="button" aria-label="Cerrar">×</button>
         <p>¿Te está gustando PokéSurvivor? Lo hago yo solo y los servidores cuestan dinero. Si quieres, puedes ayudarme a mantenerlo en línea.</p>

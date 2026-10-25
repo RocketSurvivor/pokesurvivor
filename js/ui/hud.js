@@ -127,7 +127,8 @@ G.HUD = (() => {
     ctx.fillText(G.U.mmss(st.time), w / 2, 42);
     ctx.font = F(600, 10);
     ctx.fillStyle = '#8fa3c4';
-    ctx.fillText(G.World.biomeName().toUpperCase() + '  ·  ' + pl.kills + ' DERROTADOS  ·  ' + pl.coins + ' MONEDAS', w / 2, 58);
+    ctx.fillText(G.Dungeon.active ? G.Dungeon.hudText(pl) + '  ·  ' + pl.coins + ' MONEDAS'
+      : G.World.biomeName().toUpperCase() + '  ·  ' + pl.kills + ' DERROTADOS  ·  ' + pl.coins + ' MONEDAS', w / 2, 58);
 
     // ---------- clima (arriba a la derecha) ----------
     const wx = G.Weather.current;

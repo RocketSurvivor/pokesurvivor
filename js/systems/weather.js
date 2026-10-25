@@ -32,7 +32,10 @@ G.Weather = (() => {
   const BIOME_W = [
     { rain: 3, fog: 2, sun: 1.5, snow: 0.5, sand: 0.5 },
     { fog: 3, snow: 2.5, rain: 1, sand: 1 },
-    { sun: 3, sand: 3, fog: 1 }
+    { sun: 3, sand: 3, fog: 1 },
+    { sun: 3, rain: 2, sand: 1 },          // Playa Coral
+    { rain: 3, fog: 2, sun: 1 },           // Ciudad Neón
+    { fog: 3, snow: 1, rain: 1 }           // Mundo Distorsión
   ];
   const FROM = 120, CHECK = 60, CHANCE = 0.18;
 

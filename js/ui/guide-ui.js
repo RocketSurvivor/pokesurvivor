@@ -7,13 +7,19 @@
  */
 G.Guide = (() => {
   const $ = G.UI.$;
-  const KEY = 'ps.guide', VER = 1;
+  const KEY = 'ps.guide', VER = 2;
   const ITEMS = [
+    // (VER 2, 25-10-2026: lo nuevo, arriba.)
+    ['dungeon', 'gchest', 'Modo Mazmorra', 'Nuevo modo al pulsar Jugar: vence a los Pokémon de cada piso y baja por la escalera. Hay salas de tesoro, descanso, tienda, trampas y casas de monstruos, un jefe cada 5 pisos y un legendario cada 10. Ganas tickets por cada piso.'],
+    ['raid', 'crown', 'Incursiones', 'En la sala de grupo, el anfitrión puede elegir Incursión (★, ★★ o ★★★): en el minuto 6 sale el legendario Dinamax de la semana, gigante, y tenéis 4 minutos para vencerlo. Cuanta más dificultad, más tickets.'],
+    ['daily', 'ticket', 'Premio diario', 'Cada día que entras te llevas un premio, y mejora con la racha. ¡El séptimo día seguido, un ticket shiny!'],
+    ['zones', 'wfog', 'Tres zonas nuevas', 'Playa Coral (oleaje), Ciudad Neón (apagón) y Mundo Distorsión (los controles se invierten un rato; su jefe es Giratina). Cada zona trae también sus propios Pokémon salvajes.'],
+    ['sig', 'star', 'Ataques exclusivos y formas', '27 legendarios tienen su ataque propio, y hay formas regionales y alternativas (y Primigenios y Origen) como Pokémon en el gacha.'],
     ['mode', 'clock', 'Modos Normal e Infinito', 'Al pulsar Jugar eliges el modo. Normal: en el minuto 30 llega la Sentencia de Arceus y, si caes, se acaba. Infinito: sin Arceus, todo sigue y se va endureciendo; tiene su propio ranking.'],
     ['green', 'shiny', 'Grieta verde', 'En el minuto 15, 45, 60... se abre una grieta verde. Dentro te esperan 3 legendarios a la vez. Si ganas: un ticket ×10 seguro, a veces un ticket shiny y un vínculo.'],
     ['path', 'up', 'Caminos del minuto 10', 'En el minuto 10 eliges un camino para toda la partida: una ventaja con su contra (más daño y menos vida, más vida y menos velocidad...).'],
     ['chest', 'gchest', 'Cofre dorado', 'A veces aparece un cofre dorado con 5 guardianes. Véncelos, quédate a su lado 2 segundos y elige: un objeto, entrenar tu ataque más flojo o un tesoro.'],
-    ['biome', 'wfog', 'Sucesos y jefes de zona', 'Cada zona tiene su suceso (niebla en el bosque, derrumbes en la cueva, erupciones en el volcán) y su jefe con un ataque propio.'],
+    ['biome', 'wfog', 'Sucesos y jefes de zona', 'Cada zona tiene su suceso (niebla en el bosque, derrumbes en la cueva, erupciones en el volcán, oleaje en la playa, apagón en la ciudad, gravedad al revés en el Mundo Distorsión) y su jefe con un ataque propio.'],
     ['revive', 'revive', 'Revivir', 'Algunos jefes sueltan un Revivir. Si lo llevas y caes, te levanta con la mitad de la vida. Se ve su icono junto a tu nombre.'],
     ['mastery', 'medal3', 'Maestría y talentos', 'Cuanto más juegas con un Pokémon, más rango (hasta Leyenda): +1 % de daño por rango. Cada rango pide también un reto. Con Maestro eliges un talento.'],
     ['season', 'medal3', 'Temporadas', 'Cada mes es de un tipo: sus Pokémon pegan un 10 % más. Aguanta 15 minutos con uno de ellos y te llevas un ticket shiny.'],

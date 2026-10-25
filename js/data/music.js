@@ -149,4 +149,45 @@ G.MUSIC.judgment = {
 };
 
 /** Tema de cada bioma durante la run. */
-G.BIOME_MUSIC = ['forest', 'cave', 'volcano'];
+// Zonas nuevas (25-10-2026): Playa Coral, Ciudad Neón y Mundo Distorsión.
+G.MUSIC.beach = {
+  bpm: 116, swing: 0.15,
+  chords: ['C', 'G/B', 'Am', 'F', 'C', 'G', 'F', 'G'],
+  melody: [{ inst: 'flute', vel: 0.95, bars: [
+    'E5:4 G5:2 E5:2 C5:4 D5:4', 'D5:6 B4:2 G4:4 B4:4', 'C5:4 E5:2 A5:2 G5:4 E5:4', 'F5:8 A4:4 C5:4',
+    'G5:4 E5:2 G5:2 C6:4 B5:4', 'A5:4 G5:4 D5:4 B4:4', 'A4:2 C5:2 F5:4 E5:2 D5:2 C5:4', 'D5:12 -:4'] }],
+  parts: [
+    { inst: 'bass', octave: 2, vel: 0.9, pattern: 'R..R..F.R..R..O.' },
+    { inst: 'pluck', octave: 4, vel: 0.55, pattern: '0.1.2.1.0.1.2.1.' },
+    { inst: 'pad', octave: 3, vel: 0.6, pattern: 'C-------C-------' }
+  ],
+  drums: { kick: 'X.....x.X.......', snare: '....X.......X...', shaker: 'o.x.o.x.o.x.o.x.' }
+};
+G.MUSIC.city = {
+  bpm: 108, swing: 0.22,
+  chords: ['Dm', 'G', 'C', 'Am', 'F', 'G', 'Em', 'A'],
+  melody: [{ inst: 'lead', vel: 0.8, bars: [
+    'F5:3 A5:1 C6:4 A5:2 F5:2 D5:4', 'D5:2 F5:2 B5:4 A5:4 G5:4', 'E5:4 G5:2 C6:2 B5:4 G5:4', 'A5:8 E5:4 C5:4',
+    'A5:3 F5:1 C5:4 F5:4 A5:4', 'B5:4 G5:2 D5:2 G5:4 B5:4', 'G5:4 E5:4 B4:4 E5:4', 'C#5:4 E5:4 A5:8'] }],
+  parts: [
+    { inst: 'bass', octave: 2, vel: 1, pattern: 'R.R.F.R.O.R.F.T.' },
+    { inst: 'bell', octave: 4, vel: 0.45, pattern: '..0...2...1...2.' },
+    { inst: 'pad', octave: 3, vel: 0.5, pattern: 'C---------------' }
+  ],
+  drums: { kick: 'X.......X.x.....', snare: '....X.......X...', hat: 'x.x.x.x.x.x.x.x.' }
+};
+G.MUSIC.distortion = {
+  bpm: 84, swing: 0,
+  chords: ['Cm', 'Ab', 'Fm', 'G', 'Cm', 'Ab', 'Db', 'G'],
+  melody: [{ inst: 'bell', vel: 0.7, bars: [
+    'C5:6 Eb5:2 G5:8', 'Ab5:6 G5:2 Eb5:8', 'F5:4 Ab5:4 C6:8', 'B5:8 D5:8',
+    'G5:6 Eb5:2 C5:8', 'C6:4 Ab5:4 Eb5:8', 'Db5:4 F5:4 Ab5:8', 'G5:8 B4:8'] }],
+  parts: [
+    { inst: 'pad', octave: 3, vel: 1, pattern: 'C---------------' },
+    { inst: 'bass', octave: 1, vel: 0.8, pattern: 'R-------R---F---' },
+    { inst: 'pluck', octave: 4, vel: 0.35, pattern: '0...2...1...3...' }
+  ],
+  drums: { kick: 'o.......o.....o.', hat: '....o.......o...' }
+};
+
+G.BIOME_MUSIC = ['forest', 'cave', 'volcano', 'beach', 'city', 'distortion'];

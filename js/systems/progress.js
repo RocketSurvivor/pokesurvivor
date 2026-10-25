@@ -116,6 +116,7 @@ G.Progress = (() => {
     if (r.coins) s.coins += r.coins;
     if (r.t1) s.tickets.t1 += r.t1;
     if (r.t10) s.tickets.t10 += r.t10;
+    if (r.ts) s.tickets.ts = (s.tickets.ts || 0) + r.ts;
     if (G.UI && G.UI.refreshCoins && !document.getElementById('topbar').classList.contains('hidden')) G.UI.refreshCoins();
   }
 

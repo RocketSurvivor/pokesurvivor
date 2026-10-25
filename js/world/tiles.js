@@ -35,8 +35,9 @@ G.Tiles = (() => {
       prop: 'dead', leaf: ['#4a3a30', '#5e4a3c', '#6f5a49', '#806a58'], trunk: ['#3a2e27', '#52423a'],
       rock: ['#4e4642', '#6a605b', '#877c76'], grass: ['#6b4a2a', '#94693a', '#c4914e'] },
   ];
-  const NORMAL = 3;                   // biomas que se van turnando en una run
-  const ARENA = 3;                    // a partir de aquí, las arenas de la grieta (una por tipo)
+  // (25-10-2026: +3 zonas, Playa Coral, Ciudad Neón y Mundo Distorsión, detrás de las tres de siempre.)
+  const NORMAL = 6;                   // biomas que se van turnando en una run
+  const ARENA = 6;                    // a partir de aquí, las arenas de la grieta (una por tipo)
 
   // ---------------- arenas de la grieta ----------------
   /*
@@ -133,6 +134,16 @@ G.Tiles = (() => {
       grass: [shade(th.grass, -0.28), th.grass, shade(th.grass, 0.28)]
     };
   }
+  // Zonas nuevas (25-10-2026): con la misma forma de paleta que las arenas, pero de la run.
+  const NEW_ZONES = [
+    { name: 'Playa Coral', floor: '#d6c088', wall: '#8c7c5c', liquid: 'water', liq: '#38a4e0', foam: '#eafcff', prop: 'tree',
+      leaf: '#3f9a4a', trunk: '#8a6a3a', flowers: ['#ff8a8a', '#ffffff', '#ffd23f'], grass: '#9ab85a', rock: '#a89a7a' },
+    { name: 'Ciudad Neón', floor: '#6a6e78', wall: '#8a5a4a', liquid: 'water', liq: '#3f7fc0', foam: '#bfe6ff', prop: 'tree',
+      leaf: '#4a8a4a', trunk: '#5a4a3a', flowers: ['#ffd23f', '#ff5f9e', '#7fd0ff'], grass: '#6a8a5a', rock: '#8a8e98' },
+    { name: 'Mundo Distorsión', floor: '#34303f', wall: '#55606a', liquid: 'water', liq: '#5a3a7a', foam: '#b89aff', prop: 'dead',
+      leaf: '#4a4060', trunk: '#2a2633', flowers: ['#7ef0a0', '#b89aff', '#ff5f6d'], grass: '#4a5a6a', rock: '#5a566a' }
+  ];
+  for (const th of NEW_ZONES) { const b = arenaBiome(th); b.name = th.name; BIOMES.push(b); }
   for (const t of ARENA_TYPES) BIOMES.push(arenaBiome(ARENA_THEMES[t]));
   BIOMES[ARENA + ARENA_TYPES.indexOf('judgment')].name = ARENA_THEMES.judgment.name;
 

@@ -90,7 +90,7 @@ G.Judgment = (() => {
     phase = null; ct = 0; cfg = null; ported = landed = canSkip = false; cues = {};
     A = null; center = null; arenaT = bossT = 0; bossN = 0; base = 0; downs = 0;
     // (Modo Infinito: Arceus no viene; para el resto del juego es como si ya se hubiera ido.)
-    back = null; retired = !!(G.Mode && G.Mode.infinite); kept = null;
+    back = null; retired = !!(G.Mode && (G.Mode.infinite || G.Mode.dungeon)); kept = null;
     dealt = 0; shielded = broke = false; brk = 0;
     hits = new Map(); hitT = 0; samples = []; embers = []; cam = null;
   }

@@ -142,8 +142,27 @@ G.Enemies = (() => {
   let cast = null;      // [{ from, list: [def] }]
   let bosses = null;    // [def de jefe]
 
+  /*
+   * Pokémon de la zona (25-10-2026): además del elenco, en cada zona salen unos
+   * cuantos de sus tipos (Agua y Volador en la playa, Eléctrico y Acero en la
+   * ciudad, Fantasma y Dragón en el Mundo Distorsión…), sorteados al llegar.
+   */
+  let zoneCast = {};              // 'tramo:zona' -> [def]
+  function zoneDefs(t, z) {
+    const Z = G.ZoneBoss && G.ZoneBoss.ZONES[z];
+    if (!Z) return [];
+    const ti = tierAt(t), k = ti + ':' + z;
+    if (!zoneCast[k]) {
+      const pool = candidates(TIERS[ti]).filter(p => p.types.some(x => Z.types.includes(x)) && !SUPPORT.includes(behaviorOf(p)));
+      zoneCast[k] = G.U.pickN(pool, 3).map(p => defFor(p, TIERS[ti], ti));
+    }
+    return zoneCast[k];
+  }
+  const zoneNow = () => (G.World && G.Tiles && !(G.Rift && G.Rift.inArena) && !(G.Judgment && G.Judgment.active)) ? G.Tiles.zoneOf(G.World.biome) : -1;
+
   /** Sortea el elenco de una run nueva. */
   function rollRun() {
+    zoneCast = {};
     cast = TIERS.map((tier, ti) => ({
       from: tier.from,
       list: castFor(tier).map(p => defFor(p, tier, ti))
@@ -236,6 +255,8 @@ G.Enemies = (() => {
       const w = t - tier.from > 260 ? 3 : 10;       // los tramos viejos pierden peso
       for (const e of tier.list) for (let i = 0; i < w; i++) bag.push(e);
     }
+    const z = zoneNow();
+    if (z >= 0) for (const e of zoneDefs(t, z)) for (let i = 0; i < 8; i++) bag.push(e);
     return bag.length ? bag : cast[0].list;
   }
 
@@ -245,6 +266,8 @@ G.Enemies = (() => {
     const out = [];
     for (const tier of cast) if (tier.from <= t + ahead) for (const e of tier.list) out.push(e.dex);
     for (const b of bosses) if (b.at <= t + ahead) out.push(b.dex);
+    const z = zoneNow();
+    if (z >= 0) for (const zz of [z, (z + 1) % G.Tiles.NORMAL]) for (const e of zoneDefs(t, zz)) out.push(e.dex);
     return out;
   }
 

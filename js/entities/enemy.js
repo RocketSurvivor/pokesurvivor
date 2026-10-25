@@ -124,6 +124,14 @@
      * el nombre y los tipos; la vida y la fuerza siguen (la fase 2 ya los endurece).
      */
     static get PHASE_FORM() { return { 382: 10077, 383: 10078, 483: 10245, 484: 10246, 487: 10007 }; }
+    /** Jefe de incursión: gigante (sólo el tamaño; la vida ya viene puesta). */
+    giant(k) {
+      this.scale *= k;
+      this.anim = new G.Sprites.Animator(this.dex, this.scale, !!this.shiny);
+      this.r = G.Sprites.bodyRadius(this.dex, this.scale);
+      this.bodyH = G.Sprites.bodyHeight(this.dex, this.scale);
+    }
+
     morphTo(dex) {
       const mon = G.DEX_BY[dex];
       if (!mon || !G.SPRITE_META[dex]) return false;

@@ -18,6 +18,7 @@ G.LegendRift = (() => {
 
   function update(dt, pl, time) {
     if (!authority() || time < next) return;
+    if ((G.Dungeon && G.Dungeon.active) || (G.Raid && G.Raid.active)) return;
     if (G.Rift.rift || G.Rift.inArena || G.Judgment.active) return;     // espera a que acabe
     if ((retryT -= dt) > 0) return;
     if (!G.Rift.openTrio()) { retryT = 1; return; }                       // no había sitio libre: vuelve a probar

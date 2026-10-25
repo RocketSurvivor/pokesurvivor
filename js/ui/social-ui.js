@@ -138,7 +138,29 @@
   // ======================= SALA =======================
 
   G.LobbyUI = (() => {
-    let membersKey = '';
+    let membersKey = '', raidPick = 0, raidKey = '';
+
+    /*
+     * Incursión (25-10-2026, systems/raid.js): el anfitrión elige partida normal o
+     * incursión y su dificultad; todos ven el legendario de la semana y el premio.
+     */
+    function renderRaid(room) {
+      const box = $('lobby-raid'), dex = G.Raid.boss(), mon = G.DEX_BY[dex], D = G.Raid.DIFF;
+      const key = dex + ':' + raidPick + ':' + (room.isHost ? 1 : 0);
+      if (key === raidKey) return;
+      raidKey = key;
+      const prize = d => G.Icons.html('ticket10', 12) + ' ' + D[d].t10 + ' ×10 · <span class="coin"></span> ' + D[d].coins + (D[d].ts ? ' · ' + G.Icons.html('shiny', 12) + ' 1' : '');
+      box.innerHTML = `<div class="raid-row"><canvas width="96" height="80"></canvas><div class="grow">
+          <b class="gold">${G.I18n.f('Incursión de la semana: {x} Dinamax', G.T(mon.name))}</b>
+          <small>${G.T('Un legendario gigante en el minuto 6, con 4 minutos para vencerlo. La partida acaba con la incursión.')}</small>
+          ${room.isHost ? `<div class="chips raid-chips"><button class="chip ${raidPick ? '' : 'on'}" data-r="0">${G.T('Partida normal')}</button>${[1, 2, 3].map(d =>
+            `<button class="chip ${raidPick === d ? 'on' : ''}" data-r="${d}">${D[d].stars} ${G.T(D[d].name)}</button>`).join('')}</div>
+            ${raidPick ? `<small>${G.T('Premio para cada uno')}: ${prize(raidPick)}</small>` : ''}`
+          : `<small>${G.T('El anfitrión elige si es partida normal o incursión.')}</small>`}
+        </div></div>`;
+      G.UI.sprite(box.querySelector('canvas'), dex, { scale: 2, lively: true, fit: true });
+      box.querySelectorAll('[data-r]').forEach(b => b.onclick = () => { raidPick = +b.dataset.r; render(); });
+    }
 
     function init() {
       $('lobby-leave').onclick = async () => {
@@ -240,12 +262,13 @@
         }
       }
 
+      renderRaid(room);
       const btn = $('lobby-start');
       btn.classList.toggle('hidden', !room.isHost);
       const connecting = ms.some(m => m.uid !== room.host && G.Net.mode(m.uid) === 'connecting');
       const failed = ms.some(m => m.uid !== room.host && G.Net.mode(m.uid) === 'failed');
       btn.disabled = !room.isHost || ms.length < 2 || connecting || failed;
-      btn.textContent = 'Empezar partida (' + ms.length + '/' + G.Social.MAX_PLAYERS + ')';
+      btn.textContent = (raidPick ? G.T('Empezar incursión') : G.T('Empezar partida')) + ' (' + ms.length + '/' + G.Social.MAX_PLAYERS + ')';
       $('lobby-note').textContent = !room.isHost ? 'Cuando el anfitrión empiece, entraréis todos a la vez.'
         : ms.length < 2 ? 'Necesitas al menos un amigo en la sala.'
         : failed ? 'No se puede conectar con algún amigo: su red (o la tuya) no deja jugar en grupo. Probad con otra wifi o datos móviles; se reintenta solo.'
@@ -256,7 +279,7 @@
       const room = G.Social.room;
       if (!room || !room.isHost || room.members.length < 2) return;
       const cfg = {
-        k: 'start', seed: Math.floor(Math.random() * 1e6), host: room.host,
+        k: 'start', seed: Math.floor(Math.random() * 1e6), host: room.host, raid: raidPick,
         members: room.members.map(m => ({ uid: m.uid, name: m.name, dex: m.dex, shiny: !!m.shiny }))
       };
       G.Social.setOpen(false);

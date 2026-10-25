@@ -23,6 +23,7 @@ G.GoldChest = (() => {
   function update(dt, pl, time) {
     if (!pl || G.Coop.active) return;
     if (!chest) {
+      if (G.Dungeon && G.Dungeon.active) return;               // en la mazmorra sale en su sala del tesoro
       if (!at || time < at || G.Rift.inArena || G.Judgment.active || G.EnemyMgr.bossAlive()) return;
       at = 0;
       spawn(pl, time);
@@ -135,7 +136,7 @@ G.GoldChest = (() => {
     };
   }
 
-  return { reset, update, drawable, debugSpawn() { const p = G.Game.player; if (p && !chest) spawn(p, G.Game.st.time || 0); },
+  return { reset, update, spawnNow: spawn, drawable, debugSpawn() { const p = G.Game.player; if (p && !chest) spawn(p, G.Game.st.time || 0); },
            get chest() { return chest; } };
 })();
 
@@ -176,18 +177,33 @@ G.Paths = (() => {
 
 // ---------------- sucesos de cada zona ----------------
 G.BiomeFx = (() => {
-  const EVERY = [60, 85], DUR = { 0: 14, 1: 8, 2: 8 };
-  const NAME = { 0: '¡Niebla en el bosque! No se ve casi nada', 1: '¡Derrumbe! Cuidado con los cristales que caen', 2: '¡Erupción! Esquiva la lava' };
+  // (25-10-2026) Zonas nuevas: oleaje en la playa (olas que barren de lado a lado), apagón en
+  // la ciudad (como la niebla, pero a oscuras) y gravedad al revés en el Mundo Distorsión
+  // (los controles se invierten un rato; se avisa con una cuenta atrás).
+  const EVERY = [60, 85], DUR = { 0: 14, 1: 8, 2: 8, 3: 9, 4: 12, 5: 7 };
+  const NAME = { 0: '¡Niebla en el bosque! No se ve casi nada', 1: '¡Derrumbe! Cuidado con los cristales que caen', 2: '¡Erupción! Esquiva la lava',
+                 3: '¡Oleaje! Las olas barren la playa', 4: '¡Apagón! Se va la luz en la ciudad', 5: '¡La gravedad se invierte! Los controles van al revés' };
+  const DARK = { 0: '18,28,24', 4: '6,8,20' };       // zonas que tapan la vista (niebla / apagón)
   let next = 0, ev = null;       // { b, t, dur, every, acc }
 
   function reset() { next = G.U.rand(EVERY[0], EVERY[1]) + 90; ev = null; }
 
   function update(dt, pl, time) {
     if (!pl) return;
-    if (G.Rift.inArena || G.Judgment.active) { ev = null; return; }
+    if (G.Rift.inArena || G.Judgment.active || (G.Dungeon && G.Dungeon.active && G.Dungeon.calm)) { ev = null; pl.inverted = false; return; }
     if (ev) {
       ev.t += dt;
-      if (ev.b !== 0 && !G.Coop.active && !pl.dead) {
+      if (ev.b === 3 && !G.Coop.active && !pl.dead) {
+        // Olas: una franja de lado a lado que avisa en el suelo y barre.
+        ev.acc -= dt;
+        if (ev.acc <= 0) {
+          ev.acc = 1.1;
+          const y = pl.y + G.U.rand(-170, 170), fromLeft = Math.random() < 0.5;
+          G.Hazards.add({ kind: 'beam', x: pl.x + (fromLeft ? -420 : 420), y, angle: fromLeft ? 0 : Math.PI, len: 840, w: 46,
+                          delay: 1.1, dmg: 6 + time / 25, type: 'water', color: '#7fd8ff', by: 'Oleaje' });
+        }
+      } else if (ev.b === 5) pl.inverted = ev.t > 1.2 && ev.t < ev.dur;         // tras un momento de aviso
+      else if ((ev.b === 1 || ev.b === 2) && !G.Coop.active && !pl.dead) {
         ev.acc -= dt;
         if (ev.acc <= 0) {
           ev.acc = ev.b === 1 ? 0.45 : 0.6;
@@ -200,7 +216,7 @@ G.BiomeFx = (() => {
           }
         }
       }
-      if (ev.t >= ev.dur) ev = null;
+      if (ev.t >= ev.dur) { ev = null; pl.inverted = false; }
       return;
     }
     if (time < next) return;
@@ -210,19 +226,34 @@ G.BiomeFx = (() => {
     ev = { b, t: 0, dur: DUR[b], acc: 1.2 };
     G.Spawner.say(NAME[b], 3);
     G.Guide.tip('biome');
-    G.Audio.sfx(b === 0 ? 'biome' : 'boss');
-    if (b !== 0) G.Camera.kick(0.6);
+    G.Audio.sfx(b === 0 || b === 4 ? 'biome' : 'boss');
+    if (b !== 0 && b !== 4) G.Camera.kick(0.6);
   }
 
   /** La niebla: un círculo de visión alrededor de tu Pokémon (encima del mapa, debajo del HUD). */
   function drawHud(ctx, w, h, sx, sy) {
-    if (!ev || ev.b !== 0) return;
+    if (!ev) return;
+    if (ev.b === 5) {
+      // Gravedad al revés: la pantalla se tiñe de morado y avisa con la cuenta atrás.
+      const k = Math.min(1, ev.t / 0.6, (ev.dur - ev.t) / 0.6);
+      if (k <= 0) return;
+      ctx.save();
+      ctx.fillStyle = `rgba(90,40,140,${0.18 * k})`;
+      ctx.fillRect(0, 0, w, h);
+      ctx.font = '800 15px Pixelify, monospace'; ctx.textAlign = 'center';
+      const txt = ev.t < 1.2 ? G.T('¡Atento!') : '⇄ ' + G.T('Controles al revés') + ' ' + Math.ceil(ev.dur - ev.t);
+      ctx.lineWidth = 4; ctx.strokeStyle = 'rgba(0,0,0,.8)'; ctx.strokeText(txt, w / 2, h - 120);
+      ctx.fillStyle = '#d6b8ff'; ctx.fillText(txt, w / 2, h - 120);
+      ctx.restore();
+      return;
+    }
+    if (!(ev.b in DARK)) return;
     const k = Math.min(1, ev.t / 1.5, (ev.dur - ev.t) / 1.5);
     if (k <= 0) return;
-    const r = Math.max(w, h) * (0.55 - 0.33 * k);
+    const r = Math.max(w, h) * (0.55 - 0.33 * k), c = DARK[ev.b];
     const g = ctx.createRadialGradient(sx, sy, r * 0.45, sx, sy, r);
-    g.addColorStop(0, 'rgba(18,28,24,0)');
-    g.addColorStop(1, `rgba(18,28,24,${0.93 * k})`);
+    g.addColorStop(0, `rgba(${c},0)`);
+    g.addColorStop(1, `rgba(${c},${0.93 * k})`);
     ctx.save();
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, w, h);
@@ -295,17 +326,30 @@ G.ZoneBoss = (() => {
   const ZONES = {
     0: { types: ['grass', 'bug', 'poison'], color: '#9be04a', type: 'grass', name: 'Bosque Umbrío' },
     1: { types: ['rock', 'ice', 'ground'], color: '#b8e8ff', type: 'rock', name: 'Cueva Cristal' },
-    2: { types: ['fire', 'dragon'], color: '#ff7a2a', type: 'fire', name: 'Volcán Ceniza' }
+    2: { types: ['fire', 'dragon'], color: '#ff7a2a', type: 'fire', name: 'Volcán Ceniza' },
+    // (25-10-2026) Zonas nuevas. En el Mundo Distorsión el jefe es siempre Giratina
+    // (un legendario de verdad: con sus dos fases, forma Origen y su ataque exclusivo).
+    3: { types: ['water', 'flying'], color: '#5fd0ff', type: 'water', name: 'Playa Coral' },
+    4: { types: ['electric', 'steel', 'normal'], color: '#ffe14d', type: 'electric', name: 'Ciudad Neón' },
+    5: { types: ['ghost', 'dragon'], color: '#b89aff', type: 'ghost', name: 'Mundo Distorsión', legend: 487 }
   };
+  let pre = -1;                   // tramo en el que ya se precargó su legendario
   let zoneAt = -1, done = -1;     // tramo (cada 4 min) en el que empezó la zona / último con jefe
 
-  function reset() { zoneAt = 0; done = -1; }
+  function reset() { zoneAt = 0; done = -1; pre = -1; }
   const color = z => (ZONES[z] || ZONES[0]).color;
   const type = z => (ZONES[z] || ZONES[0]).type;
 
   function update(pl, time) {
     if (!pl || (G.Coop.active && !G.Coop.isHost)) return;
     const seg = Math.floor(time / 240);
+    if (G.Dungeon && G.Dungeon.active) return;               // la mazmorra tiene sus jefes
+    if (G.Raid && G.Raid.active) return;                     // y la incursión, el suyo
+    if (seg !== pre) {                                       // Giratina: su sprite, listo antes de salir
+      pre = seg;
+      const Z = ZONES[G.Tiles.zoneOf(G.World.biome)];
+      if (Z && Z.legend) G.Sprites.preload([Z.legend], 8000);
+    }
     if (seg < 1 || seg === done || G.Rift.inArena || G.Judgment.active || G.EnemyMgr.bossAlive()) return;
     if (time - seg * 240 < AFTER) return;
     done = seg;
@@ -315,19 +359,21 @@ G.ZoneBoss = (() => {
   function spawn(z, t) {
     const Z = ZONES[z];
     if (!Z) return;
-    const pool = G.DEX.filter(p => !p.leg && !p.mega && p.bst >= 420 && G.SPRITE_META[p.dex] && p.types.some(x => Z.types.includes(x)));
-    if (!pool.length) return;
+    const pool = Z.legend ? [G.DEX_BY[Z.legend]]
+      : G.DEX.filter(p => !p.leg && !p.mega && !p.form && p.bst >= 420 && G.SPRITE_META[p.dex] && p.types.some(x => Z.types.includes(x)));
+    if (!pool.length || !pool[0]) return;
     const mon = G.U.pick(pool);
     const bosses = G.Enemies.BOSSES;
     const ref = bosses.filter(b => b.at <= t).pop() || bosses[0];
     if (!ref) return;
-    const k = ref.at <= t ? 0.8 : 0.6;
+    const k = (ref.at <= t ? 0.8 : 0.6) * (Z.legend ? 1.35 : 1);
     G.Sprites.preload([mon.dex]);
     const def = Object.assign({}, ref, { at: t, dex: mon.dex, name: mon.name, hp: Math.round(ref.hp * k), dmg: Math.round(ref.dmg * 0.9),
       shotDmg: Math.round((ref.shotDmg || ref.dmg * 0.5) * 0.9), shotCd: ref.shotCd || 1.1, range: ref.range || 260 });
     const e = G.Spawner.spawnBossDef(def);
     if (!e) return;
     e.zoneBoss = z;
+    if (Z.legend) e.legend = true;
     e.ai = null;                  // se rehace con su ataque de zona (Enemy.bossInit)
     G.Spawner.say(G.I18n.f('¡Jefe de zona: {x}!', G.T(e.name)), 3.2);
     G.Guide.tip('zoneboss');

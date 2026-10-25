@@ -151,11 +151,13 @@ G.Spawner = (() => {
     if (preloadT <= 0) { preloadT = 10; G.Sprites.preload(G.Enemies.upcomingDex(t, 60)); }
 
     // --- jefes ---
-    const b = G.Enemies.BOSSES[bossIdx];
+    // (En la Mazmorra y en la Incursión los jefes los saca su modo: dungeon.js / raid.js.)
+    const own = (G.Dungeon && G.Dungeon.active) || (G.Raid && G.Raid.active && t >= G.Raid.AT - 1);
+    const b = own ? null : G.Enemies.BOSSES[bossIdx];
     if (b && t >= b.at) { spawnBoss(anchor(), t, b); bossIdx++; }
     // Tras irse Arceus (ver Judgment.retire): un jefe cada 3 min, el primero al minuto.
     // (Se elige con antelación para que su sprite ya esté cargado al salir.)
-    if (!b && G.Judgment.retired) {
+    if (!b && !own && G.Judgment.retired) {
       if (!extraT) { extraT = t + 60; extraNext = G.Enemies.extraBoss(extraT); }
       else if (t >= extraT) {
         spawnBoss(anchor(), t, G.Enemies.extraBoss(t, extraNext.dex));
@@ -189,8 +191,8 @@ G.Spawner = (() => {
   }
 
   /** Unos cuantos de golpe desde un lado (al empezar una horda). */
-  function burst(n) {
-    const base = Math.random() * 6.2832, target = anchor() || G.Game.player, t = G.Game.st.time;
+  function burst(n, at) {
+    const base = Math.random() * 6.2832, target = anchor() || G.Game.player, t = at != null ? at : G.Game.st.time;
     for (let i = 0; i < n && G.EnemyMgr.count < CAP + 10; i++) spawnOne(target, t, base + G.U.rand(-0.6, 0.6));
   }
 
@@ -238,7 +240,7 @@ G.Spawner = (() => {
   return { reset, update, ahead, burst, tickBanner, banner, banners, say, rate, SHINY_RATE, CAP,
            debugForceShiny(n = 1) { forceShiny = n; },
            /** Un jefe con su ficha ya hecha (jefes de zona, ver systems/extras.js). */
-           spawnBossDef(def) { const p = G.Game.player; return p ? spawnBoss(p, G.Game.st.time || 0, def) : null; },
+           spawnBossDef(def, t) { const p = G.Game.player; return p ? spawnBoss(p, t != null ? t : G.Game.st.time || 0, def) : null; },
            /** Menú de administrador: un jefe ya (como los de después de Arceus). */
            debugBoss(t) { const p = G.Game.player; if (p) spawnBoss(p, t, G.Enemies.extraBoss(t)); } };
 })();

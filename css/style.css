@@ -1109,12 +1109,14 @@ html:lang(zh) .btn, html:lang(zh) .chip { letter-spacing: 0; }
 @media (max-width: 700px) { .adminstats-btn { top: 5px; left: 92px; padding: 2px 6px; } .as-cards { grid-template-columns: repeat(2, 1fr); } }
 
 /* Elegir modo (25-10-2026) */
-.mode-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+.mode-cards { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 12px; }
+@media (max-width: 900px) { .mode-cards { grid-template-columns: 1fr 1fr; } }
 .mode-card { text-align: left; padding: 16px; cursor: pointer; display: flex; flex-direction: column; gap: 6px; border: 2px solid var(--edge);
   color: inherit; font: inherit; transition: transform .12s, border-color .12s; }
 .mode-card:hover, .mode-card:focus-visible { transform: translateY(-2px); border-color: #ffd23f; outline: none; }
 .mode-card b { font-size: 24px; }
 .mode-card.inf b { color: #9ae6ff; }
+.mode-card.dgn b { color: #ffcf7a; }
 .mode-card small { color: var(--muted); font-size: 13px; line-height: 1.35; }
 @media (max-width: 600px) { .mode-cards { grid-template-columns: 1fr; } }
 
@@ -1149,3 +1151,24 @@ html:lang(zh) .btn, html:lang(zh) .chip { letter-spacing: 0; }
 .guide-tip small { font-size: 12px; color: #e8eef8; line-height: 1.35; display: block; }
 @media (max-width: 600px) { .hub-cards { grid-template-columns: 1fr; } .guide-tip { top: 64px; } }
 @media (max-height: 500px) { .guide-tip { top: 74px; width: min(300px, 40vw); padding: 6px 10px; } .guide-tip small { font-size: 11px; } }
+
+/* Incursión en la sala (25-10-2026) */
+.lobby-raid { margin-top: 12px; padding: 10px 12px; }
+.lobby-raid .raid-row { display: flex; gap: 10px; align-items: center; }
+.lobby-raid .raid-row > div { display: flex; flex-direction: column; gap: 4px; }
+.lobby-raid .raid-chips { margin: 4px 0 0; flex-wrap: wrap; }
+.lobby-raid canvas { image-rendering: pixelated; flex: none; }
+
+/* Premio diario (25-10-2026) */
+.daily-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 12px; }
+.daily-day { position: relative; background: rgba(10,20,50,.55); border: 2px solid var(--edge); border-radius: 10px; padding: 8px 4px;
+  text-align: center; font-size: 12px; display: flex; flex-direction: column; gap: 6px; align-items: center; }
+.daily-day span { color: var(--muted); font-size: 11px; }
+.daily-day.done { opacity: .55; }
+.daily-day.now { border-color: #ffd23f; box-shadow: 0 0 12px rgba(255,210,63,.35); }
+.daily-day b { position: absolute; top: 2px; right: 6px; color: #5fe08a; }
+@media (max-width: 600px) { .daily-days { grid-template-columns: repeat(4, 1fr); } }
+
+/* Aviso de los administradores en el menú (25-10-2026) */
+.menu-notice { display: flex; gap: 8px; align-items: center; background: linear-gradient(90deg, rgba(255,210,63,.22), rgba(196,123,255,.18));
+  border: 2px solid #ffd23f; border-radius: 12px; padding: 10px 14px; margin-bottom: 10px; color: #fff6cf; font-size: 14px; line-height: 1.35; }

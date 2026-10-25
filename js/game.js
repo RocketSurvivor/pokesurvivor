@@ -130,6 +130,7 @@ G.Game = (() => {
     G.Spawner.reset();
     G.Rift.reset();
     G.LegendRift.reset();
+    G.Dungeon.reset(); G.Raid.reset(coop);
     G.GoldChest.reset(); G.Paths.reset(); G.BiomeFx.reset(); G.ZoneBoss.reset(); G.Season.reset();
     G.Judgment.reset();
     G.Events.reset();
@@ -172,6 +173,7 @@ G.Game = (() => {
     G.Weekly.applyPlayer(pl);
     if (!weekly) { G.Mons.applyTalent(pl, mon.dex); pl.setActive(0); }
     G.Season.applyPlayer(pl);
+    G.Dungeon.begin(pl);
 
     if (coop) {
       G.Coop.begin(coop, pl, coopApi);
@@ -418,6 +420,8 @@ G.Game = (() => {
     save.stats.bestLevel = Math.max(save.stats.bestLevel, pl.level);
     save.stats.coinsEarned += coins;
     const judge = G.Judgment.summary();
+    const dungeon = G.Dungeon.finish();             // Mazmorra: piso récord (y sus tickets ya van en pl.t1/t10/ts)
+    const raid = G.Raid.finish();
     if (judge) G.Progress.event('judgeEnd', judge);
     G.Judgment.reset();
     G.Progress.event('runEnd', { time: markT, level: fall ? fall.level : pl.level, coins: pl.coins, types: pl.mon.types, group: coop,
@@ -436,7 +440,7 @@ G.Game = (() => {
     // Desafío semanal: su propia tabla (y tu mejor marca de la semana), no la normal.
     const weeklyRec = pl.weekly ? G.Weekly.finish(mark) : false;
     if (pl.weekly && ok) G.Ranking.submitWeekly(Object.assign({}, mark, { dex: pl.startDex, shiny: false })).catch(() => {});
-    const sent = pl.weekly ? null
+    const sent = pl.weekly || dungeon || raid ? null
                : pl.mode === 'infinite' ? (ok ? G.Ranking.submitInfinite(Object.assign(mark, { dex: pl.startDex, shiny: pl.shiny })) : null)
                : ok && !coop ? G.Ranking.submitSolo(Object.assign(mark, { dex: pl.startDex, shiny: pl.shiny }))
                : ok && wasHost ? G.Ranking.submitGroup(Object.assign(mark, { members: team })) : null;
@@ -444,7 +448,7 @@ G.Game = (() => {
 
     G.RunUI.showOver({
       dead, time, level: pl.level, kills: pl.kills, bosses: pl.bosses, coins, record, t1: pl.t1, t10: pl.t10, ts: pl.ts || 0, judge, fall,
-      moves: pl.moves, caught, taken: pl.taken || {}, mastUp, mastDex: pl.startDex, weekly: pl.weekly, weeklyRec, mode: pl.mode,
+      moves: pl.moves, caught, taken: pl.taken || {}, mastUp, mastDex: pl.startDex, weekly: pl.weekly, weeklyRec, mode: pl.mode, dungeon, raid,
       breakdown: Object.entries(parts).filter(([, v]) => v).map(([k, v]) => `${k} ${v}`).join(' · ') +
                  (mul > 1 ? ` · ×${mul.toFixed(2)} Fortuna` : '')
     }, () => { pl = null; G.Flow.afterRun(); });
@@ -906,7 +910,7 @@ G.Game = (() => {
     time += dt;
 
     const b = Math.floor(time / 240);
-    if (b !== biome && !G.Rift.inArena && !G.Judgment.active) {
+    if (b !== biome && !G.Rift.inArena && !G.Judgment.active && !G.Dungeon.active) {
       biome = b;
       // (Sólo los 3 biomas normales: detrás van las paletas de las arenas de las grietas.)
       G.World.setBiome(b % G.Tiles.NORMAL);
@@ -927,7 +931,7 @@ G.Game = (() => {
     G.World.update(dt, G.Camera);
 
     const all = everyone();
-    if (!coop || G.Coop.isHost) { G.Path.update(dt, all); G.Spawner.update(dt, all, time); }
+    if (!coop || G.Coop.isHost) { G.Path.update(dt, all); G.Spawner.update(dt, all, G.Dungeon.active ? G.Dungeon.vt : time); }
     else G.Spawner.tickBanner(dt);
     G.EnemyMgr.update(dt, all);
     G.EnemyMgr.rebuildGrid();
@@ -946,12 +950,14 @@ G.Game = (() => {
     G.BiomeFx.update(dt, pl, time);
     G.Combos.update(pl);
     G.Paths.update(pl, time);
+    G.Dungeon.update(dt, pl);
+    G.Raid.update(dt, pl, time);
     G.Judgment.update(dt, pl, time);
     G.Events.update(dt, all, time);
     G.Weather.update(dt, time, pl);
     G.FX.update(dt);
 
-    G.Audio.music(G.Judgment.active ? G.Judgment.music : G.Rift.inArena ? 'rift' : G.EnemyMgr.bossAlive() ? 'boss' : G.BIOME_MUSIC[biome % G.BIOME_MUSIC.length]);
+    G.Audio.music(G.Judgment.active ? G.Judgment.music : G.Rift.inArena ? 'rift' : G.EnemyMgr.bossAlive() ? 'boss' : G.BIOME_MUSIC[(G.Dungeon.active ? G.World.biome : biome) % G.BIOME_MUSIC.length]);
     if (!coop || G.Coop.isHost) maybeLevelUp();
     maybeEvolve();
     if (pl.bonds > 0) offerBond(true);
@@ -998,6 +1004,8 @@ G.Game = (() => {
     if (rift) items.push({ y: rift.y, ent: rift });
     const gchest = pl && state !== 'ui' ? G.GoldChest.drawable() : null;
     if (gchest) items.push({ y: gchest.y, ent: gchest });
+    const stairs = pl && state !== 'ui' ? G.Dungeon.drawable() : null;
+    if (stairs) items.push({ y: stairs.y, ent: stairs });
     const arceus = pl && state !== 'ui' ? G.Judgment.drawable() : null;
     if (arceus) items.push({ y: arceus.y, ent: arceus });
     if (pl && state !== 'ui') for (const d of G.Events.drawables()) items.push({ y: d.y, ent: d });
@@ -1064,6 +1072,7 @@ G.Game = (() => {
     // Niebla del Bosque Umbrío (suceso de zona): sólo se ve alrededor de tu Pokémon.
     if (pl && state !== 'ui') { const cm = G.Camera; G.BiomeFx.drawHud(ctx, w, h, (pl.x - cm.left()) * cm.scale, (pl.y - 20 - cm.top()) * cm.scale); }
     if (!G.Judgment.cinematic) G.HUD.draw(ctx, w, h, pl, st);
+    if (pl && state !== 'ui') { G.Dungeon.drawHud(ctx, w, h, G.Camera, pl); G.Raid.drawHud(ctx, w, h, time); }
     G.Judgment.drawOverlay(ctx, w, h);
     G.Touch.draw(ctx);
     drawAimMark();
@@ -1127,7 +1136,7 @@ G.Game = (() => {
       G.Camera.follow(G.Camera.x, G.Camera.y, dt);
 
       biomeT += dt;
-      if (biomeT > 30) { biomeT = 0; bi = (bi + 1) % 3; G.World.setBiome(bi); }
+      if (biomeT > 30) { biomeT = 0; bi = (bi + 1) % G.Tiles.NORMAL; G.World.setBiome(bi); }
 
       for (const wd of wanderers) {
         wd.t -= dt;
@@ -1187,6 +1196,8 @@ G.Game = (() => {
     togglePause, cycleWatch,
     /** El compañero al que miras estando caído (o null). */
     get watching() { return watched(); },
+    /** Acaba la partida desde un modo (la incursión): en grupo, para todos. */
+    finishRun(dead) { if (state === 'ui' || state === 'over' || !pl) return; if (G.Coop.isHost) G.Coop.over(summary()); endRun(dead); },
     /** Abandona la partida en curso (p. ej. al cerrar sesión desde Ajustes). */
     quit() { if (state !== 'ui' && state !== 'over') quitRun(); },
     /** Para grabar vídeos: abre las cartas de subir de nivel. */
@@ -1202,7 +1213,7 @@ G.Game = (() => {
 G.Flow = {
   boot() {
     G.UI.initChrome();
-    G.LoginUI.init(); G.TestUI.init(); G.MenuUI.init(); G.GachaUI.init(); G.MovedexUI.init(); G.WeeklyUI.init(); G.AdminStatsUI.init();
+    G.LoginUI.init(); G.TestUI.init(); G.MenuUI.init(); G.GachaUI.init(); G.MovedexUI.init(); G.WeeklyUI.init(); G.AdminStatsUI.init(); G.DailyUI.init(); G.NoticeUI.init();
     document.querySelectorAll('#scr-mode [data-mode]').forEach(b => { b.onclick = () => { G.Audio.sfx('confirm'); G.Flow.play(b.dataset.mode); }; });
     G.SocialUI.init(); G.RankingUI.init(); G.ModUI.init(); G.GoalsUI.init(); G.ProfileUI.init(); G.SettingsUI.init(); G.SupportUI.init(); G.NewsUI.init(); G.LiveUI.init(); G.Updater.init();
     // Tu nombre arriba a la derecha abre tu perfil.
@@ -1249,6 +1260,8 @@ G.Flow = {
     G.MenuUI.open();
     if (!G.LoginUI.updateNotices()) G.LoginUI.offerRecovery();
     G.Guide.maybeShow();
+    G.DailyUI.maybeShow();
+    G.NoticeUI.refresh();
   },
   /** Al cerrar el resumen: a la sala si sigues en una, si no al menú. */
   afterRun() {
@@ -1264,6 +1277,8 @@ G.Flow = {
     if (!mode) {
       G.UI.show('scr-mode', true);
       const c = G.Season.cur(), s = G.DB.save, done = s && s.seasons && s.seasons[c.id];
+      const best = s && s.stats && s.stats.dgBest;
+      document.getElementById('mode-dgbest').textContent = best ? G.I18n.f('Tu récord: {x} pisos superados', best) : '';
       document.getElementById('mode-season').innerHTML = G.Icons.html('medal3', 16) + ' ' + G.I18n.f('{x}: los Pokémon de tipo {x} pegan un 10 % más.', c.name, G.T(G.U.TYPE_NAME[c.type]))
         + ' ' + (done ? G.T('Reto cumplido ✓') : G.T('Reto: aguanta 15 minutos con uno de ellos (premio: ticket shiny).'));
       return;

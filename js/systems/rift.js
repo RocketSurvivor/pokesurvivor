@@ -57,7 +57,7 @@ G.Rift = (() => {
       rift.ttl -= dt;
       if (rift.ttl <= 0) { rift = null; return; }
       if (!arena && !pl.dead && G.U.dist2(pl.x, pl.y, rift.x, rift.y - 10) < 30 * 30) enter();
-    } else if (!arena && authority() && time > FROM && (time < G.Judgment.AT - 120 || G.Judgment.retired)) {
+    } else if (!arena && authority() && !(G.Dungeon && G.Dungeon.active) && !(G.Raid && G.Raid.active) && time > FROM && (time < G.Judgment.AT - 120 || G.Judgment.retired)) {
       checkT -= dt;
       if (checkT <= 0) {
         checkT = CHECK;
@@ -159,7 +159,8 @@ G.Rift = (() => {
     G.Combat.clearFields();
     G.Hazards.clear();
     G.World.setArena({ tx: cfg.tx, ty: cfg.ty, r: cfg.r, type: cfg.type });
-    G.World.setBiome(G.Tiles.arenaBiome(cfg.type), true);
+    // (Giratina pelea en su Mundo Distorsión, la zona 5 de la run.)
+    G.World.setBiome(cfg.dex === 487 && !cfg.trio ? 5 : G.Tiles.arenaBiome(cfg.type), true);
     // Cada arena trae su clima (el volcán, sol; el glaciar, nieve...).
     const th = G.Tiles.ARENA_THEMES[cfg.type];
     if (th && th.weather) G.Weather.force(th.weather, arena.time + 15);

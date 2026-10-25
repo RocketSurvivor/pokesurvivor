@@ -302,6 +302,18 @@ service cloud.firestore {
         && request.resource.data.at == request.time;
     }
 
+    // Avisos de los administradores para todos (25-10-2026, js/ui/notice-ui.js):
+    // un único documento, notices/cur, que lee cualquiera y sólo escriben ellos.
+    match /notices/{id} {
+      allow read: if true;
+      allow delete: if admin() && id == 'cur';
+      allow create, update: if admin() && id == 'cur'
+        && request.resource.data.keys().hasOnly(['text', 'by', 'at', 'until'])
+        && request.resource.data.text is string && request.resource.data.text.size() > 0 && request.resource.data.text.size() <= 240
+        && request.resource.data.by is string && request.resource.data.by.size() <= 24
+        && request.resource.data.at is int && request.resource.data.until is int;
+    }
+
     // Para borrar todas tus marcas al borrar la cuenta (consulta de grupo).
     match /{path=**}/e/{id} {
       allow read: if signedIn();
