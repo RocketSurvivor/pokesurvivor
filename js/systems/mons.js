@@ -108,7 +108,11 @@ G.Mons = (() => {
   /** ¿Ya lo sabe sin MT (es de sus tipos)? */
   const natural = (dex, id) => G.Moves.poolFor(G.DEX_BY[dex], true).includes(id);
   /** MT que puede aprender (las que no sabe ya). */
-  function learnable(dex) { return G.TM_OF(dex).filter(id => G.Moves.BY_ID[id] && !natural(dex, id) && !taught(dex).includes(id)); }
+  function learnable(dex) {
+    // Las suyas de los juegos y, además, todas las de tipo Normal (cualquiera las aprende).
+    const all = new Set(G.TM_OF(dex).concat(G.Moves.NORMAL_TM));
+    return [...all].filter(id => G.Moves.BY_ID[id] && !natural(dex, id) && !taught(dex).includes(id));
+  }
   const canLearn = (dex, id) => learnable(dex).includes(id);
   /** Enseña una MT de la Mochila (se gasta). → true si se ha aprendido. */
   function teach(dex, id) {

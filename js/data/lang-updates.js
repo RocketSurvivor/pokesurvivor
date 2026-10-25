@@ -1268,4 +1268,39 @@
     "La Grieta de legendarios es ahora una grieta verde: en el minuto 15 (y cada 15 min, menos en el 30) se abre cerca de ti, y si entras te lleva a una arena donde te esperan los 3 legendarios a la vez. Tienes 3 min y 30 s para vencerlos y, al ganar, también te llevas un vínculo. La barra del jefe dice cuántos quedan.": "傳說裂縫現在是綠色裂縫：在第15分鐘（之後每15分鐘一次，第30分鐘除外）會在你附近打開，進入後會把你帶到競技場，3隻傳說寶可夢同時在那裡等你。你有3分30秒擊敗牠們，獲勝後還能獲得一個羈絆。首領血條會顯示還剩幾隻。",
     "El juego podía quedarse congelado en el minuto 15, al salir los 3 legendarios en el mapa entre todos los enemigos.": "在第15分鐘，3隻傳說寶可夢在地圖上和所有敵人一起出現時，遊戲可能會卡住。"
   }, 'zh-Hant');
+  G.I18n.add({
+    "MT de tipo Normal": "CT de type Normal",
+    "Siempre a la venta. Cualquier Pokémon puede aprender los ataques de tipo Normal con su MT.": "Toujours en vente. N'importe quel Pokémon peut apprendre les capacités de type Normal avec leur CT.",
+    "{x} ya lo aprende sin MT": "{x} l'apprend déjà sans CT",
+    "Pokémon de tipo Normal, y cualquiera con su MT": "Pokémon de type Normal, et n'importe lequel avec sa CT",
+    "Nuevo apartado en la Tienda Kecleon: MT de tipo Normal, siempre a la venta. Con ellas cualquier Pokémon puede aprender los ataques de tipo Normal (Placaje, Golpe Cuerpo, Vozarrón, Hiperrayo, Rapidez...).": "Nouvelle section dans la Boutique Kecleon : CT de type Normal, toujours en vente. Avec elles, n'importe quel Pokémon peut apprendre les capacités de type Normal (Charge, Plaquage, Mégaphone, Ultralaser, Météores...)."
+  }, 'fr');
+  G.I18n.add({
+    "MT de tipo Normal": "MT di tipo Normale",
+    "Siempre a la venta. Cualquier Pokémon puede aprender los ataques de tipo Normal con su MT.": "Sempre in vendita. Qualsiasi Pokémon può imparare le mosse di tipo Normale con la loro MT.",
+    "{x} ya lo aprende sin MT": "{x} la impara già senza MT",
+    "Pokémon de tipo Normal, y cualquiera con su MT": "Pokémon di tipo Normale, e qualsiasi con la sua MT",
+    "Nuevo apartado en la Tienda Kecleon: MT de tipo Normal, siempre a la venta. Con ellas cualquier Pokémon puede aprender los ataques de tipo Normal (Placaje, Golpe Cuerpo, Vozarrón, Hiperrayo, Rapidez...).": "Nuova sezione nel Negozio Kecleon: MT di tipo Normale, sempre in vendita. Con queste qualsiasi Pokémon può imparare le mosse di tipo Normale (Azione, Corposcontro, Granvoce, Iper Raggio, Comete...)."
+  }, 'it');
+  G.I18n.add({
+    "MT de tipo Normal": "MT do tipo Normal",
+    "Siempre a la venta. Cualquier Pokémon puede aprender los ataques de tipo Normal con su MT.": "Sempre à venda. Qualquer Pokémon pode aprender golpes do tipo Normal com a MT deles.",
+    "{x} ya lo aprende sin MT": "{x} já aprende sem MT",
+    "Pokémon de tipo Normal, y cualquiera con su MT": "Pokémon do tipo Normal, e qualquer um com a MT",
+    "Nuevo apartado en la Tienda Kecleon: MT de tipo Normal, siempre a la venta. Con ellas cualquier Pokémon puede aprender los ataques de tipo Normal (Placaje, Golpe Cuerpo, Vozarrón, Hiperrayo, Rapidez...).": "Nova seção na Loja Kecleon: MT do tipo Normal, sempre à venda. Com elas qualquer Pokémon pode aprender golpes do tipo Normal (Investida, Pancada Corporal, Voz Hiper, Hiper Raio, Meteoro...)."
+  }, 'pt-BR');
+  G.I18n.add({
+    "MT de tipo Normal": "一般属性招式学习器",
+    "Siempre a la venta. Cualquier Pokémon puede aprender los ataques de tipo Normal con su MT.": "一直在售。任何宝可梦都能用招式学习器学会一般属性招式。",
+    "{x} ya lo aprende sin MT": "{x} 不用招式学习器也会",
+    "Pokémon de tipo Normal, y cualquiera con su MT": "一般属性宝可梦，以及任何使用招式学习器的宝可梦",
+    "Nuevo apartado en la Tienda Kecleon: MT de tipo Normal, siempre a la venta. Con ellas cualquier Pokémon puede aprender los ataques de tipo Normal (Placaje, Golpe Cuerpo, Vozarrón, Hiperrayo, Rapidez...).": "凯克商店新增分区：一般属性招式学习器，一直在售。用它们任何宝可梦都能学会一般属性招式（撞击、泰山压顶、巨声、破坏光线、高速星星……）。"
+  }, 'zh-Hans');
+  G.I18n.add({
+    "MT de tipo Normal": "一般屬性招式學習器",
+    "Siempre a la venta. Cualquier Pokémon puede aprender los ataques de tipo Normal con su MT.": "一直在售。任何寶可夢都能用招式學習器學會一般屬性招式。",
+    "{x} ya lo aprende sin MT": "{x} 不用招式學習器也會",
+    "Pokémon de tipo Normal, y cualquiera con su MT": "一般屬性寶可夢，以及任何使用招式學習器的寶可夢",
+    "Nuevo apartado en la Tienda Kecleon: MT de tipo Normal, siempre a la venta. Con ellas cualquier Pokémon puede aprender los ataques de tipo Normal (Placaje, Golpe Cuerpo, Vozarrón, Hiperrayo, Rapidez...).": "凱克商店新增分區：一般屬性招式學習器，一直在售。用它們任何寶可夢都能學會一般屬性招式（撞擊、泰山壓頂、巨聲、破壞光線、高速星星……）。"
+  }, 'zh-Hant');
 })();

@@ -41,7 +41,7 @@ G.MovedexUI = (() => {
 
   function who(m) {
     if (m.type !== 'normal') return G.I18n.f('Pokémon de tipo {x}', G.T(G.U.TYPE_NAME[m.type]));
-    return m.kind === 'buff' ? G.T('Todos los Pokémon') : G.I18n.f('Pokémon de tipo {x}', G.T(G.U.TYPE_NAME.normal));
+    return m.kind === 'buff' ? G.T('Todos los Pokémon') : G.T('Pokémon de tipo Normal, y cualquiera con su MT');
   }
 
   function init() {

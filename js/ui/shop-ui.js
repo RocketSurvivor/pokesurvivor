@@ -556,15 +556,22 @@ G.ShopUI = (() => {
     }
     h += `</div><h3 style="margin:14px 0 6px">${G.T('MT de hoy')}</h3>
       <p class="sub" style="margin:0 0 8px">${G.T('Cada día hay otras 8. Una MT enseña su ataque a un Pokémon que lo aprenda en los juegos, para siempre (se gasta al usarla).')}</p><div class="upg">`;
-    for (const id of G.Shop.dailyTms()) {
+    const tmRow = id => {
       const m = G.Moves.BY_ID[id];
       const fits = partner && G.Mons.canLearn(partner, id);
       const cat = G.Stats.NAME[m.cat || (m.stat === 'patk' ? 'physical' : m.stat === 'satk' ? 'special' : '')];
       const tag = `<span class="tag-chip" style="background:${G.U.TYPE_COLOR[m.type]}">${G.U.TYPE_NAME[m.type]}</span>${cat ? `<span class="tag-chip cat">${cat}</span>` : ''}`;
       const note = fits ? `<span class="gold">${G.I18n.f('{x} la puede aprender', G.DEX_BY[partner].name)}</span>`
         : partner && G.Mons.taught(partner).includes(id) ? G.I18n.f('{x} ya la sabe', G.DEX_BY[partner].name) : G.T(m.desc);
-      h += row(G.Icons.html('move:' + id, 32), `${G.T('MT')} ${moveName(id)} ${tag}${mine(G.Shop.tmCount(id))}`, note, buyBtn('tm:' + id, G.Shop.tmPrice(id)));
-    }
+      const natural = partner && G.Mons.natural(partner, id);
+      return row(G.Icons.html('move:' + id, 32), `${G.T('MT')} ${moveName(id)} ${tag}${mine(G.Shop.tmCount(id))}`,
+        natural ? G.I18n.f('{x} ya lo aprende sin MT', G.DEX_BY[partner].name) : note, buyBtn('tm:' + id, G.Shop.tmPrice(id)));
+    };
+    for (const id of G.Shop.dailyTms()) h += tmRow(id);
+    // Apartado fijo: todas las MT de tipo Normal, siempre a la venta, para cualquier Pokémon.
+    h += `</div><h3 style="margin:14px 0 6px">${G.T('MT de tipo Normal')}</h3>
+      <p class="sub" style="margin:0 0 8px">${G.T('Siempre a la venta. Cualquier Pokémon puede aprender los ataques de tipo Normal con su MT.')}</p><div class="upg">`;
+    for (const id of G.Moves.NORMAL_TM) h += tmRow(id);
     return h + '</div>';
   }
 

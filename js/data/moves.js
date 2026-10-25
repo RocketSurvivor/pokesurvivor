@@ -1093,6 +1093,13 @@
     return true;
   }
 
+  /*
+   * MT de tipo Normal (25-10-2026): los ataques Normales (Placaje, Hiperrayo...)
+   * los puede aprender CUALQUIER Pokémon con su MT, que siempre está a la venta
+   * en su apartado de la Tienda Kecleon. Sin la MT siguen siendo de los de tipo Normal.
+   */
+  const NORMAL_TM = RAW.filter(m => m.type === 'normal' && !ANYONE.has(m.id)).map(m => m.id);
+
   G.Moves = { ALL: RAW, BY_ID, POOL, poolFor, instance, levelUp, nextUpText, startFor,
-              EVO, NEED_NAME, evoInfo, evolve };
+              EVO, NEED_NAME, evoInfo, evolve, ANYONE, NORMAL_TM };
 })();

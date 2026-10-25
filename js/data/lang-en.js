@@ -1224,5 +1224,10 @@ G.I18n.add({
   "¡Tres legendarios te esperaban en la grieta verde!": "Three legendaries were waiting in the green rift!",
   "¡Has vencido a los tres legendarios! Recoge el premio…": "You beat all three legendaries! Grab the reward…",
   "La Grieta de legendarios es ahora una grieta verde: en el minuto 15 (y cada 15 min, menos en el 30) se abre cerca de ti, y si entras te lleva a una arena donde te esperan los 3 legendarios a la vez. Tienes 3 min y 30 s para vencerlos y, al ganar, también te llevas un vínculo. La barra del jefe dice cuántos quedan.": "The Legendary Rift is now a green rift: at minute 15 (and every 15 min, except at 30) it opens near you, and if you go in it takes you to an arena where all 3 legendaries are waiting. You have 3 min 30 s to beat them and, if you win, you also get a bond. The boss bar shows how many are left.",
-  "El juego podía quedarse congelado en el minuto 15, al salir los 3 legendarios en el mapa entre todos los enemigos.": "The game could freeze at minute 15, when the 3 legendaries came out on the map among all the enemies."
+  "El juego podía quedarse congelado en el minuto 15, al salir los 3 legendarios en el mapa entre todos los enemigos.": "The game could freeze at minute 15, when the 3 legendaries came out on the map among all the enemies.",
+  "MT de tipo Normal": "Normal-type TMs",
+  "Siempre a la venta. Cualquier Pokémon puede aprender los ataques de tipo Normal con su MT.": "Always for sale. Any Pokémon can learn Normal-type moves with their TM.",
+  "{x} ya lo aprende sin MT": "{x} already learns it without a TM",
+  "Pokémon de tipo Normal, y cualquiera con su MT": "Normal-type Pokémon, and any Pokémon with its TM",
+  "Nuevo apartado en la Tienda Kecleon: MT de tipo Normal, siempre a la venta. Con ellas cualquier Pokémon puede aprender los ataques de tipo Normal (Placaje, Golpe Cuerpo, Vozarrón, Hiperrayo, Rapidez...).": "New section in the Kecleon Shop: Normal-type TMs, always for sale. With them any Pokémon can learn Normal-type moves (Tackle, Body Slam, Hyper Voice, Hyper Beam, Swift...)."
 });

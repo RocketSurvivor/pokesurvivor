@@ -79,7 +79,7 @@ G.Shop = (() => {
     const s = save();
     if (!s) return { ok: false };
     const tm = key.startsWith('tm:') ? key.slice(3) : null;
-    if (tm && !dailyTms().includes(tm)) return { ok: false, error: 'Esa MT ya no está a la venta.' };
+    if (tm && !dailyTms().includes(tm) && !G.Moves.NORMAL_TM.includes(tm)) return { ok: false, error: 'Esa MT ya no está a la venta.' };
     if (!tm && !ITEMS[key]) return { ok: false };
     const price = tm ? tmPrice(tm) : ITEMS[key].price;
     if (s.coins < price) return { ok: false, error: 'No tienes Pokémonedas suficientes.' };
