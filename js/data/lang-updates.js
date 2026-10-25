@@ -1408,4 +1408,24 @@
     "Para cambiar el orden, toca uno y luego otro: se intercambian.": "要更改順序，先點一個再點另一個：兩者會互換。",
     "Mejora automática: para cambiar el orden ya no hay flechas; tocas una estadística o un ataque y luego otro, y se intercambian.": "自動強化：不再用箭頭調整順序；點一個能力或招式，再點另一個，兩者就會互換。"
   }, 'zh-Hant');
+  G.I18n.add({
+    "Nivel {x}": "Niveau {x}",
+    "Mejora automática: ya no se abren las cartas al subir de nivel. Sale un aviso con lo que ha cogido y la partida sigue sin pararse (en cooperativo se siguen viendo las cartas, porque hay que esperar a los demás).": "Amélioration auto : les cartes ne s'ouvrent plus à chaque niveau. Un message indique ce qui a été choisi et la partie continue sans s'arrêter (en coopération, les cartes restent visibles, car il faut attendre les autres)."
+  }, 'fr');
+  G.I18n.add({
+    "Nivel {x}": "Livello {x}",
+    "Mejora automática: ya no se abren las cartas al subir de nivel. Sale un aviso con lo que ha cogido y la partida sigue sin pararse (en cooperativo se siguen viendo las cartas, porque hay que esperar a los demás).": "Potenziamento automatico: le carte non si aprono più quando sali di livello. Un avviso mostra cosa ha scelto e la partita continua senza fermarsi (in cooperativa le carte si vedono ancora, perché bisogna aspettare gli altri)."
+  }, 'it');
+  G.I18n.add({
+    "Nivel {x}": "Nível {x}",
+    "Mejora automática: ya no se abren las cartas al subir de nivel. Sale un aviso con lo que ha cogido y la partida sigue sin pararse (en cooperativo se siguen viendo las cartas, porque hay que esperar a los demás).": "Melhoria automática: as cartas não abrem mais ao subir de nível. Aparece um aviso com o que foi escolhido e a partida continua sem parar (no cooperativo as cartas ainda aparecem, porque é preciso esperar os outros)."
+  }, 'pt-BR');
+  G.I18n.add({
+    "Nivel {x}": "等级 {x}",
+    "Mejora automática: ya no se abren las cartas al subir de nivel. Sale un aviso con lo que ha cogido y la partida sigue sin pararse (en cooperativo se siguen viendo las cartas, porque hay que esperar a los demás).": "自动强化：升级时不再打开卡牌。会显示一条提示说明选了什么，游戏不会暂停（合作模式中仍会显示卡牌，因为要等其他人）。"
+  }, 'zh-Hans');
+  G.I18n.add({
+    "Nivel {x}": "等級 {x}",
+    "Mejora automática: ya no se abren las cartas al subir de nivel. Sale un aviso con lo que ha cogido y la partida sigue sin pararse (en cooperativo se siguen viendo las cartas, porque hay que esperar a los demás).": "自動強化：升級時不再打開卡牌。會顯示一則提示說明選了什麼，遊戲不會暫停（合作模式中仍會顯示卡牌，因為要等其他人）。"
+  }, 'zh-Hant');
 })();

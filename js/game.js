@@ -486,7 +486,8 @@ G.Game = (() => {
     pendingLevels--;
     state = 'levelup';
     G.Audio.sfx('levelup');
-    G.RunUI.showLevelUp(pl.level, G.LevelUp.offer(pl), card => {
+    // (El nivel de esta subida: si se han ganado varios de golpe, van uno a uno.)
+    G.RunUI.showLevelUp(Math.max(1, pl.level - pendingLevels), G.LevelUp.offer(pl), card => {
       G.Audio.sfx('confirm');
       card.apply(pl);
       state = 'playing';

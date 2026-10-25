@@ -22,6 +22,16 @@ G.RunUI = (() => {
 
   /** @param coop  en grupo: tras elegir, se queda esperando a los demás */
   function showLevelUp(level, list, cb, coop = false) {
+    // Mejora automática (sólo partidas de uno): no se abren las cartas; se elige la
+    // mejor al momento, sale un aviso con lo que ha cogido y sigue la partida (y la
+    // siguiente subida, si hay más pendientes). En grupo se ven las cartas (hay que
+    // esperar a los demás) y se eligen solas igual.
+    if (!coop && autoOn() && list.length) {
+      const c = list[bestCard(list)];
+      autoFeed(level, c);
+      cb(c);
+      return;
+    }
     offerCb = cb; coopMode = coop;
     $('lvl-num').textContent = level;
     $('lvl-wait').textContent = '';
@@ -113,6 +123,24 @@ G.RunUI = (() => {
       autoT = setTimeout(() => { if (offers) pick(i); }, 180);
     };
     autoT = setTimeout(tryPick, GUARD * 1000 + 40);
+  }
+
+  /** Aviso rectangular de lo que ha cogido la mejora automática (se apilan y se van solos). */
+  function autoFeed(level, c) {
+    let box = document.getElementById('auto-feed');
+    if (!box) { box = document.createElement('div'); box.id = 'auto-feed'; document.body.appendChild(box); }
+    const el = document.createElement('div');
+    el.className = 'auto-feed-it' + (c.type === 'evo' ? ' evo' : '');
+    el.style.borderColor = c.color || '#8fa3c4';
+    // El título de las cartas de ataque ya va traducido; el de las estadísticas no.
+    const title = c.type === 'stat' ? G.T(c.title) : c.title;
+    const tag = c.type === 'new' ? G.T('Nuevo') : c.type === 'stat' ? '' : c.tag;
+    el.innerHTML = `<div class="ic" style="background:${c.color}33">${G.Icons.html(c.icon, 24)}</div>
+      <div class="tx"><small>${G.I18n.f('Nivel {x}', level)} · ${G.T('Mejora automática')}</small><b>${title}${tag ? ` <span class="tag-chip" style="background:${c.color}">${tag}</span>` : ''}</b></div>`;
+    box.appendChild(el);
+    while (box.children.length > 4) box.firstChild.remove();
+    setTimeout(() => el.classList.add('out'), 2600);
+    setTimeout(() => el.remove(), 3100);
   }
 
   /** Ataques que puede aprender el Pokémon de esta partida, por el orden de la mejora automática. */
