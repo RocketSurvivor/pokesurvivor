@@ -597,7 +597,7 @@ G.Ranking = (() => {
   }
 
   // Cuenta de moderación (firestore.rules, admin()): la pantalla oculta de js/ui/mod-ui.js.
-  const ADMINS = ['o3u87KVZmgecIpACkaWW0HFPlhn1', 'iwfb9nOrIES0lq8ypnW1FmmPtGK2', 'Gs9Ne9k009fBPqRW7xt0tYYpjNB2'];
+  const ADMINS = ['o3u87KVZmgecIpACkaWW0HFPlhn1', 'iwfb9nOrIES0lq8ypnW1FmmPtGK2', 'Gs9Ne9k009fBPqRW7xt0tYYpjNB2', 'Ti1M9fSFoROgL5Om8EPG76EjAD83'];
   const isAdmin = () => !!fbx() && ADMINS.includes(fbx().uid);
 
   /** Admin: los reportes, juntos por marca (los más reportados primero). */

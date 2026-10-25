@@ -12,7 +12,7 @@ G.Admin = (() => {
   const NAMES = ['admin'];
   // Otras cuentas de la nube con todo desbloqueado (por su UID de Firebase, que no se
   // puede falsificar). Los moderadores del ranking van en net/ranking.js y firestore.rules.
-  const UIDS = ['iwfb9nOrIES0lq8ypnW1FmmPtGK2', 'Gs9Ne9k009fBPqRW7xt0tYYpjNB2'];   // last, maka
+  const UIDS = ['iwfb9nOrIES0lq8ypnW1FmmPtGK2', 'Gs9Ne9k009fBPqRW7xt0tYYpjNB2', 'Ti1M9fSFoROgL5Om8EPG76EjAD83'];   // last, maka y Ti1M9…
   // Títulos de perfil sólo para estas cuentas (además de los de los logros).
   // Son nombres propios: se ven igual en todos los idiomas.
   const TITLES = ['XUFARDA SUPREMA', 'MINIOCH COGOMBRO'];
@@ -21,7 +21,7 @@ G.Admin = (() => {
   const isAdminName = name => NAMES.includes(String(name || '').trim().toLowerCase());
   // Administradores (25-10-2026): su nombre sale en verde en el ranking, amigos, salas,
   // perfiles y cooperativo, y tienen el menú de administrador en la partida.
-  const ADMIN_UIDS = ['o3u87KVZmgecIpACkaWW0HFPlhn1', 'iwfb9nOrIES0lq8ypnW1FmmPtGK2', 'Gs9Ne9k009fBPqRW7xt0tYYpjNB2'];   // admin, last, maka
+  const ADMIN_UIDS = ['o3u87KVZmgecIpACkaWW0HFPlhn1', 'iwfb9nOrIES0lq8ypnW1FmmPtGK2', 'Gs9Ne9k009fBPqRW7xt0tYYpjNB2', 'Ti1M9fSFoROgL5Om8EPG76EjAD83'];   // admin, last, maka y Ti1M9…
   const GREEN = '#4dff7a';
   const isUid = uid => !!uid && ADMIN_UIDS.includes(uid);
   /** ¿La cuenta con la que juegas ahora es de administrador? */
