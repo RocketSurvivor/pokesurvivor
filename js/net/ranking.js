@@ -104,8 +104,10 @@ G.Ranking = (() => {
   }
 
   /** El filtro por Pokémon sólo existe en el histórico. */
+  // Modo Infinito (25-10-2026): mode 'i', tablas "s_i..." (en solitario: firestore.rules las trata como "s_").
   function board(mode, period, dex) {
-    return mode + '_' + boardIds()[period] + (dex && period === 'a' ? '_p' + dex : '');
+    const pre = mode === 'i' ? 's_i' : mode + '_';
+    return pre + boardIds()[period] + (dex && period === 'a' ? '_p' + dex : '');
   }
 
   const col = b => fbx().fs.collection('lb').doc(b).collection('e');
@@ -362,6 +364,19 @@ G.Ranking = (() => {
     return better;
   }
 
+  /** Modo Infinito: sus tablas (diaria ... histórica y por Pokémon), en solitario. */
+  function submitInfinite(r) { return track(submitInfiniteNow(r)); }
+  async function submitInfiniteNow(r) {
+    const fb = fbx();
+    if (!fb || !G.Social.me || r.t < MIN_T) return [];
+    const entry = { t: r.t, uids: [fb.uid], names: [G.Social.me.name], dex: [r.dex], shiny: [!!r.shiny], lv: r.lv, kills: r.kills, dmg: 0 };
+    const boards = PERIODS.map(([p]) => [board('i', p), p]);
+    if (r.t >= MIN_T_MON) boards.push([board('i', 'a', r.dex), 'p']);
+    const better = await store(boards, fb.uid, entry);
+    announce(better);
+    return better;
+  }
+
   /** Desafío semanal: su tabla de la semana (s_wk<semana>a). */
   const weeklyBoard = () => 's_wk' + periodIds().w + GEN;
   function submitWeekly(r) { return track(submitWeeklyNow(r)); }
@@ -453,7 +468,7 @@ G.Ranking = (() => {
     const ck = 'f:' + b + ':' + circle.slice().sort().join(',');
     let extra = cacheGet(ck);
     if (extra === undefined) {
-      if (mode === 's') {
+      if (mode === 's' || mode === 'i') {
         const missing = circle.filter(u => !inTop.some(r => r.id === u));
         const docs = await Promise.all(missing.map(u => col(b).doc(u).get().catch(() => null)));
         extra = docs.filter(d => d && d.exists).map(d => rowOf(d.id, d.data()));
@@ -482,10 +497,10 @@ G.Ranking = (() => {
     const c = cacheGet(ck);
     if (c !== undefined) return c;
     // Si este navegador ya sabe que no tienes marca en esta tabla, no se mira.
-    const kb = bests(), mk = b + ':' + (mode === 's' ? fb.uid : '*');
+    const kb = bests(), mk = b + ':' + (mode === 's' || mode === 'i' ? fb.uid : '*');
     if (kb[mk] === 0) { cacheSet(ck, null); return null; }
     let mine = null;
-    if (mode === 's') {
+    if (mode === 's' || mode === 'i') {
       const d = await col(b).doc(fb.uid).get();
       if (d.exists) mine = rowOf(d.id, d.data());
     } else {
@@ -675,6 +690,6 @@ G.Ranking = (() => {
       t1: (v.tickets || {}).t1 || 0, t10: (v.tickets || {}).t10 || 0, owned: Object.keys(v.owned || {}).length }; });
   }
 
-  return { PERIODS, periodIds, board, runStarted, submitSolo, submitGroup, submitWeekly, weeklyTop, top, topDmg, myRank, removeMine,
+  return { PERIODS, periodIds, board, runStarted, submitSolo, submitGroup, submitWeekly, submitInfinite, weeklyTop, top, topDmg, myRank, removeMine,
            report, reported, isAdmin, reports, entryInfo, removeEntry, purgeAbove, removeEverywhere, setMarked, dismiss, markedAccounts };
 })();

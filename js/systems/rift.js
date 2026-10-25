@@ -124,7 +124,9 @@ G.Rift = (() => {
     if (forceType && pool.some(p => p.types.includes(forceType))) pool = pool.filter(p => p.types.includes(forceType));
     // Los legendarios que aún no has vencido salen 4 veces más (menos repetidos).
     const beaten = (G.DB.save && G.DB.save.legends) || {};
-    const ws = pool.map(p => (beaten[p.dex] ? 1 : 4));
+    // (Temporada: los legendarios de su tipo salen el triple.)
+    const st = G.Season ? G.Season.cur().type : '';
+    const ws = pool.map(p => (beaten[p.dex] ? 1 : 4) * (p.types.includes(st) ? 3 : 1));
     let r = Math.random() * ws.reduce((a, b) => a + b, 0), mi = 0;
     while (mi < pool.length - 1 && (r -= ws[mi]) > 0) mi++;
     const mon = pool[mi];

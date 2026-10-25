@@ -7,7 +7,8 @@
  */
 G.AdminStatsUI = (() => {
   const $ = G.UI.$;
-  const P = [['d', 'Hoy'], ['w', 'Esta semana'], ['m', 'Este mes'], ['a', 'Histórico']];
+  const P = [['d', 'Hoy'], ['w', 'Esta semana'], ['m', 'Este mes'], ['a', 'Histórico'], ['errs', 'Fallos']];
+  const esc = v => String(v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   let period = 'w';
 
   function init() {
@@ -24,9 +25,23 @@ G.AdminStatsUI = (() => {
     render();
   }
 
+  /** Los informes de fallos que manda el juego (js/core/errlog.js). */
+  async function renderErrs(box) {
+    let list = [];
+    try { list = await G.ErrLog.list(); }
+    catch (e) { box.innerHTML = `<p class="sub">${G.T('No se han podido leer los fallos. ¿Has publicado las reglas nuevas de Firestore?')}</p>`; return; }
+    if (!list.length) { box.innerHTML = `<p class="sub">${G.T('No hay fallos. ¡Bien!')}</p>`; return; }
+    box.innerHTML = list.map(r => `<div class="panel as-err">
+      <div class="row between"><b>${esc(r.msg)}</b><button class="btn small ghost" data-del="${esc(r.id)}">${G.T('Borrar')}</button></div>
+      <small>${esc(new Date(r.at).toLocaleString(G.I18n.locale))} · ${esc(r.name || r.uid)} · ${esc(r.where)} · v${esc(r.v)}</small>
+      <details><summary>${G.T('Detalles')}</summary><pre>${esc(r.stack)}\n\n${esc(r.ua)}</pre></details></div>`).join('');
+    box.querySelectorAll('[data-del]').forEach(b => b.onclick = async () => { b.disabled = true; try { await G.ErrLog.remove(b.dataset.del); } catch (e) { /* nada */ } render(); });
+  }
+
   async function render() {
     const box = $('as-body');
     box.innerHTML = `<p class="sub">${G.T('Cargando…')}</p>`;
+    if (period === 'errs') { renderErrs(box); return; }
     let solo = [], group = [];
     try { [solo, group] = await Promise.all([G.Ranking.top('s', period), G.Ranking.top('g', period)]); }
     catch (e) { box.innerHTML = `<p class="sub">${G.T('No se ha podido leer el ranking.')}</p>`; return; }

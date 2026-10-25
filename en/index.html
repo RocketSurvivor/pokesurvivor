@@ -77,8 +77,8 @@
   ]
 }
 </script>
-<link rel="stylesheet" href="css/style.css?v=1f7271e94a">
-<script src="js/core/locales.js?v=3af6ed7123"></script>
+<link rel="stylesheet" href="css/style.css?v=5c8e66d447">
+<script src="js/core/locales.js?v=1608fb06b6"></script>
 <script src="js/noframe.js"></script>
 </head>
 <body>
@@ -449,6 +449,23 @@
 </div>
 
 <!-- ====== Colección ====== -->
+<section id="scr-mode" class="scr dim hidden">
+  <div class="box">
+    <div class="row between"><h2>Elige el modo</h2><button class="btn small ghost" data-back>Volver</button></div>
+    <p id="mode-season" class="gold" style="margin:6px 0 0"></p>
+    <div class="mode-cards">
+      <button class="panel mode-card" data-mode="normal" type="button">
+        <b>Normal</b>
+        <small>Como siempre: en el minuto 30 llega la Sentencia de Arceus. Si caes, se acaba la partida.</small>
+      </button>
+      <button class="panel mode-card inf" data-mode="infinite" type="button">
+        <b>Infinito</b>
+        <small>Sin Arceus. Las oleadas, jefes y grietas siguen para siempre y cada vez son más fuertes. ¿Cuánto aguantas? Tiene su propio ranking.</small>
+      </button>
+    </div>
+  </div>
+</section>
+
 <section id="scr-adminstats" class="scr dim hidden">
   <div class="box wide">
     <div class="row between"><h2>Panel del juego</h2><button class="btn small ghost" data-back>Volver</button></div>
@@ -670,6 +687,6 @@
 </section>
 
 <!-- datos generados -->
-<script defer src="js/app.min.js?v=78738a54ff"></script>
+<script defer src="js/app.min.js?v=cbeb120f07"></script>
 </body>
 </html>

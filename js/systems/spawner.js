@@ -219,6 +219,8 @@ G.Spawner = (() => {
 
   return { reset, update, ahead, burst, tickBanner, banner, say, rate, SHINY_RATE, CAP,
            debugForceShiny(n = 1) { forceShiny = n; },
+           /** Un jefe con su ficha ya hecha (jefes de zona, ver systems/extras.js). */
+           spawnBossDef(def) { const p = G.Game.player; return p ? spawnBoss(p, G.Game.st.time || 0, def) : null; },
            /** Menú de administrador: un jefe ya (como los de después de Arceus). */
            debugBoss(t) { const p = G.Game.player; if (p) spawnBoss(p, t, G.Enemies.extraBoss(t)); } };
 })();

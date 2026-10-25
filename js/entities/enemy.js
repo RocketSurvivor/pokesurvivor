@@ -498,6 +498,8 @@
         phase2 = ['rain', 'beam', 'nova', 'volley', 'spiral', 'cage', 'cross', 'storm', 'snipe'];
         ranged.push(G.U.hash(this.dex, 7, 3) < 0.5 ? 'storm' : 'snipe');
       }
+      // Jefe de zona (25-10-2026): su ataque propio de la zona, además de los suyos.
+      if (this.zoneBoss != null) ranged.push('zone', 'zone');
       const far = this.behavior === 'ranged';
       this.ai = { melee, ranged, phase2, farLike: far ? 0.65 : 0.35, mode: far ? 'far' : 'close', modeT: G.U.rand(6, 8),
                   cd: 1.6, cast: null, fury: false, side: Math.random() < 0.5 ? -1 : 1 };
@@ -625,6 +627,11 @@
           c.wind = 1.0; c.after = 0.7; this.anim.play('Charge', { speed: 1.1 });
           break;
         }
+        case 'zone':       // jefe de zona: esporas (bosque), cristales (cueva) o lava (volcán) a tu alrededor
+          c.wind = 0.5; c.after = 0.4; c.dur = ai.fury ? 2.6 : 2.0; c.every = ai.fury ? 0.2 : 0.26; c.next = 0;
+          this.anim.play('Charge', { speed: 1.2 });
+          G.FX.ring(this.x, this.y, this.r, this.r * 5, G.ZoneBoss.color(this.zoneBoss), 0.6, 4);
+          break;
         case 'storm':      // tormenta: zonas que caen por todas partes a tu alrededor
           c.wind = 0.4; c.after = 0.3; c.dur = ai.fury ? 2.4 : 2.0; c.every = ai.fury ? 0.14 : 0.18; c.next = 0;
           this.anim.play('Charge', { speed: 1.2 });
@@ -651,6 +658,16 @@
         if (c.t >= c.wind + c.dur) return this.bossEnd();
         const sp = c.len / c.dur;
         return [Math.cos(c.ang) * sp, Math.sin(c.ang) * sp, 'Walk'];
+      }
+      if (c.id === 'zone' && c.t >= c.wind) {
+        while (c.t - c.wind >= c.next && c.next < c.dur) {
+          const a = Math.random() * 6.2832, d = G.U.rand(0, 200), z = this.zoneBoss;
+          this.hazard({ kind: 'zone', x: pl.x + Math.cos(a) * d, y: pl.y + Math.sin(a) * d * 0.8, r: z === 2 ? 56 : 44,
+                          delay: 0.95, dmg: this.shotDmg() * 1.1, type: G.ZoneBoss.type(z), color: G.ZoneBoss.color(z) });
+          c.next += c.every;
+        }
+        if (c.t >= c.wind + c.dur + c.after) return this.bossEnd();
+        return [0, 0, 'Idle'];
       }
       if (c.id === 'storm' && c.t >= c.wind) {
         while (c.t - c.wind >= c.next && c.next < c.dur) {

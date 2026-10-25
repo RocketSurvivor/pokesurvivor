@@ -626,7 +626,9 @@ G.Tiles = (() => {
 
   function clearProps() { propCache.clear(); }
 
-  return { T, BIOMES, NORMAL, ARENA, ARENA_THEMES, ARENA_TYPES, paintChunk, propSprite, clearProps,
+  /** La zona (0 Bosque, 1 Cueva, 2 Volcán) de un tramo de bioma, que va subiendo cada 4 min. */
+  const zoneOf = b => ((b % NORMAL) + NORMAL) % NORMAL;
+  return { zoneOf, T, BIOMES, NORMAL, ARENA, ARENA_THEMES, ARENA_TYPES, paintChunk, propSprite, clearProps,
            /** Índice de bioma de la arena de un tipo. */
            arenaBiome: type => ARENA + Math.max(0, ARENA_TYPES.indexOf(type)) };
 })();

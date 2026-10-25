@@ -87,6 +87,8 @@ G.AchDefs = (() => {
     { id: 'mv30', cat: 'combate', tier: 1, name: 'Repertorio', desc: 'Usa 30 ataques distintos.', value: count('mvUsed'), goal: 30, reward: { t1: 3 } },
     { id: 'mv80', cat: 'combate', tier: 2, name: 'Gran repertorio', desc: 'Usa 80 ataques distintos.', value: count('mvUsed'), goal: 80, reward: { t10: 1 } },
     { id: 'mvAll', cat: 'combate', tier: 3, name: 'Movedex completa', desc: 'Usa todos los ataques del juego.', value: count('mvUsed'), goal: 999, reward: { t10: 3 }, title: 'Enciclopedia de ataques' },
+    { id: 'season1', cat: 'otros', tier: 2, name: 'De temporada', desc: 'Cumple el reto de una temporada (15 minutos con un Pokémon de su tipo).', value: st('seasons'), goal: 1, reward: { t10: 1 } },
+    { id: 'season3', cat: 'otros', tier: 3, name: 'Veterano de temporadas', desc: 'Cumple el reto de 3 temporadas.', value: st('seasons'), goal: 3, reward: { t10: 3 }, title: 'Veterano de temporadas' },
     { id: 'weekly10', cat: 'otros', tier: 2, name: 'Retador incansable', desc: 'Juega 10 Desafíos semanales.', value: st('weekly'), goal: 10, reward: { t10: 1 }, title: 'Retador' }
   ];
 

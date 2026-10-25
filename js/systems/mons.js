@@ -174,6 +174,34 @@ G.Mons = (() => {
     return now.rank > before ? now : null;
   }
 
-  return { mastery, addMastery, MAST_NAME, MAST_REQ_TEXT, name, natureOf, setNature, rolledNature, monFor, abilityOf, abilityChoices, setAbility, abilityName,
+  // ---------------- Talentos (25-10-2026) ----------------
+  // Con la maestría Maestro (rango 4) eliges uno de dos talentos para ese Pokémon,
+  // para todas sus partidas (menos el Desafío semanal). Se puede cambiar cuando quieras.
+  const TALENTS = {
+    start: { name: 'Comienzo veloz', desc: 'Empiezas cada partida con un ataque más de sus tipos.' },
+    tough: { name: 'Cuerpo curtido', desc: '+15 % de vida máxima en todas sus partidas.' }
+  };
+  const TALENT_RANK = 4;
+  function talentOf(dex) { const s = save(), t = s && s.talent && s.talent[dex]; return t && TALENTS[t[0]] ? t[0] : null; }
+  function setTalent(dex, id) {
+    const s = save();
+    if (!s || !TALENTS[id] || mastery(dex).rank < TALENT_RANK) return false;
+    s.talent = s.talent || {};
+    s.talent[dex] = [id, Date.now()];
+    return true;
+  }
+  /** Lo aplica game.js al empezar la partida. */
+  function applyTalent(pl, dex) {
+    const t = talentOf(dex);
+    if (t === 'tough') pl.addMaxHp(Math.round(pl.maxHp * 0.15));
+    else if (t === 'start') {
+      const pool = G.Moves.poolFor(pl.mon, true).filter(id => { const m = G.Moves.BY_ID[id]; return m && m.kind !== 'buff' && !pl.hasMove(id) && pl.mon.types.includes(m.type); });
+      const side = pool.filter(id => G.Stats.fit(pl.mon, G.Moves.BY_ID[id].cat) >= 0.999);
+      const id = G.U.pick(side.length ? side : pool);
+      if (id) pl.addMove(id);
+    }
+  }
+
+  return { mastery, addMastery, MAST_NAME, MAST_REQ_TEXT, TALENTS, TALENT_RANK, talentOf, setTalent, applyTalent, name, natureOf, setNature, rolledNature, monFor, abilityOf, abilityChoices, setAbility, abilityName,
            slots, taught, learnable, canLearn, teach, forget, natural };
 })();

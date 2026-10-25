@@ -195,14 +195,18 @@ G.Enemies = (() => {
   // (El "tiempo extra" del minuto 60 se quitó al llegar la Sentencia de Arceus,
   //  que acaba todas las partidas en el minuto 30: ver systems/judgment.js.)
   function scale(t) {
-    return { hp: 1 + t / 95, dmg: 1 + t / 420, spd: 1 + Math.min(0.35, t / 1400) };
+    const m = G.Mode ? G.Mode.scale(t) : { hp: 1, dmg: 1 };       // modo Infinito, desde el minuto 30
+    return { hp: (1 + t / 95) * m.hp, dmg: (1 + t / 420) * m.dmg, spd: 1 + Math.min(0.35, t / 1400) };
   }
 
   /**
    * Los jefes ya traen su vida base creciente (1.400 ... 16.000), así que
    * escalan mucho más suave: con la curva normal el último llegaba a 168.000 PV.
    */
-  function bossScale(t) { return { hp: 1 + t / 600, dmg: 1 + t / 600, spd: 1 }; }
+  function bossScale(t) {
+    const m = G.Mode ? G.Mode.scale(t) : { hp: 1, dmg: 1 };
+    return { hp: (1 + t / 600) * m.hp, dmg: (1 + t / 600) * m.dmg, spd: 1 };
+  }
 
   /** Tramo que toca en el segundo `t`. */
   function tierAt(t) { let ti = 0; TIERS.forEach((tr, i) => { if (t >= tr.from) ti = i; }); return ti; }

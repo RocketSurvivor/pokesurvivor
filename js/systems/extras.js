@@ -203,7 +203,7 @@ G.BiomeFx = (() => {
     }
     if (time < next) return;
     next = time + G.U.rand(EVERY[0], EVERY[1]);
-    const b = G.World.biome;
+    const b = G.Tiles.zoneOf(G.World.biome);
     if (!(b in DUR)) return;
     ev = { b, t: 0, dur: DUR[b], acc: 1.2 };
     G.Spawner.say(NAME[b], 3);
@@ -280,4 +280,98 @@ G.Combos = (() => {
   }
 
   return { update, drawGround, comboOf, PAIRS, get link() { return link; } };
+})();
+
+// ---------------- jefes de zona ----------------
+// A los 90 s de entrar en cada zona (cada 4 min cambia; desde la segunda, minuto 5:30) sale su jefe: un Pokémon de
+// los tipos de la zona, un poco más flojo que el jefe de ese momento, con un ataque
+// propio (esporas en el bosque, cristales en la cueva, lava en el volcán).
+// Lo saca quien manda (solitario o anfitrión); los ataques se reparten como los demás.
+G.ZoneBoss = (() => {
+  const AFTER = 90;
+  const ZONES = {
+    0: { types: ['grass', 'bug', 'poison'], color: '#9be04a', type: 'grass', name: 'Bosque Umbrío' },
+    1: { types: ['rock', 'ice', 'ground'], color: '#b8e8ff', type: 'rock', name: 'Cueva Cristal' },
+    2: { types: ['fire', 'dragon'], color: '#ff7a2a', type: 'fire', name: 'Volcán Ceniza' }
+  };
+  let zoneAt = -1, done = -1;     // tramo (cada 4 min) en el que empezó la zona / último con jefe
+
+  function reset() { zoneAt = 0; done = -1; }
+  const color = z => (ZONES[z] || ZONES[0]).color;
+  const type = z => (ZONES[z] || ZONES[0]).type;
+
+  function update(pl, time) {
+    if (!pl || (G.Coop.active && !G.Coop.isHost)) return;
+    const seg = Math.floor(time / 240);
+    if (seg < 1 || seg === done || G.Rift.inArena || G.Judgment.active || G.EnemyMgr.bossAlive()) return;
+    if (time - seg * 240 < AFTER) return;
+    done = seg;
+    spawn(G.Tiles.zoneOf(G.World.biome), time);
+  }
+
+  function spawn(z, t) {
+    const Z = ZONES[z];
+    if (!Z) return;
+    const pool = G.DEX.filter(p => !p.leg && !p.mega && p.bst >= 420 && G.SPRITE_META[p.dex] && p.types.some(x => Z.types.includes(x)));
+    if (!pool.length) return;
+    const mon = G.U.pick(pool);
+    const bosses = G.Enemies.BOSSES;
+    const ref = bosses.filter(b => b.at <= t).pop() || bosses[0];
+    if (!ref) return;
+    const k = ref.at <= t ? 0.8 : 0.6;
+    G.Sprites.preload([mon.dex]);
+    const def = Object.assign({}, ref, { at: t, dex: mon.dex, name: mon.name, hp: Math.round(ref.hp * k), dmg: Math.round(ref.dmg * 0.9),
+      shotDmg: Math.round((ref.shotDmg || ref.dmg * 0.5) * 0.9), shotCd: ref.shotCd || 1.1, range: ref.range || 260 });
+    const e = G.Spawner.spawnBossDef(def);
+    if (!e) return;
+    e.zoneBoss = z;
+    e.ai = null;                  // se rehace con su ataque de zona (Enemy.bossInit)
+    G.Spawner.say(G.I18n.f('¡Jefe de zona: {x}!', G.T(e.name)), 3.2);
+  }
+
+  return { reset, update, color, type, ZONES, debugSpawn() { spawn(G.Tiles.zoneOf(G.World.biome), G.Game.st.time || 0); } };
+})();
+
+// ---------------- temporadas ----------------
+// Cada mes (hora de Madrid) es la temporada de un tipo: sus Pokémon pegan un 10 % más,
+// sus legendarios salen más en las grietas y, si aguantas 15 minutos con uno de ese
+// tipo (modo Normal o Infinito), te llevas un ticket shiny y la insignia de la temporada.
+G.Season = (() => {
+  const MONTH_TYPE = ['ice', 'fairy', 'grass', 'bug', 'flying', 'water', 'fire', 'electric', 'ground', 'ghost', 'dark', 'dragon'];
+  const GOAL = 900;
+  let given = false;
+
+  function cur() {
+    const id = G.Ranking.periodIds().m;                  // 'm202610'
+    const month = +id.slice(5, 7);
+    const type = MONTH_TYPE[month - 1];
+    return { id, type, name: G.I18n.f('Temporada {x}', G.T(G.U.TYPE_NAME[type])) };
+  }
+  const fits = mon => !!mon && mon.types.includes(cur().type);
+
+  function reset() { given = false; }
+
+  /** Al empezar la partida: +10 % de daño si tu Pokémon es del tipo de la temporada. */
+  function applyPlayer(pl) {
+    pl.season = fits(pl.mon);
+    if (pl.season) pl.atkMul *= 1.1;
+  }
+
+  function update(pl, time) {
+    if (given || !pl || !pl.season || pl.weekly || time < GOAL) return;
+    given = true;
+    const s = G.DB.save, c = cur();
+    if (!s) return;
+    s.seasons = s.seasons || {};
+    if (s.seasons[c.id]) return;
+    s.seasons[c.id] = Date.now();
+    G.Pickups.drop('ticketS', pl.x, pl.y - 30, 1);
+    G.Pickups.pullAll();
+    G.Spawner.say(G.I18n.f('¡Reto de la {x} cumplido! Ticket shiny e insignia', c.name), 3.6, true);
+    G.Audio.sfx('legend');
+    G.Progress.event('season');
+    G.DB.commit(true);
+  }
+
+  return { cur, fits, reset, applyPlayer, update, MONTH_TYPE };
 })();

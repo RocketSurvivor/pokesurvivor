@@ -53,7 +53,7 @@ G.RankingUI = (() => {
         box.appendChild(b);
       }
     };
-    mk($('rk-mode'), [['s', `<b>${G.Icons.html('user', 16)} Solo</b>`], ['g', `<b>${G.Icons.html('friends', 16)} Grupo</b>`]],
+    mk($('rk-mode'), [['s', `<b>${G.Icons.html('user', 16)} Solo</b>`], ['g', `<b>${G.Icons.html('friends', 16)} Grupo</b>`], ['i', `<b>${G.Icons.html('clock', 16)} ${G.T('Infinito')}</b>`]],
        mode, k => { mode = k; }, 'gen-tab');
     mk($('rk-period'), G.Ranking.PERIODS, period, k => {
       period = k;
@@ -74,7 +74,7 @@ G.RankingUI = (() => {
       [rows, me, dmg] = await Promise.all([
         G.Ranking.top(mode, period, dex, scope === 'friends'),
         G.Social.me ? G.Ranking.myRank(mode, period, dex) : Promise.resolve(null),
-        dex ? Promise.resolve(dmg) : G.Ranking.topDmg(mode, period, scope === 'friends')
+        dex || mode === 'i' ? Promise.resolve(dmg) : G.Ranking.topDmg(mode, period, scope === 'friends')
       ]);
     } catch (e) {
       if (my !== token) return;
@@ -91,7 +91,8 @@ G.RankingUI = (() => {
     rows.forEach((r, i) => list.appendChild(rowEl(r, i + 1, r.uids.includes(uid), b, done)));
 
     // Daño a Arceus (no hay por Pokémon).
-    if (dex) dlist.innerHTML = '<p class="sub">El daño a Arceus no tiene ranking por Pokémon.</p>';
+    if (mode === 'i') dlist.innerHTML = '<p class="sub">En el modo Infinito no hay Arceus: sólo cuenta cuánto aguantas.</p>';
+    else if (dex) dlist.innerHTML = '<p class="sub">El daño a Arceus no tiene ranking por Pokémon.</p>';
     else if (!dmg.rows.length) dlist.innerHTML = '<p class="sub">Todavía nadie le ha hecho daño a Arceus aquí. ¡Llega al minuto 30 y pégale!</p>';
     const db = G.Ranking.board(mode, period);
     dmg.rows.forEach((r, i) => dlist.appendChild(rowEl(r, i + 1, r.uids.includes(uid), db, done, true)));
@@ -116,8 +117,8 @@ G.RankingUI = (() => {
     const pn = en ? { d: 'today', w: 'this week', m: 'this month', y: 'this year', a: 'of all time' }[period]
                   : { d: 'de hoy', w: 'de esta semana', m: 'de este mes', y: 'de este año', a: 'de siempre' }[period];
     const mon = dex ? G.DEX_BY[dex].name : '';
-    const where = en ? (mode === 's' ? 'solo' : 'group') + (dex ? ' with ' + mon : '')
-                     : (mode === 's' ? 'en solitario' : 'en grupo') + (dex ? ' con ' + mon : '');
+    const where = en ? (mode === 's' ? 'solo' : mode === 'i' ? 'in Infinite mode' : 'group') + (dex ? ' with ' + mon : '')
+                     : (mode === 's' ? 'en solitario' : mode === 'i' ? 'en el modo Infinito' : 'en grupo') + (dex ? ' con ' + mon : '');
     $('rk-me').removeAttribute('translate');
     $('rk-me').innerHTML = !G.Social.me ? 'Elige un apodo (en Amigos) para salir en el ranking.'
       : me && me.out ? (en ? `<span translate="no">You're not in the top 50 ${where} ${pn} yet. Your rank is in All-time.</span>`

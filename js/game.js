@@ -50,7 +50,9 @@ G.Game = (() => {
   function resize() {
     // Resolución interna como mucho ×1,5: en pantallas ×2 dibujar el doble de
     // píxeles era de lo que más costaba, y con el pixel art no se nota.
-    const d = Math.min(1.5, window.devicePixelRatio || 1);
+    // (25-10-2026: con calidad baja, o si la automática la ha bajado por ir a tirones,
+    // a ×1: en móviles modestos lo que más cuesta es pintar píxeles.)
+    const d = Math.min(G.Settings.fx === 0 ? 1 : 1.5, window.devicePixelRatio || 1);
     const cw = cv.clientWidth, ch = cv.clientHeight;
     if (!cw || !ch) return;
     G.Touch.resetSafe();
@@ -106,7 +108,9 @@ G.Game = (() => {
     holdBy = []; awayBy = null;
     const save = G.DB.save;
     // Desafío semanal: sólo en solitario, con su Pokémon y sin las Mejoras compradas.
+    // Modo Infinito: también sólo en solitario (el desafío se juega en modo normal).
     if (coop) G.Weekly.cancel();
+    if (coop || G.Weekly.active) G.Mode.set('normal');
     const weekly = G.Weekly.active;
     // Con su naturaleza aplicada (una copia: ver systems/mons.js).
     const mon = G.Mons.monFor(weekly ? G.Weekly.info().dex : save.partner);
@@ -122,7 +126,7 @@ G.Game = (() => {
     G.Spawner.reset();
     G.Rift.reset();
     G.LegendRift.reset();
-    G.GoldChest.reset(); G.Paths.reset(); G.BiomeFx.reset();
+    G.GoldChest.reset(); G.Paths.reset(); G.BiomeFx.reset(); G.ZoneBoss.reset(); G.Season.reset();
     G.Judgment.reset();
     G.Events.reset();
     G.Weather.reset();
@@ -141,7 +145,7 @@ G.Game = (() => {
     pl.mastery = weekly ? 0 : G.Mons.mastery(mon.dex).rank;
     pl.atkMul *= 1 + pl.mastery * 0.01;
     pl.weekly = weekly;
-    G.Weekly.applyPlayer(pl);
+    pl.mode = G.Mode.cur;
     banked = { t1: 0, t10: 0, ts: 0 };
     caught = [];
     // Atajos: movimientos con hueco fijo (save.pbind[dex] = [id del 1, id del 2, ...]),
@@ -159,6 +163,11 @@ G.Game = (() => {
       else if (pool.length) pl.addMove(G.U.pick(pool));
       pl.setActive(0);
     }
+    // Reglas del Desafío semanal y talento del Pokémon (después de los ataques iniciales
+    // y del Veto: "Un solo tipo" añade sus vetos a los tuyos).
+    G.Weekly.applyPlayer(pl);
+    if (!weekly) { G.Mons.applyTalent(pl, mon.dex); pl.setActive(0); }
+    G.Season.applyPlayer(pl);
 
     if (coop) {
       G.Coop.begin(coop, pl, coopApi);
@@ -423,13 +432,15 @@ G.Game = (() => {
     // Desafío semanal: su propia tabla (y tu mejor marca de la semana), no la normal.
     const weeklyRec = pl.weekly ? G.Weekly.finish(mark) : false;
     if (pl.weekly && ok) G.Ranking.submitWeekly(Object.assign({}, mark, { dex: pl.startDex, shiny: false })).catch(() => {});
-    const sent = pl.weekly ? null : ok && !coop ? G.Ranking.submitSolo(Object.assign(mark, { dex: pl.startDex, shiny: pl.shiny }))
+    const sent = pl.weekly ? null
+               : pl.mode === 'infinite' ? (ok ? G.Ranking.submitInfinite(Object.assign(mark, { dex: pl.startDex, shiny: pl.shiny })) : null)
+               : ok && !coop ? G.Ranking.submitSolo(Object.assign(mark, { dex: pl.startDex, shiny: pl.shiny }))
                : ok && wasHost ? G.Ranking.submitGroup(Object.assign(mark, { members: team })) : null;
     if (sent) sent.then(b => { if (b && b.some(p => p !== 'a')) G.DB.commit(true); }).catch(() => {});
 
     G.RunUI.showOver({
       dead, time, level: pl.level, kills: pl.kills, bosses: pl.bosses, coins, record, t1: pl.t1, t10: pl.t10, ts: pl.ts || 0, judge, fall,
-      moves: pl.moves, caught, taken: pl.taken || {}, mastUp, mastDex: pl.startDex, weekly: pl.weekly, weeklyRec,
+      moves: pl.moves, caught, taken: pl.taken || {}, mastUp, mastDex: pl.startDex, weekly: pl.weekly, weeklyRec, mode: pl.mode,
       breakdown: Object.entries(parts).filter(([, v]) => v).map(([k, v]) => `${k} ${v}`).join(' · ') +
                  (mul > 1 ? ` · ×${mul.toFixed(2)} Fortuna` : '')
     }, () => { pl = null; G.Flow.afterRun(); });
@@ -742,7 +753,7 @@ G.Game = (() => {
     }
     if (state === 'ui') {
       // Esc en una subpantalla del menú vuelve al menú.
-      if (G.Input.tap('escape') && !G.UI.isOpen('scr-profile') && ['scr-dex', 'scr-upgrades', 'scr-shop', 'scr-bag', 'scr-gacha', 'scr-friends', 'scr-rank', 'scr-goals', 'scr-movedex', 'scr-weekly', 'scr-adminstats'].some(G.UI.isOpen)
+      if (G.Input.tap('escape') && !G.UI.isOpen('scr-profile') && ['scr-dex', 'scr-upgrades', 'scr-shop', 'scr-bag', 'scr-gacha', 'scr-friends', 'scr-rank', 'scr-goals', 'scr-movedex', 'scr-weekly', 'scr-adminstats', 'scr-mode'].some(G.UI.isOpen)
           && document.getElementById('pull-fx').classList.contains('hidden')) G.MenuUI.open();
       return;
     }
@@ -792,12 +803,13 @@ G.Game = (() => {
   // Si falla fotograma tras fotograma (el juego ya no avanza ni se ve), la
   // partida se da por terminada a los ~3 s y se guarda: tiempo, derrotados,
   // récords y ranking. Mejor eso que una pantalla negra y perderlo todo.
-  let loopErrs = 0, errRun = 0;
+  let loopErrs = 0, errRun = 0, resizeN = 0;
   function loop(ts) {
     requestAnimationFrame(loop);
     try { frame(ts); errRun = 0; }
     catch (e) {
       if (loopErrs++ < 5) console.error('[Game] fallo en un fotograma:', e);
+      if (loopErrs <= 3 && G.ErrLog) G.ErrLog.add(e, 'fotograma');
       G.Input.endFrame();
       if (++errRun === 180 && pl && state !== 'ui' && state !== 'over') {
         try {
@@ -824,6 +836,7 @@ G.Game = (() => {
     if (stuckT < 1.5) return;
     stuckT = 0;
     console.warn('[Game] parado sin pantalla de elección (' + state + '): se sigue jugando');
+    if (G.ErrLog) G.ErrLog.add(new Error('Parado sin pantalla de elección (' + state + ')'), 'red de seguridad');
     // (Si había un objeto por elegir, afterLevelUp vuelve a enseñar su pantalla.)
     if (G.Coop.active) { try { G.Coop.holdEnd(); } catch (e) { /* nada */ } }
     state = holdBy.length ? 'held' : 'playing';
@@ -841,6 +854,7 @@ G.Game = (() => {
 
     G.Pad.poll(real);
     handleKeys();
+    if (++resizeN >= 60) { resizeN = 0; resize(); }      // por si la calidad automática ha cambiado
 
     if (state === 'playing') update(dt);
     else if (pl && state !== 'ui') { G.FX.update(dt * 0.25); pl.anim.update(dt * 0.25); }
@@ -878,7 +892,9 @@ G.Game = (() => {
       if (deathT > 1.3) {
         deathT = 0;
         // Ante Arceus (en solitario) se puede seguir: se pregunta primero.
-        if (G.Judgment.fighting) askContinue(); else endRun(true);
+        // (Hasta el 25-10-2026 se podía seguir tras caer ante Arceus; ahora para jugar
+        // sin fin está el modo Infinito, ver systems/mode.js.)
+        endRun(true);
       }
       return;
     }
@@ -887,7 +903,8 @@ G.Game = (() => {
     const b = Math.floor(time / 240);
     if (b !== biome && !G.Rift.inArena && !G.Judgment.active) {
       biome = b;
-      G.World.setBiome(b);
+      // (Sólo los 3 biomas normales: detrás van las paletas de las arenas de las grietas.)
+      G.World.setBiome(b % G.Tiles.NORMAL);
       G.Audio.sfx('biome');
       G.Spawner.say('— ' + G.World.biomeName() + ' —', 3);
       G.FX.ring(pl.x, pl.y, 10, G.Camera.outerRadius(), '#ffffff', 0.7, 6);
@@ -919,6 +936,8 @@ G.Game = (() => {
     G.Rift.update(dt, pl, time);
     G.LegendRift.update(dt, pl, time);
     G.GoldChest.update(dt, pl, time);
+    G.ZoneBoss.update(pl, time);
+    G.Season.update(pl, time);
     G.BiomeFx.update(dt, pl, time);
     G.Combos.update(pl);
     G.Paths.update(pl, time);
@@ -1179,6 +1198,7 @@ G.Flow = {
   boot() {
     G.UI.initChrome();
     G.LoginUI.init(); G.TestUI.init(); G.MenuUI.init(); G.GachaUI.init(); G.MovedexUI.init(); G.WeeklyUI.init(); G.AdminStatsUI.init();
+    document.querySelectorAll('#scr-mode [data-mode]').forEach(b => { b.onclick = () => { G.Audio.sfx('confirm'); G.Flow.play(b.dataset.mode); }; });
     G.SocialUI.init(); G.RankingUI.init(); G.ModUI.init(); G.GoalsUI.init(); G.ProfileUI.init(); G.SettingsUI.init(); G.SupportUI.init(); G.NewsUI.init(); G.LiveUI.init(); G.Updater.init();
     // Tu nombre arriba a la derecha abre tu perfil.
     document.getElementById('user-pill').onclick = () => G.GoalsUI.open('profile');
@@ -1233,7 +1253,18 @@ G.Flow = {
       G.LobbyUI.open();
     } else this.goMenu();
   },
-  play() { G.Game.startRun(); },
+  /** Jugar: sin modo, se elige (Normal o Infinito); con modo (Jugar otra vez), empieza ya. */
+  play(mode) {
+    if (!mode) {
+      G.UI.show('scr-mode', true);
+      const c = G.Season.cur(), s = G.DB.save, done = s && s.seasons && s.seasons[c.id];
+      document.getElementById('mode-season').innerHTML = G.Icons.html('medal3', 16) + ' ' + G.I18n.f('{x}: los Pokémon de tipo {x} pegan un 10 % más.', c.name, G.T(G.U.TYPE_NAME[c.type]))
+        + ' ' + (done ? G.T('Reto cumplido ✓') : G.T('Reto: aguanta 15 minutos con uno de ellos (premio: ticket shiny).'));
+      return;
+    }
+    G.Mode.set(mode);
+    G.Game.startRun();
+  },
   /** Empieza la partida en grupo (el anfitrión la manda a todos). */
   startCoop(cfg) {
     if (G.Game.state !== 'ui' || !G.Social.room) return;

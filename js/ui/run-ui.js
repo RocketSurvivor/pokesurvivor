@@ -451,6 +451,7 @@ G.RunUI = (() => {
         ${r.t1 ? G.Icons.html('ticket', 22) + ' +' + r.t1 + ' ' : ''}${r.t10 ? G.Icons.html('ticket10', 22) + ' +' + r.t10 + ' ×10 ' : ''}${r.ts ? G.Icons.html('ticketS', 22) + ' +' + r.ts + ' shiny' : ''}</b></div>` : ''}
       <div style="grid-column:1/-1"><span>Daño de cada ataque</span>${overMoves(r)}</div>
       ${overTaken(r)}
+      ${r.mode === 'infinite' ? `<div style="grid-column:1/-1;text-align:center" class="gold">${G.T('Modo Infinito')}</div>` : ''}
       ${r.weekly ? `<div style="grid-column:1/-1;text-align:center" class="gold">${r.weeklyRec ? G.T('Desafío semanal: ¡tu mejor marca de la semana!') : G.T('Desafío semanal terminado')}</div>` : ''}
       ${r.mastUp ? `<div style="grid-column:1/-1;text-align:center" class="gold">${G.I18n.f('¡Maestría de {x}: {x}! Ahora hace un {x} % más de daño.', esc(G.T(G.DEX_BY[r.mastDex].name)), G.T(r.mastUp.name), r.mastUp.rank)}</div>` : ''}
       ${r.caught && r.caught.length ? `<div style="grid-column:1/-1" class="caught"><span>${G.Icons.html('shiny', 12)} Shinies conseguidos</span>
@@ -473,7 +474,7 @@ G.RunUI = (() => {
       G.Audio.sfx('confirm');
       onBack();
       if (G.Social.room || G.Game.state !== 'ui') return;
-      if (r.weekly) G.Weekly.play(); else G.Flow.play();
+      if (r.weekly) G.Weekly.play(); else G.Flow.play(r.mode);
     };
     if (r.caught && r.caught.length) {
       const row = $('over-caught');

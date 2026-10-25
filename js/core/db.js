@@ -380,6 +380,9 @@ G.DB = (() => {
       r.pstat[d] = { best: Math.max(+a.best || 0, +b.best || 0), lv: Math.max(+a.lv || 0, +b.lv || 0),
                      runs: Math.max(+a.runs || 0, +b.runs || 0), kills: Math.max(+a.kills || 0, +b.kills || 0), mv };
     }
+    r.seasons = Object.assign({}, older.seasons, r.seasons);
+    r.talent = r.talent || {};
+    for (const d in older.talent || {}) if (!r.talent[d] || (+older.talent[d][1] || 0) > (+r.talent[d][1] || 0)) r.talent[d] = older.talent[d];
     r.mastq = r.mastq || {};
     for (const d in older.mastq || {}) r.mastq[d] = Object.assign({}, older.mastq[d], r.mastq[d]);
     // Movimiento inicial: el de la versión más reciente; si no lo tenía elegido, el de la otra.

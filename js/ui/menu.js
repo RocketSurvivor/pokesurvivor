@@ -387,6 +387,13 @@ G.MenuUI = (() => {
         return `<div class="mx-row"><span>${G.T('Maestría')}</span><b class="mast-${m.rank}">${G.T(m.name)}</b>
           <small>${m.rank ? G.I18n.f('+{x} % de daño', m.rank) + ' · ' : ''}${m.next ? G.I18n.f('{x} / {x} min de partida', m.min, m.next) : G.T('Rango máximo')}</small></div>
         ${m.need ? `<p class="sub mx-desc">${G.T('Para el siguiente rango')}: ${G.T(m.need)} ${m.needDone ? '✓' : ''}</p>` : ''}
+        ${(() => {
+          const tal = G.Mons.talentOf(dex), can = m.rank >= G.Mons.TALENT_RANK;
+          return `<div class="mx-talent"><span>${G.T('Talento')}</span>${can
+            ? Object.entries(G.Mons.TALENTS).map(([id, t]) => `<button class="btn small ${tal === id ? 'gold' : 'ghost'}" data-talent="${id}" title="${G.T(t.desc)}">${G.T(t.name)}</button>`).join('')
+            : `<small>${G.T('Se desbloquea con la maestría Maestro.')}</small>`}</div>
+            ${tal ? `<p class="sub mx-desc">${G.T(G.Mons.TALENTS[tal].desc)}</p>` : can ? `<p class="sub mx-desc">${G.T('Elige uno: se puede cambiar cuando quieras.')}</p>` : ''}`;
+        })()}
         ${ps ? `<div class="mx-stats">
           <div><span>${G.T('Mejor tiempo')}</span><b>${G.U.mmss(ps.best || 0)}</b></div>
           <div><span>${G.T('Nivel máximo')}</span><b>${ps.lv || 0}</b></div>
@@ -402,6 +409,9 @@ G.MenuUI = (() => {
   function wireExtras(dex, box) {
     box.querySelectorAll('[data-extra]').forEach(b => {
       b.onclick = () => { extraOpen = extraOpen === b.dataset.extra ? '' : b.dataset.extra; G.Audio.sfx('select'); showDetail(dex); };
+    });
+    box.querySelectorAll('[data-talent]').forEach(b => {
+      b.onclick = () => { if (G.Mons.setTalent(dex, b.dataset.talent)) { G.DB.commit(); G.Audio.sfx('buy'); showDetail(dex); } };
     });
     const host = box.querySelector('#mx-picker');
     if (!host || !extraOpen) return;

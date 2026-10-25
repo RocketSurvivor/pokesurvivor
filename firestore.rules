@@ -286,6 +286,22 @@ service cloud.firestore {
         && rid == request.resource.data.board + '__' + request.resource.data.e + '__' + me();
     }
 
+    // Informes de fallos del juego (25-10-2026, js/core/errlog.js): cualquiera con
+    // cuenta puede mandar los suyos (cortos); sólo los administradores los leen y borran.
+    match /errs/{id} {
+      allow read, delete: if admin();
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['msg', 'stack', 'where', 'v', 'ua', 'uid', 'name', 'at'])
+        && request.resource.data.uid == me()
+        && request.resource.data.msg is string && request.resource.data.msg.size() <= 300
+        && request.resource.data.stack is string && request.resource.data.stack.size() <= 1500
+        && request.resource.data.where is string && request.resource.data.where.size() <= 200
+        && request.resource.data.v is string && request.resource.data.v.size() <= 40
+        && request.resource.data.ua is string && request.resource.data.ua.size() <= 160
+        && request.resource.data.name is string && request.resource.data.name.size() <= 24
+        && request.resource.data.at == request.time;
+    }
+
     // Para borrar todas tus marcas al borrar la cuenta (consulta de grupo).
     match /{path=**}/e/{id} {
       allow read: if signedIn();

@@ -156,6 +156,9 @@ G.Progress = (() => {
       case 'weekly':
         S.weekly = (S.weekly || 0) + 1;
         break;
+      case 'season':
+        S.seasons = (S.seasons || 0) + 1;
+        break;
       case 'evolve':
         S.evolutions = (S.evolutions || 0) + 1;
         s.evoMoves = s.evoMoves || {}; s.evoMoves[d.move] = s.evoMoves[d.move] || Date.now();
