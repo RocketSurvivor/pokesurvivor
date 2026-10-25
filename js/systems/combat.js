@@ -46,6 +46,9 @@ G.Combat = (() => {
   }
 
   function run(pl, m) {
+    // Exclusivos de legendario (data/signature.js): con su forma especial (Primigenio,
+    // Origen, mega…) pegan un 25 % más y sueltan 2 más; algunos dan un segundo golpe a la vez.
+    if (m.sig && pl.mon && (pl.mon.mega || pl.mon.form)) m = Object.assign({}, m, { root: m.root || m, dmg: m.dmg * 1.25, count: m.count != null ? m.count + 2 : m.count });
     switch (m.kind) {
       case 'projectile': fireProjectiles(pl, m); break;
       case 'melee':      melee(pl, m); break;
@@ -70,6 +73,7 @@ G.Combat = (() => {
       case 'shove':      shove(pl, m); break;
       case 'stun':       stunZone(pl, m); break;
     }
+    if (m.also) run(pl, Object.assign({}, m, m.also, { root: m.root || m, also: null, sig: false, dmg: m.dmg * (m.also.dmgK || 0.5) }));
   }
 
   const TARGETED = ['melee', 'beam', 'projectile', 'boomerang', 'chain', 'meteor', 'dash', 'cone',
@@ -93,7 +97,7 @@ G.Combat = (() => {
   }
 
   function payload(m) {
-    return { burn: m.burn || 0, poison: m.poison || 0, slow: m.slow || 0, knock: m.knock || 0, mtype: m.type, mcat: m.cat, src: m,
+    return { burn: m.burn || 0, poison: m.poison || 0, slow: m.slow || 0, knock: m.knock || 0, mtype: m.type, mcat: m.cat, src: m.root || m,
              bounce: m.bounce | 0, drain: m.drain || 0 };
   }
 
@@ -326,7 +330,7 @@ G.Combat = (() => {
     if (ghost) return;
     pl.x = sx + ca * len; pl.y = sy + sa * len;
     G.World.collide(pl);
-    pl.invuln = Math.max(pl.invuln || 0, 0.3);
+    pl.invuln = Math.max(pl.invuln || 0, m.invuln || 0.3);
     const w = m.width || 34;
     const mx = sx + ca * len / 2, my = sy + sa * len / 2;
     for (const e of G.EnemyMgr.queryCircle(mx, my, len / 2 + w)) {
@@ -691,7 +695,7 @@ G.Combat = (() => {
         dmg: m.dmg * pl.atkFor(m),
         oa: (i / want) * 6.2832, orad: m.radius, ospeed: m.speed,
         rehit: Math.max(0.12, m.cd),
-        knock: m.knock || 0, burn: m.burn || 0, poison: m.poison || 0, slow: m.slow || 0, mtype: m.type, mcat: m.cat, src: m
+        knock: m.knock || 0, burn: m.burn || 0, poison: m.poison || 0, slow: m.slow || 0, mtype: m.type, mcat: m.cat, src: m.root || m
       });
     }
     const live = G.Projectiles.all().filter(mine);
@@ -761,7 +765,8 @@ G.Combat = (() => {
     e.hurt(dmg, col, dx, dy, sk ? knock : 0, crit ? 'crit' : G.Types.label(G.Types.mult(m.type, e.types)));
     if (!ghost) pl.onDealt(dmg);
     pl.dmgDealt += dmg;
-    m.dealt = (m.dealt || 0) + dmg;               // por ataque, para el resumen de la pausa
+    const mr = m.root || m;                       // (las copias de los exclusivos suman al original)
+    mr.dealt = (mr.dealt || 0) + dmg;             // por ataque, para el resumen de la pausa
     if (m.burn && sk) e.applyBurn(m.burn * sk);
     if (m.poison && sk) e.applyPoison(m.poison * sk);
     if (m.slow && sk) e.applySlow(Math.min(0.8, m.slow * sk));

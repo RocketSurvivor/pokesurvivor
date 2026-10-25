@@ -491,7 +491,7 @@ G.VFX = (() => {
   };
 
   function forMove(m) {
-    const v = MOVE[m.id] || {};
+    const v = MOVE[m.id] || m.vis || {};
     return Object.assign({ pal: m.type, proj: TYPE_SHAPE[m.type] || 'ball' }, v, { pal: v.pal || m.type });
   }
   function forType(type) { return { proj: TYPE_SHAPE[type] || 'ball', pal: PAL[type] ? type : 'normal' }; }

@@ -552,6 +552,8 @@
         const pf = Enemy.PHASE_FORM[this.dex];
         if (pf) G.Sprites.preload([pf], 8000, !!this.shiny);      // su forma de la 2.ª fase, lista
         ranged.push(G.U.hash(this.dex, 7, 3) < 0.5 ? 'storm' : 'snipe');
+        // Su ataque exclusivo (data/signature.js): de vez en cuando, y más en la 2.ª fase.
+        if (G.Moves.sigFor && G.Moves.sigFor(G.DEX_BY[this.dex])) { ranged.push('sig'); phase2.push('sig', 'sig'); }
       }
       // Jefe de zona (25-10-2026): su ataque propio de la zona, además de los suyos.
       if (this.zoneBoss != null) ranged.push('zone', 'zone');
@@ -700,6 +702,55 @@
           c.wind = 0.3; c.after = 0.4; c.shots = ai.fury ? 4 : 3; c.every = 0.5; c.next = 0; c.dur = c.shots * c.every;
           this.anim.play('Charge', { speed: 1.4 });
           break;
+        case 'sig': {      // legendario: su ataque exclusivo, con aviso y su nombre en pantalla
+          const sg = G.Moves.sigFor(G.DEX_BY[this.dex]);
+          if (!sg) { ai.cast = null; ai.cd = 0.5; break; }
+          const st = sg.type, sc = G.U.TYPE_COLOR[st] || col, d = this.shotDmg();
+          G.Spawner.say(G.I18n.f('¡{x} usa {x}!', G.T(this.name), G.T(sg.name, 'move')), 2.2);
+          G.FX.ring(this.x, this.y, this.r, this.r * 4, sc, 0.8, 4);
+          switch (sg.boss) {
+            case 'beam':   // un rayo enorme hacia ti
+              this.hazard({ kind: 'beam', x: this.x, y: this.y, angle: ang, len: 640, w: 58, delay: 1.25, dmg: d * 1.8, type: st, color: sc });
+              c.wind = 1.25; c.after = 0.45; this.anim.play('Charge', { speed: 1 });
+              break;
+            case 'fan':    // abanico ancho de disparos
+              c.id = 'volley'; c.n = ai.fury ? 15 : 11; c.spread = 1.9; c.k = 1; c.wind = 0.75;
+              this.anim.play('Charge', { speed: 1.3 });
+              break;
+            case 'ring':   // anillo denso de disparos
+              c.id = 'nova'; c.n = ai.fury ? 30 : 24; c.k = 0.9; c.wind = 0.85;
+              this.anim.play('Charge', { speed: 1.3 });
+              break;
+            case 'line':   // zonas en línea hacia ti
+              for (let i = 0; i < 10; i++) {
+                const r = this.r + 40 + i * 50;
+                this.hazard({ kind: 'zone', x: this.x + Math.cos(ang) * r, y: this.y + Math.sin(ang) * r, r: 46,
+                                delay: 0.95 + i * 0.07, dmg: d * 1.5, type: st, color: sc });
+              }
+              c.wind = 0.7; c.after = 0.6; this.anim.play('Charge', { speed: 1.2 });
+              break;
+            case 'rain': { // lluvia de zonas a tu alrededor
+              const n = ai.fury ? 14 : 10;
+              for (let i = 0; i < n; i++) {
+                const a = Math.random() * 6.2832, dd = i ? G.U.rand(30, 210) : 0;
+                this.hazard({ kind: 'zone', x: pl.x + Math.cos(a) * dd, y: pl.y + Math.sin(a) * dd * 0.8, r: 48,
+                                delay: 1.1 + i * 0.07, dmg: d * 1.4, type: st, color: sc });
+              }
+              c.wind = 0.6; c.after = 0.6; this.anim.play('Shoot');
+              break;
+            }
+            case 'zone':   // una zona enorme a su alrededor: hay que salir corriendo
+              this.hazard({ kind: 'zone', x: this.x, y: this.y, r: 210 + this.r, delay: 1.4, dmg: d * 1.8, type: st, color: sc });
+              c.wind = 1.4; c.after = 0.4; this.anim.play('Charge', { speed: 1 });
+              break;
+            default:       // 'dash': embestida larga
+              c.id = 'dash'; c.wind = 0.9 * f; c.len = 500; c.dur = 0.4;
+              this.hazard({ kind: 'beam', x: this.x, y: this.y, angle: ang, len: c.len + this.r, w: this.r * 2 + 30,
+                              delay: c.wind + c.dur, dmg: this.dmg * 1.6, type: st, color: sc });
+              this.anim.play('Charge', { speed: 1.3 });
+          }
+          break;
+        }
         case 'volley':     // abanico de disparos
         case 'nova':       // anillo de disparos
           c.wind = (id === 'nova' ? 0.7 : 0.5) * f;
@@ -764,8 +815,8 @@
       if (c.t >= c.wind && !c.fired) {
         c.fired = true;
         const [ax, ay] = G.U.norm(pl.x - this.x, pl.y - this.y);
-        if (c.id === 'volley') this.shoot(ax, ay, 1.1, ai.fury ? 9 : 7, 0.8);
-        else if (c.id === 'nova') { const n = ai.fury ? 18 : 14; this.shoot(ax, ay, 6.2832 * (n - 1) / n, n, 0.7); }
+        if (c.id === 'volley') this.shoot(ax, ay, c.spread || 1.1, c.n || (ai.fury ? 9 : 7), c.k || 0.8);
+        else if (c.id === 'nova') { const n = c.n || (ai.fury ? 18 : 14); this.shoot(ax, ay, 6.2832 * (n - 1) / n, n, c.k || 0.7); }
         else if (c.id === 'slam') this.anim.play('Attack', { speed: 1.4 });
       }
       if (c.t >= c.wind + c.after) return this.bossEnd();

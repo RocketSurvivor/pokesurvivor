@@ -1006,6 +1006,8 @@ html:lang(zh) .btn, html:lang(zh) .chip { letter-spacing: 0; }
 .mdx-head b { font-size: 16px; }
 .mdx-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 3px; }
 .mdx-tags .tag-chip.kind { background: #3a4870; }
+.mdx-tags .tag-chip.sig { background: #b8860b; color: #fff6cf; }
+.mdx-card.sig { border-color: #d4a72c; box-shadow: inset 0 0 0 1px rgba(255,210,63,.25); }
 .mdx-desc { font-size: 13px; color: var(--muted); margin: 6px 0; }
 .mdx-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
 .mdx-stats div { background: rgba(255,255,255,.05); border-radius: 6px; padding: 3px 6px; display: flex; flex-direction: column; }
