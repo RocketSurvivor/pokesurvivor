@@ -3978,4 +3978,19 @@
     "Los ataques exclusivos de legendario también evolucionan: al nivel máximo y con la mejora de su condición cogida en la partida sale la carta dorada (Pulso Primigenio +). Ganan algo menos que un ataque normal al evolucionar, porque ya son fuertes.": "傳說寶可夢的專屬招式也能進化了：達到最高等級並在本局中選過對應條件的強化後，會出現金色卡牌（根源波動+）。因為本身已經很強，進化時的提升比普通招式少一些。",
     "Incursiones: cuantos más jugadores, más duras. El legendario tiene un 45 % más de vida y un 12 % más de daño por cada jugador de más.": "團體戰：人數越多越難。每多一名玩家，傳說寶可夢的體力增加45%，傷害增加12%。"
   }, 'zh-Hant');
+  G.I18n.add({
+    "Incursiones: cuando sale el legendario, los demás enemigos se van y no sale ninguno más mientras dura la pelea.": "Raids : quand le légendaire apparaît, les autres ennemis s'en vont et plus aucun n'apparaît pendant le combat."
+  }, 'fr');
+  G.I18n.add({
+    "Incursiones: cuando sale el legendario, los demás enemigos se van y no sale ninguno más mientras dura la pelea.": "Raid: quando appare il leggendario, gli altri nemici se ne vanno e non ne compaiono altri finché dura lo scontro."
+  }, 'it');
+  G.I18n.add({
+    "Incursiones: cuando sale el legendario, los demás enemigos se van y no sale ninguno más mientras dura la pelea.": "Reides: quando o lendário aparece, os outros inimigos vão embora e não surge mais nenhum enquanto dura a luta."
+  }, 'pt-BR');
+  G.I18n.add({
+    "Incursiones: cuando sale el legendario, los demás enemigos se van y no sale ninguno más mientras dura la pelea.": "团体战：传说宝可梦出现时，其他敌人会离开，战斗期间也不会再出现新的敌人。"
+  }, 'zh-Hans');
+  G.I18n.add({
+    "Incursiones: cuando sale el legendario, los demás enemigos se van y no sale ninguno más mientras dura la pelea.": "團體戰：傳說寶可夢出現時，其他敵人會離開，戰鬥期間也不會再出現新的敵人。"
+  }, 'zh-Hant');
 })();

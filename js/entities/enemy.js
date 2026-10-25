@@ -1136,6 +1136,18 @@
       stashed = null;
     }
 
+    /** Se van todos menos `keepId` (sin contar como derrotados): la incursión deja solo al jefe. */
+    function dismissAll(keepId) {
+      for (const e of list) {
+        if (e.id === keepId || e.dead) continue;
+        G.FX.ring(e.x, e.y, 4, 26, '#c9a6ff', 0.4, 2);
+        byId.delete(e.id);
+        if (G.Coop.isHost) G.Coop.enemyGone(e, false);
+      }
+      list = list.filter(e => e.id === keepId);
+      corpses = [];
+    }
+
     /** Invitado: borra las copias (llegarán otra vez del anfitrión). */
     function clearRemote() {
       for (const e of list) if (e.remote) byId.delete(e.id);
@@ -1317,7 +1329,7 @@
     function bossAlive() { return list.some(e => e.boss && !e.dead); }
     function shinies() { return list.filter(e => e.shiny && !e.dead); }
 
-    return { clear, all, add, get, addRemote, removeRemote, stash, restore, clearRemote, update, drawables, queryCircle, rebuildGrid, bossAlive, shinies, nearestPlayer,
+    return { dismissAll, clear, all, add, get, addRemote, removeRemote, stash, restore, clearRemote, update, drawables, queryCircle, rebuildGrid, bossAlive, shinies, nearestPlayer,
              get count() { return list.length; } };
   })();
 })();

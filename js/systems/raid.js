@@ -69,6 +69,9 @@ G.Raid = (() => {
     e.legend = true; e.raid = true; e.ai = null;
     e.giant(GIANT);
     bossId = e.id; t0 = G.Game.st.time; phase = 'fight';
+    // Sólo el jefe (25-10-2026): los demás enemigos se van y no salen más mientras dura.
+    G.EnemyMgr.dismissAll(e.id);
+    G.Hazards.clear();
     if (G.Coop.isHost) { G.Coop.broadcast(['rg', e.id, GIANT]); G.Coop.broadcast(['rd', 'fight', t0]); }
     announce();
   }
@@ -138,6 +141,6 @@ G.Raid = (() => {
   }
 
   return { AT, LIMIT, DIFF, boss, reset, update, remote, drawHud, finish, debugStart, debugHurt,
-           get phase() { return phase; },
+           get phase() { return phase; }, get fighting() { return phase === 'fight'; },
            get active() { return diff > 0; }, get diff() { return diff; } };
 })();

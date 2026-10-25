@@ -145,6 +145,7 @@ G.Spawner = (() => {
     // En la arena de la grieta no sale nada más (y el reloj de jefes espera).
     // En la Sentencia de Arceus, sólo sus legendarios (systems/judgment.js).
     if (G.Rift.inArena || G.Judgment.active) return;
+    if (G.Raid && G.Raid.fighting) return;                // incursión: sólo el legendario
 
     // Precarga lo que va a salir en el próximo minuto.
     preloadT -= dt;
