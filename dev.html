@@ -191,6 +191,7 @@
         <button class="menu-item" data-go="shop">Tienda Kecleon<small>Mentas, Cápsulas y MT</small></button>
         <button class="menu-item" data-go="bag">Mochila<small id="menu-bag-sub">Vacía</small></button>
         <button class="menu-item" data-go="gacha">Gacha<small>9 regiones · Pokémon y shinies</small></button>
+        <button class="menu-item" data-go="weekly">Desafío<small>Semanal: reglas iguales para todos</small></button>
         <button class="menu-item" data-go="goals">Misiones<small id="menu-goals-sub">Misiones, logros y perfil</small></button>
         <button class="menu-item" data-go="friends">Amigos<small id="menu-friends-sub">Juega en grupo, hasta 4</small></button>
         <button class="menu-item" data-go="rank">Ranking<small>Quién aguanta más</small></button>
@@ -453,6 +454,24 @@
 </div>
 
 <!-- ====== Colección ====== -->
+<section id="scr-weekly" class="scr dim hidden">
+  <div class="box wide">
+    <div class="row between"><h2>Desafío semanal <span id="wk-left" class="sub" style="font-size:14px"></span></h2><button class="btn small ghost" data-back>Volver</button></div>
+    <p class="sub">El mismo Pokémon y las mismas reglas para todos durante la semana. Sin tus Mejoras ni tu maestría: todos en igualdad. Tiene su propio ranking.</p>
+    <div class="wk-grid">
+      <div class="panel wk-hero"><canvas id="wk-mon" class="wk-mon" width="200" height="150"></canvas><h3 id="wk-name" translate="no"></h3><div id="wk-types" class="mdx-tags"></div></div>
+      <div>
+        <h3 style="margin:0 0 6px">Reglas de esta semana</h3>
+        <div id="wk-mods" class="wk-mods"></div>
+        <p id="wk-best" class="gold" style="margin:10px 0"></p>
+        <button id="wk-play" class="btn gold big" type="button">Jugar el desafío</button>
+      </div>
+    </div>
+    <h3 style="margin:14px 0 6px">Ranking de la semana</h3>
+    <div id="wk-top" class="wk-top"></div>
+  </div>
+</section>
+
 <section id="scr-movedex" class="scr dim hidden">
   <div class="box wide">
     <div class="row between"><h2>Movedex <span id="mdx-count" class="sub" style="font-size:15px"></span></h2><button class="btn small ghost" data-back>Volver</button></div>
@@ -701,6 +720,7 @@
 <script defer src="js/systems/interact.js"></script>
 <script defer src="js/systems/rift.js"></script>
 <script defer src="js/systems/legendrift.js"></script>
+<script defer src="js/systems/weekly.js"></script>
 <script defer src="js/systems/judgment.js"></script>
 <script defer src="js/systems/events.js"></script>
 <script defer src="js/systems/weather.js"></script>
@@ -726,6 +746,7 @@
 <script defer src="js/ui/shop-ui.js"></script>
 <script defer src="js/ui/run-ui.js"></script>
 <script defer src="js/ui/movedex-ui.js"></script>
+<script defer src="js/ui/weekly-ui.js"></script>
 <script defer src="js/ui/social-ui.js"></script>
 <script defer src="js/ui/ranking-ui.js"></script>
 <script defer src="js/ui/mod-ui.js"></script>

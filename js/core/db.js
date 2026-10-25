@@ -83,6 +83,7 @@ G.DB = (() => {
       pupg: {},               // dex -> { id -> nivel }: mejoras de cada Pokémon
       dfav: {},               // dex -> fecha: favorito de la colección (negativa = quitado entonces)
       pused: {},              // dex -> partidas jugadas con él (orden "más usados")
+      mast: {},               // dex -> segundos de partida con él (maestría, ver G.Mons.mastery)
       pstart: {},             // dex -> movimiento inicial elegido (Mejoras → Movimiento inicial)
       pstart2: {},            // dex -> segundo movimiento inicial (Mejoras → Segundo movimiento inicial)
       // Tienda Kecleon (20-10-2026, ver data/shop.js y systems/mons.js):
@@ -148,10 +149,10 @@ G.DB = (() => {
         }
       }
     } else delete s.led;
-    if (G.DEX_BY) for (const coll of ['owned', 'shiny', 'dfav', 'pused']) {
+    if (G.DEX_BY) for (const coll of ['owned', 'shiny', 'dfav', 'pused', 'mast']) {
       for (const d of Object.keys(s[coll] || {})) if (!G.DEX_BY[d]) delete s[coll][d];
     }
-    for (const coll of ['dfav', 'pused']) {
+    for (const coll of ['dfav', 'pused', 'mast']) {
       if (!isObj(s[coll])) { s[coll] = {}; continue; }
       for (const d of Object.keys(s[coll])) if (!Number.isFinite(+s[coll][d])) delete s[coll][d];
     }
@@ -364,6 +365,8 @@ G.DB = (() => {
     for (const d in older.dfav || {}) if (Math.abs(+older.dfav[d] || 0) > Math.abs(+r.dfav[d] || 0)) r.dfav[d] = older.dfav[d];
     r.pused = r.pused || {};
     for (const d in older.pused || {}) r.pused[d] = Math.max(+r.pused[d] || 0, +older.pused[d] || 0);
+    r.mast = r.mast || {};
+    for (const d in older.mast || {}) r.mast[d] = Math.max(+r.mast[d] || 0, +older.mast[d] || 0);
     // Movimiento inicial: el de la versión más reciente; si no lo tenía elegido, el de la otra.
     for (const k of ['pstart', 'pstart2']) {
       r[k] = r[k] || {};

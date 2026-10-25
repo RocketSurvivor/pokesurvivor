@@ -59,10 +59,11 @@
       this.r = G.Sprites.bodyRadius(def.dex, this.scale);
       this.bodyH = G.Sprites.bodyHeight(def.dex, this.scale);
 
-      this.maxHp = Math.round(def.hp * sc.hp);
+      // (Desafío semanal: sus reglas, ver systems/weekly.js; fuera del desafío es 1.)
+      this.maxHp = Math.round(def.hp * sc.hp * (G.Weekly ? G.Weekly.mult('ehp') : 1));
       this.hp = this.maxHp;
-      this.spd = def.spd * sc.spd;
-      this.dmg = def.dmg * sc.dmg;
+      this.spd = def.spd * sc.spd * (G.Weekly ? G.Weekly.mult('espd') : 1);
+      this.dmg = def.dmg * sc.dmg * (G.Weekly ? G.Weekly.mult('edmg') : 1);
       this.xp = def.xp;
       this.behavior = def.behavior;
 
@@ -235,7 +236,7 @@
         const n = this.def.loot === 'ticket10' ? 6 : 20;
         for (let i = 0; i < n; i++) G.Pickups.drop('coin', this.x + G.U.rand(-36, 36), this.y + G.U.rand(-26, 26), 5);
         if (this.def.loot === 'ticket10') G.Pickups.drop('ticket10', this.x, this.y - 12, 1);
-        if (this.def.loot === 'ticketS') G.Pickups.drop('ticketS', this.x, this.y - 12, 1);     // Aipom shiny
+        if (this.def.loot === 'ticketS') { G.Pickups.drop('ticketS', this.x, this.y - 12, 1); G.Progress.event('aipom'); }     // Aipom shiny
         G.FX.ring(this.x, this.y, this.r, this.r * 5, '#ffd23f', 0.6, 4);
       }
       if (this.legend) {
@@ -488,12 +489,15 @@
       }
       // Legendarios (grietas y Grieta de legendarios, 25-10-2026): todos los ataques
       // de lejos, más la tormenta y los rayos en ráfaga.
+      // Fases (25-10-2026): empiezan con los de su tipo y uno de los nuevos; al bajar de la
+      // mitad de vida pasan a la 2.ª fase (enrage) y sacan TODOS.
+      let phase2 = null;
       if (this.legend && !this.judge) {
-        ranged.length = 0;
-        ranged.push('rain', 'beam', 'nova', 'volley', 'spiral', 'cage', 'cross', 'storm', 'snipe');
+        phase2 = ['rain', 'beam', 'nova', 'volley', 'spiral', 'cage', 'cross', 'storm', 'snipe'];
+        ranged.push(G.U.hash(this.dex, 7, 3) < 0.5 ? 'storm' : 'snipe');
       }
       const far = this.behavior === 'ranged';
-      this.ai = { melee, ranged, farLike: far ? 0.65 : 0.35, mode: far ? 'far' : 'close', modeT: G.U.rand(6, 8),
+      this.ai = { melee, ranged, phase2, farLike: far ? 0.65 : 0.35, mode: far ? 'far' : 'close', modeT: G.U.rand(6, 8),
                   cd: 1.6, cast: null, fury: false, side: Math.random() < 0.5 ? -1 : 1 };
     }
 
@@ -533,7 +537,16 @@
     enrage() {
       this.ai.fury = true;
       this.spd *= 1.15;
-      if (!this.judge) G.Spawner.say('¡' + this.name + ' se ha enfurecido!', 2.4);
+      if (this.ai.phase2) {
+        // Legendario: 2.ª fase, con todos sus ataques.
+        this.ai.ranged = this.ai.phase2.slice();
+        this.ai.phase2 = null;
+        this.ai.cast = null; this.ai.cd = 0.8;
+        G.Spawner.say(G.I18n.f('¡{x} pasa a su segunda fase!', G.T(this.name)), 2.8);
+        G.FX.ring(this.x, this.y, this.r, this.r * 8, '#ffd23f', 0.9, 7);
+        G.FX.burst(this.x, this.y - (this.bodyH || 40) * 0.5, '#ff4a4a', 40, 260);
+        G.Game.flash && G.Game.flash('#ff6a4a', 0.35);
+      } else if (!this.judge) G.Spawner.say('¡' + this.name + ' se ha enfurecido!', 2.4);
       G.FX.ring(this.x, this.y, this.r, this.r * 5, '#ff4a4a', 0.6, 5);
       G.Camera.kick(0.5);
       G.Audio.sfx('boss');
@@ -701,7 +714,7 @@
         const a = base + (n === 1 ? 0 : (i / (n - 1) - 0.5) * spread);
         const shot = G.Projectiles.spawn({
           x: this.x, y: this.y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp,
-          dmg: this.shotDmg() * k, r: 7, life: 2.4, friendly: false, color: '#ff7a9e', mtype: type, cat: this.cat,
+          dmg: this.shotDmg() * k, r: 7, life: 2.4, friendly: false, color: '#ff7a9e', mtype: type, cat: this.cat, by: this.name,
           vis: G.VFX.forType(type)
         });
         if (G.Coop.isHost) G.Coop.enemyShot(shot, type);
@@ -711,7 +724,7 @@
     }
 
     /** Zona o rayo con aviso, con la categoría de sus golpes (tu defensa que la para). */
-    hazard(o) { G.Hazards.add(Object.assign({ cat: this.cat }, o)); }
+    hazard(o) { G.Hazards.add(Object.assign({ cat: this.cat, by: this.name }, o)); }
 
     /** Lo que hace cada personalidad cuando le toca (anfitrión / solitario). */
     special(pl, dx, dy) {

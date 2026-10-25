@@ -362,6 +362,21 @@ G.Ranking = (() => {
     return better;
   }
 
+  /** Desafío semanal: su tabla de la semana (s_wk<semana>a). */
+  const weeklyBoard = () => 's_wk' + periodIds().w + GEN;
+  function submitWeekly(r) { return track(submitWeeklyNow(r)); }
+  async function submitWeeklyNow(r) {
+    const fb = fbx();
+    if (!fb || !G.Social.me || r.t < MIN_T) return [];
+    const entry = { t: r.t, uids: [fb.uid], names: [G.Social.me.name], dex: [r.dex], shiny: [false], lv: r.lv, kills: r.kills, dmg: 0 };
+    return store([[weeklyBoard(), 'w']], fb.uid, entry);
+  }
+  /** El top del desafío de esta semana. */
+  async function weeklyTop() {
+    if (!fbx()) return [];
+    return sorted(await summary(weeklyBoard())).slice(0, TOP);
+  }
+
   /** La sube el anfitrión, con todo el equipo. */
   function submitGroup(r) { return track(submitGroupNow(r)); }
   async function submitGroupNow(r) {
@@ -660,6 +675,6 @@ G.Ranking = (() => {
       t1: (v.tickets || {}).t1 || 0, t10: (v.tickets || {}).t10 || 0, owned: Object.keys(v.owned || {}).length }; });
   }
 
-  return { PERIODS, periodIds, board, runStarted, submitSolo, submitGroup, top, topDmg, myRank, removeMine,
+  return { PERIODS, periodIds, board, runStarted, submitSolo, submitGroup, submitWeekly, weeklyTop, top, topDmg, myRank, removeMine,
            report, reported, isAdmin, reports, entryInfo, removeEntry, purgeAbove, removeEverywhere, setMarked, dismiss, markedAccounts };
 })();

@@ -192,7 +192,7 @@ G.Player = class Player {
     this.maxHp += m.hp - old.hp;
     this.baseSpd += m.spd - old.spd;
     this.baseAtk += m.atk - old.atk;
-    if (mega) this.isMega = true;
+    if (mega) { this.isMega = true; if (!this.remote) G.Progress.event('mega'); }
     else {
       this.evoN++;
       this.atkMul *= Player.GROW_ATK;
@@ -385,6 +385,7 @@ G.Player = class Player {
    */
   /** @param cat  'physical' | 'special': con qué defensa tuya se para (la del enemigo que pega). */
   hurt(amount, type = null, pure = false, cat = null) {
+    if (this.god) return;               // invencible (menú de administrador)
     if (this.invuln > 0 || this.dead) return;
     // Habilidad (data/ability-fx.js): absorber un tipo, esquivar o recibir menos.
     const ab = this.abil, cls = cat === 'physical' ? 'p' : cat === 'special' ? 's' : '';
@@ -413,6 +414,10 @@ G.Player = class Player {
     const close = this.activeGroup().some(m => m.kind === 'melee') ? 0.75 : 1;
     const d = pure ? Math.max(1, amount) : Math.max(1, amount * (1 - this.reduction) * close);
     this.hp -= d;
+    // Quién te ha quitado la vida, para el resumen del final (ver run-ui.js showOver).
+    const by = this.hitBy || 'Otros';
+    this.hitBy = null;
+    (this.taken = this.taken || {})[by] = (this.taken[by] || 0) + Math.min(d, Math.max(0, this.hp + d));
     this.invuln = 0.45;
     this.flash = 0.14;
     G.Audio.sfx('hurt');

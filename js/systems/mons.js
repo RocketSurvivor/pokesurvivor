@@ -135,6 +135,28 @@ G.Mons = (() => {
     return true;
   }
 
-  return { name, natureOf, setNature, rolledNature, monFor, abilityOf, abilityChoices, setAbility, abilityName,
+  // ---------------- Maestría (25-10-2026) ----------------
+  // Cuanto más juegas con un Pokémon (minutos de partida, empezando con él), más
+  // rango: +1 % de daño por rango en sus partidas, hasta el 5.
+  const MAST_MIN = [20, 60, 150, 300, 600];
+  const MAST_NAME = ['Sin rango', 'Aprendiz', 'Entrenado', 'Experto', 'Maestro', 'Leyenda'];
+  function mastery(dex) {
+    const s = save(), secs = (s && s.mast && +s.mast[dex]) || 0, min = secs / 60;
+    let rank = 0;
+    while (rank < MAST_MIN.length && min >= MAST_MIN[rank]) rank++;
+    return { rank, min: Math.floor(min), next: MAST_MIN[rank] || 0, name: MAST_NAME[rank], bonus: rank * 0.01 };
+  }
+  /** Suma el tiempo de una partida. → el rango nuevo si ha subido, si no null. */
+  function addMastery(dex, secs) {
+    const s = save();
+    if (!s || !dex || !(secs > 0)) return null;
+    const before = mastery(dex).rank;
+    s.mast = s.mast || {};
+    s.mast[dex] = Math.floor((+s.mast[dex] || 0) + secs);
+    const now = mastery(dex);
+    return now.rank > before ? now : null;
+  }
+
+  return { mastery, addMastery, MAST_NAME, name, natureOf, setNature, rolledNature, monFor, abilityOf, abilityChoices, setAbility, abilityName,
            slots, taught, learnable, canLearn, teach, forget, natural };
 })();

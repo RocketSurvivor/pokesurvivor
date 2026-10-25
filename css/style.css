@@ -303,14 +303,14 @@ label { display: block; font-size: 14px; color: var(--muted); margin: 8px 0 4px;
 .menu-right > :first-child { margin-top: auto; }
 .menu-right > :last-child { margin-bottom: auto; }
 /* Portátiles con poca altura: menú más compacto y, si hace falta, en dos columnas. */
-@media (max-height: 780px) and (min-height: 521px) {
+@media (max-height: 900px) and (min-height: 521px) {
   .menu-right { padding-top: 62px; gap: 10px; }
   .menu-right .box { padding: 10px 14px; }
   .menu-item { font-size: 17px; padding: 5px 10px; }
   .menu-item.play { font-size: 24px; }
   .menu-item small { font-size: 11px; }
 }
-@media (max-height: 660px) and (min-height: 521px) {
+@media (max-height: 740px) and (min-height: 521px) {
   .menu-right { width: min(500px, 52vw); }
   .menu-list { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 6px; }
   .menu-item.play { grid-column: span 2; }
@@ -1055,3 +1055,31 @@ html:lang(zh) .btn, html:lang(zh) .chip { letter-spacing: 0; }
 .auto-feed-it b { font-size: 14px; }
 @keyframes autoIn { from { opacity: 0; transform: translateY(10px) scale(.96); } to { opacity: 1; transform: none; } }
 @media (max-width: 700px) { #auto-feed { bottom: 150px; } }
+
+.auto-presets { display: flex; flex-wrap: wrap; gap: 5px; margin: 6px 0 2px; }
+.auto-presets .btn { font-size: 11px; padding: 3px 8px; }
+
+/* Final de partida: daño de cada ataque (25-10-2026) */
+.over-bars { display: flex; flex-direction: column; gap: 4px; margin-top: 4px; text-align: left; }
+.ob-row { display: grid; grid-template-columns: minmax(0, 1.3fr) 1fr auto; gap: 8px; align-items: center; font-size: 13px; }
+.ob-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ob-bar { height: 8px; background: rgba(255,255,255,.08); border-radius: 4px; overflow: hidden; }
+.ob-bar i { display: block; height: 100%; border-radius: 4px; }
+.ob-num { font-weight: 700; text-align: right; white-space: nowrap; }
+.ob-num small, .ob-name small { color: var(--muted); font-weight: 400; }
+
+/* Maestría (25-10-2026) */
+.mast-0 { color: var(--muted); } .mast-1 { color: #b8e0ff; } .mast-2 { color: #7dffa0; } .mast-3 { color: #ffd23f; }
+.mast-4 { color: #ff9a4d; } .mast-5 { color: #ff6ad5; text-shadow: 0 0 6px rgba(255,106,213,.5); }
+
+/* Desafío semanal (25-10-2026) */
+.wk-grid { display: grid; grid-template-columns: 220px 1fr; gap: 14px; align-items: start; margin-top: 8px; }
+.wk-hero { text-align: center; padding: 10px; }
+.wk-hero h3 { margin: 4px 0; }
+.wk-hero .mdx-tags { justify-content: center; }
+.wk-mon { width: 200px; height: 150px; display: block; margin: 0 auto; }
+.wk-mods { display: flex; flex-direction: column; gap: 6px; }
+.wk-mod { padding: 8px 12px; display: flex; flex-direction: column; }
+.wk-mod small { color: var(--muted); }
+.wk-top { max-height: 30vh; overflow-y: auto; }
+@media (max-width: 700px) { .wk-grid { grid-template-columns: 1fr; } }

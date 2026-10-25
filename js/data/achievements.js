@@ -12,6 +12,8 @@ G.AchDefs = (() => {
   const legends = s => Object.keys(s.legends || {}).length;
   const st = k => s => (s.stats && s.stats[k]) || 0;
   const count = k => s => Object.keys(s[k] || {}).length;
+  // El rango de maestría más alto que tengas con algún Pokémon (ver G.Mons.mastery).
+  const mastTop = s => Math.max(0, ...Object.keys(s.mast || {}).map(d => (G.Mons ? G.Mons.mastery(d).rank : 0)));
 
   const CATS = [['coleccion', 'Colección'], ['supervivencia', 'Supervivencia'], ['combate', 'Combate'],
                 ['grietas', 'Grietas'], ['legendarios', 'Legendarios'], ['otros', 'Misiones y más']];
@@ -71,7 +73,18 @@ G.AchDefs = (() => {
     { id: 'mis50', cat: 'otros', tier: 2, name: 'Constante', desc: 'Completa 50 misiones.', value: st('missionsDone'), goal: 50, reward: { t10: 1 }, title: 'Constante' },
     { id: 'mis200', cat: 'otros', tier: 3, name: 'Incansable', desc: 'Completa 200 misiones.', value: st('missionsDone'), goal: 200, reward: { t10: 3 } },
     { id: 'group1', cat: 'otros', tier: 1, name: 'En compañía', desc: 'Juega una partida en grupo.', value: st('groupRuns'), goal: 1, reward: { t1: 2 } },
-    { id: 'group10', cat: 'otros', tier: 2, name: 'Compañero fiel', desc: 'Juega 10 partidas en grupo.', value: st('groupRuns'), goal: 10, reward: { t10: 1 }, title: 'Compañero fiel' }
+    { id: 'group10', cat: 'otros', tier: 2, name: 'Compañero fiel', desc: 'Juega 10 partidas en grupo.', value: st('groupRuns'), goal: 10, reward: { t10: 1 }, title: 'Compañero fiel' },
+
+    // ---------- lo nuevo (25-10-2026) ----------
+    { id: 'green1', cat: 'grietas', tier: 2, name: 'Tres a la vez', desc: 'Vence a los 3 legendarios de una grieta verde.', value: st('greenWins'), goal: 1, reward: { t10: 1 } },
+    { id: 'green5', cat: 'grietas', tier: 3, name: 'Rompegrietas', desc: 'Vence 5 grietas verdes.', value: st('greenWins'), goal: 5, reward: { t10: 3 }, title: 'Rompegrietas' },
+    { id: 'aipom1', cat: 'combate', tier: 2, name: 'Mono brillante', desc: 'Atrapa al Aipom shiny antes de que huya.', value: st('aipom'), goal: 1, reward: { t10: 1 }, title: 'Rápido de reflejos' },
+    { id: 'mega1', cat: 'combate', tier: 2, name: 'Megaevolución', desc: 'Megaevoluciona en una partida.', value: st('megaRuns'), goal: 1, reward: { t10: 1 }, title: 'Mega' },
+    { id: 'base15', cat: 'supervivencia', tier: 3, name: 'Desde abajo', desc: 'Aguanta 15 minutos con un Pokémon que ha evolucionado en la partida.', value: st('baseT15'), goal: 1, reward: { t10: 2 }, title: 'Desde abajo' },
+    { id: 'mast3', cat: 'otros', tier: 2, name: 'Experto', desc: 'Consigue la maestría Experto con un Pokémon.', value: s => mastTop(s), goal: 3, reward: { t10: 1 } },
+    { id: 'mast5', cat: 'otros', tier: 3, name: 'Leyenda viva', desc: 'Consigue la maestría Leyenda con un Pokémon.', value: s => mastTop(s), goal: 5, reward: { t10: 3 }, title: 'Leyenda viva' },
+    { id: 'weekly1', cat: 'otros', tier: 1, name: 'Retador', desc: 'Juega un Desafío semanal.', value: st('weekly'), goal: 1, reward: { t1: 3 } },
+    { id: 'weekly10', cat: 'otros', tier: 2, name: 'Retador incansable', desc: 'Juega 10 Desafíos semanales.', value: st('weekly'), goal: 10, reward: { t10: 1 }, title: 'Retador' }
   ];
 
   // Un logro por legendario: "Vence a Mewtwo"...

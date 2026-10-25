@@ -105,9 +105,12 @@ G.Game = (() => {
   function startRun(coop = null) {
     holdBy = []; awayBy = null;
     const save = G.DB.save;
+    // Desafío semanal: sólo en solitario, con su Pokémon y sin las Mejoras compradas.
+    if (coop) G.Weekly.cancel();
+    const weekly = G.Weekly.active;
     // Con su naturaleza aplicada (una copia: ver systems/mons.js).
-    const mon = G.Mons.monFor(save.partner);
-    const perks = G.Upgrades.perks(G.DB.upgradesOf(mon.dex));
+    const mon = G.Mons.monFor(weekly ? G.Weekly.info().dex : save.partner);
+    const perks = G.Upgrades.perks(weekly ? {} : G.DB.upgradesOf(mon.dex));
 
     G.UI.hideAll();
     G.UI.chrome(false);
@@ -130,9 +133,14 @@ G.Game = (() => {
     time = 0; pendingLevels = 0;
     runReal = performance.now(); tampered = false;
 
-    pl = new G.Player(mon, perks, !!save.partnerShiny && G.DB.ownsShiny(mon.dex));
+    pl = new G.Player(mon, perks, !weekly && !!save.partnerShiny && G.DB.ownsShiny(mon.dex));
     G.Orbs.reset();
     pl.setAbility(G.Mons.abilityOf(mon.dex).id);
+    // Maestría: +1 % de daño por rango con este Pokémon.
+    pl.mastery = weekly ? 0 : G.Mons.mastery(mon.dex).rank;
+    pl.atkMul *= 1 + pl.mastery * 0.01;
+    pl.weekly = weekly;
+    G.Weekly.applyPlayer(pl);
     banked = { t1: 0, t10: 0, ts: 0 };
     caught = [];
     // Atajos: movimientos con hueco fijo (save.pbind[dex] = [id del 1, id del 2, ...]),
@@ -377,7 +385,9 @@ G.Game = (() => {
     bankTickets(false);
     save.stats.runs++;
     save.pused = save.pused || {};
-    save.pused[pl.startDex] = (+save.pused[pl.startDex] || 0) + 1;     // para "más usados" en la colección
+    if (!pl.weekly) save.pused[pl.startDex] = (+save.pused[pl.startDex] || 0) + 1;     // para "más usados" en la colección
+    // Maestría: el tiempo de partida (no cuenta si se ha tocado con el menú de administrador).
+    const mastUp = clean() && !pl.weekly ? G.Mons.addMastery(pl.startDex, Math.floor(time)) : null;
     save.stats.totalKills += pl.kills;
     save.stats.bestTime = Math.max(save.stats.bestTime, Math.floor(markT));
     if (coop) save.stats.bestGroupTime = Math.max(save.stats.bestGroupTime || 0, Math.floor(time));
@@ -386,7 +396,8 @@ G.Game = (() => {
     const judge = G.Judgment.summary();
     if (judge) G.Progress.event('judgeEnd', judge);
     G.Judgment.reset();
-    G.Progress.event('runEnd', { time: markT, level: fall ? fall.level : pl.level, coins: pl.coins, types: pl.mon.types, group: coop });
+    G.Progress.event('runEnd', { time: markT, level: fall ? fall.level : pl.level, coins: pl.coins, types: pl.mon.types, group: coop,
+                                 evolved: pl.evoN || 0 });
     G.Progress.checkAch();
     // A la nube al acabar la partida (como mucho cada hora); si la marca entra
     // en un top (hoy, semana o mes), enseguida (abajo, tras subirla al ranking).
@@ -398,13 +409,16 @@ G.Game = (() => {
                       : { t: Math.floor(time), lv: pl.level, kills: pl.kills, dmg: judge ? judge.dmg : 0 };   // dmg: a Arceus
     // Si la partida se ha tocado (ver clean()), no sube al ranking (sin avisar); lo demás, sí.
     const ok = clean();
-    const sent = ok && !coop ? G.Ranking.submitSolo(Object.assign(mark, { dex: pl.startDex, shiny: pl.shiny }))
+    // Desafío semanal: su propia tabla (y tu mejor marca de la semana), no la normal.
+    const weeklyRec = pl.weekly ? G.Weekly.finish(mark) : false;
+    if (pl.weekly && ok) G.Ranking.submitWeekly(Object.assign({}, mark, { dex: pl.startDex, shiny: false })).catch(() => {});
+    const sent = pl.weekly ? null : ok && !coop ? G.Ranking.submitSolo(Object.assign(mark, { dex: pl.startDex, shiny: pl.shiny }))
                : ok && wasHost ? G.Ranking.submitGroup(Object.assign(mark, { members: team })) : null;
     if (sent) sent.then(b => { if (b && b.some(p => p !== 'a')) G.DB.commit(true); }).catch(() => {});
 
     G.RunUI.showOver({
       dead, time, level: pl.level, kills: pl.kills, bosses: pl.bosses, coins, record, t1: pl.t1, t10: pl.t10, ts: pl.ts || 0, judge, fall,
-      moves: pl.moves, caught,
+      moves: pl.moves, caught, taken: pl.taken || {}, mastUp, mastDex: pl.startDex, weekly: pl.weekly, weeklyRec,
       breakdown: Object.entries(parts).filter(([, v]) => v).map(([k, v]) => `${k} ${v}`).join(' · ') +
                  (mul > 1 ? ` · ×${mul.toFixed(2)} Fortuna` : '')
     }, () => { pl = null; G.Flow.afterRun(); });
@@ -685,7 +699,7 @@ G.Game = (() => {
     }
     if (state === 'ui') {
       // Esc en una subpantalla del menú vuelve al menú.
-      if (G.Input.tap('escape') && !G.UI.isOpen('scr-profile') && ['scr-dex', 'scr-upgrades', 'scr-shop', 'scr-bag', 'scr-gacha', 'scr-friends', 'scr-rank', 'scr-goals', 'scr-movedex'].some(G.UI.isOpen)
+      if (G.Input.tap('escape') && !G.UI.isOpen('scr-profile') && ['scr-dex', 'scr-upgrades', 'scr-shop', 'scr-bag', 'scr-gacha', 'scr-friends', 'scr-rank', 'scr-goals', 'scr-movedex', 'scr-weekly'].some(G.UI.isOpen)
           && document.getElementById('pull-fx').classList.contains('hidden')) G.MenuUI.open();
       return;
     }
@@ -1079,6 +1093,8 @@ G.Game = (() => {
     quit() { if (state !== 'ui' && state !== 'over') quitRun(); },
     /** Para grabar vídeos: abre las cartas de subir de nivel. */
     debugLevelUp() { tampered = true; pl.level++; pendingLevels++; },
+    /** Menú de administrador: la partida pasa a ser de prueba (no cuenta para el ranking). */
+    debugMark() { tampered = true; },
     toUI() { state = 'ui'; if (cv) cv.style.cursor = ''; Backdrop.restore(); },
     get state() { return state; }, get player() { return pl; }, st
   };
@@ -1088,7 +1104,7 @@ G.Game = (() => {
 G.Flow = {
   boot() {
     G.UI.initChrome();
-    G.LoginUI.init(); G.TestUI.init(); G.MenuUI.init(); G.GachaUI.init(); G.MovedexUI.init();
+    G.LoginUI.init(); G.TestUI.init(); G.MenuUI.init(); G.GachaUI.init(); G.MovedexUI.init(); G.WeeklyUI.init();
     G.SocialUI.init(); G.RankingUI.init(); G.ModUI.init(); G.GoalsUI.init(); G.ProfileUI.init(); G.SettingsUI.init(); G.SupportUI.init(); G.NewsUI.init(); G.LiveUI.init(); G.Updater.init();
     // Tu nombre arriba a la derecha abre tu perfil.
     document.getElementById('user-pill').onclick = () => G.GoalsUI.open('profile');

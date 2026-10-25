@@ -1,6 +1,7 @@
 /* ============ run-ui.js — cartas de nivel, pausa y fin de run ============ */
 G.RunUI = (() => {
   const $ = G.UI.$;
+  const esc = v => String(v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   let offers = null, offerCb = null, coopMode = false;
 
   /*
@@ -59,8 +60,17 @@ G.RunUI = (() => {
    */
   const CATS = { evo: 'Evoluciones', up: 'Mejorar ataques', new: 'Ataques nuevos', stat: 'Estadísticas' };
   const STAT_ORDER = ['atk', 'cd', 'hp', 'def', 'spd', 'rgn', 'mag', 'xp'];
+  /*
+   * Cada Pokémon guarda su orden (categorías, estadísticas y ataques) en `per[dex]`
+   * (el Pokémon con el que empiezas la partida). Si aún no tiene, usa el general.
+   * Activada / desactivada es para todos.
+   */
+  const autoDex = () => { const p = G.Game.player; return p ? (p.startDex || p.dex) : 0; };
   function autoCfg() {
-    const c = Object.assign({}, G.Settings.DEF.autoPick, G.Settings.get('autoPick') || {});
+    const raw = Object.assign({}, G.Settings.DEF.autoPick, G.Settings.get('autoPick') || {});
+    const own = (raw.per && raw.per[autoDex()]) || {};
+    const c = Object.assign({}, raw, own, { on: raw.on, own: !!raw.per && !!raw.per[autoDex()] });
+    if (!Array.isArray(c.order) || c.order.length !== 4) c.order = G.Settings.DEF.autoPick.order.slice();
     // Orden de estadísticas (antes sólo había una preferida, `stat`: va la primera).
     if (!Array.isArray(c.stats) || c.stats.length !== STAT_ORDER.length || STAT_ORDER.some(x => !c.stats.includes(x))) {
       c.stats = [...new Set([c.stat, ...STAT_ORDER].filter(x => STAT_ORDER.includes(x)))];
@@ -156,8 +166,27 @@ G.RunUI = (() => {
   // Para ordenar: tocas uno (se marca) y luego otro de la misma lista, y se cambian de sitio.
   let autoSel = null;            // { g: 'cat' | 'stat' | 'move', i }
   function renderAuto() {
-    const box = $('pause-auto'), cfg = autoCfg();
-    const save = v => { G.Settings.set('autoPick', Object.assign({}, cfg, v)); renderAuto(); };
+    const box = $('pause-auto'), cfg = autoCfg(), dex = autoDex();
+    // Activada / desactivada, para todos; el orden, para este Pokémon.
+    const save = v => {
+      const raw = Object.assign({}, G.Settings.DEF.autoPick, G.Settings.get('autoPick') || {});
+      if ('on' in v) raw.on = v.on;
+      const rest = Object.assign({}, v); delete rest.on;
+      if (Object.keys(rest).length && dex) {
+        raw.per = Object.assign({}, raw.per);
+        raw.per[dex] = Object.assign({ order: cfg.order, stats: cfg.stats, moves: cfg.moves }, raw.per[dex], rest);
+        // Lo último que ordenes también sirve de punto de partida para los Pokémon que aún no tienen orden.
+        Object.assign(raw, { order: raw.per[dex].order, stats: raw.per[dex].stats });
+      }
+      G.Settings.set('autoPick', raw); renderAuto();
+    };
+    const PRESETS = {
+      dmg:  { order: ['evo', 'up', 'new', 'stat'], stats: ['atk', 'cd', 'xp', 'hp', 'def', 'spd', 'rgn', 'mag'] },
+      tank: { order: ['evo', 'up', 'stat', 'new'], stats: ['hp', 'def', 'rgn', 'atk', 'cd', 'spd', 'mag', 'xp'] },
+      fast: { order: ['evo', 'up', 'new', 'stat'], stats: ['cd', 'spd', 'atk', 'mag', 'xp', 'hp', 'def', 'rgn'] },
+      wide: { order: ['evo', 'new', 'up', 'stat'], stats: ['xp', 'atk', 'cd', 'mag', 'hp', 'def', 'spd', 'rgn'] }
+    };
+    const PRESET_NAME = { dmg: 'Daño máximo', tank: 'Tanque', fast: 'Velocidad y recarga', wide: 'Muchos ataques' };
     const STATS = Object.fromEntries(G.LevelUp.STATS.map(s => [s.id, s]));
     const item = (grp, i, html) => `<li class="auto-it${autoSel && autoSel.g === grp && autoSel.i === i ? ' sel' : ''}" data-g="${grp}" data-i="${i}">
           <b class="auto-n">${i + 1}</b><span>${html}</span></li>`;
@@ -168,6 +197,8 @@ G.RunUI = (() => {
       <div class="${cfg.on ? '' : 'hidden'}">
         <p class="sub" style="margin:4px 0 0;font-size:12px">${G.T('Elige sola las cartas al subir de nivel. Prioridad (lo de arriba primero):')}</p>
         <p class="sub auto-hint">${G.T('Para cambiar el orden, toca uno y luego otro: se intercambian.')}</p>
+        ${dex ? `<p class="sub" style="margin:2px 0 0;font-size:11px">${G.I18n.f('Este orden es sólo de {x}.', G.T(G.DEX_BY[dex].name))}</p>` : ''}
+        <div class="auto-presets">${Object.keys(PRESETS).map(k => `<button type="button" class="btn small ghost" data-preset="${k}">${G.T(PRESET_NAME[k])}</button>`).join('')}</div>
         <ol class="auto-list">${cfg.order.map((k, i) => item('cat', i, G.T(CATS[k]))).join('')}</ol>
         <details id="auto-d-stats" ${autoOpen.stats ? 'open' : ''}><summary>${G.T('Orden de las estadísticas')}</summary>
           <ol class="auto-list">${cfg.stats.map((id, i) => item('stat', i, `${G.Icons.html(STATS[id].icon, 14)} ${G.T(STATS[id].title)}`)).join('')}</ol>
@@ -181,6 +212,12 @@ G.RunUI = (() => {
         </details>
       </div>`;
     box.querySelector('#auto-on').onclick = () => save({ on: !cfg.on });
+    box.querySelectorAll('[data-preset]').forEach(b => b.onclick = () => {
+      G.Audio.sfx('select');
+      autoSel = null;
+      save(Object.assign({}, PRESETS[b.dataset.preset]));
+      G.UI.toast(G.I18n.f('Orden puesto: {x}', G.T(PRESET_NAME[b.dataset.preset])), 1800);
+    });
     box.querySelector('#auto-d-stats').ontoggle = e => { autoOpen.stats = e.target.open; };
     box.querySelector('#auto-d-moves').ontoggle = e => { autoOpen.moves = e.target.open; };
     const reset = box.querySelector('#auto-mreset');
@@ -232,6 +269,14 @@ G.RunUI = (() => {
         <button type="button" class="btn small" data-min="10">+10 min</button>
         <span class="admin-go"><input id="admin-min" type="number" min="0" max="120" step="1" value="${Math.floor(t / 60)}"><button type="button" class="btn small gold" id="admin-go">${G.T('Ir al minuto')}</button></span>
       </div>
+      <div class="admin-btns">
+        <button type="button" class="btn small" data-adm="boss">${G.T('Jefe ya')}</button>
+        <button type="button" class="btn small" data-adm="rift">${G.T('Grieta')}</button>
+        <button type="button" class="btn small" data-adm="green">${G.T('Grieta verde')}</button>
+        <button type="button" class="btn small" data-adm="aipom">${G.T('Aipom shiny')}</button>
+        <button type="button" class="btn small" data-adm="heal">${G.T('Curar')}</button>
+        <button type="button" class="btn small ${G.Game.player.god ? 'gold' : ''}" data-adm="god">${G.T('Invencible')}: ${G.Game.player.god ? G.T('Sí') : G.T('No')}</button>
+      </div>
       <p class="sub" style="margin:4px 0 0;font-size:11px">${G.T('Las partidas con estos cambios no cuentan para el ranking.')}</p>`;
     box.querySelectorAll('[data-lv]').forEach(b => b.onclick = () => {
       for (let i = 0; i < +b.dataset.lv; i++) G.Game.debugLevelUp();
@@ -240,6 +285,19 @@ G.RunUI = (() => {
     const go = sec => { G.Game.debugTime(Math.max(0, Math.min(7200, sec))); G.Audio.sfx('select'); renderAdmin(); };
     box.querySelectorAll('[data-min]').forEach(b => b.onclick = () => go((G.Game.st.time || 0) + 60 * +b.dataset.min));
     box.querySelector('#admin-go').onclick = () => go(60 * (+box.querySelector('#admin-min').value || 0));
+    box.querySelectorAll('[data-adm]').forEach(b => b.onclick = () => {
+      const pl = G.Game.player, t = G.Game.st.time || 0, k = b.dataset.adm;
+      G.Game.debugMark();
+      if (k === 'boss') G.Spawner.debugBoss(t);
+      else if (k === 'rift') { if (!G.Rift.rift && !G.Rift.inArena) G.Rift.debugOpen(); }
+      else if (k === 'green') G.Rift.openTrio();
+      else if (k === 'aipom') G.Events.debugAipom();
+      else if (k === 'heal') pl.hp = pl.maxHp;
+      else if (k === 'god') pl.god = !pl.god;
+      G.Audio.sfx('select');
+      G.UI.toast(G.T('Hecho: vuelve a la partida para verlo'), 1500);
+      renderAdmin();
+    });
   }
 
   /**
@@ -331,6 +389,26 @@ G.RunUI = (() => {
     return true;
   }
 
+  /** Final de la partida: barras con el daño de cada ataque, del que más al que menos. */
+  function overMoves(r) {
+    const list = r.moves.slice().sort((a, b) => (b.dealt || 0) - (a.dealt || 0));
+    if (!list.length) return '<b>—</b>';
+    const total = list.reduce((a, m) => a + (m.dealt || 0), 0) || 1, top = list[0].dealt || 1;
+    const n = v => Math.round(v).toLocaleString(G.I18n.locale);
+    return `<div class="over-bars">${list.map(m => `<div class="ob-row">
+        <span class="ob-name">${G.Icons.html('move:' + m.id, 16)} ${G.T(m.name, 'move')} <small>Nv.${m.lvl}</small></span>
+        <span class="ob-bar"><i style="width:${Math.max(2, (m.dealt || 0) / top * 100)}%;background:${G.U.TYPE_COLOR[m.type] || '#8fa3c4'}"></i></span>
+        <span class="ob-num">${m.cat ? `${n(m.dealt || 0)} <small>${Math.round((m.dealt || 0) / total * 100)} %</small>` : '—'}</span></div>`).join('')}</div>`;
+  }
+  /** Quién te ha quitado más vida (los 3 primeros). */
+  function overTaken(r) {
+    const all = Object.entries(r.taken || {}).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]);
+    if (!all.length) return '';
+    const total = all.reduce((a, [, v]) => a + v, 0) || 1;
+    return `<div style="grid-column:1/-1"><span>Lo que más vida te ha quitado</span><b style="font-size:14px">
+      ${all.slice(0, 3).map(([k, v]) => `${esc(G.T(k))} <small>${Math.round(v / total * 100)} %</small>`).join(' · ')}</b></div>`;
+  }
+
   function showOver(r, onBack) {
     $('over-title').textContent = r.dead ? 'Has caído…' : 'Run terminada';
     $('over-stats').innerHTML = `
@@ -345,8 +423,10 @@ G.RunUI = (() => {
         <div style="font-size:12px;color:var(--muted)">${r.breakdown}</div></div>
       ${r.t1 || r.t10 || r.ts ? `<div style="grid-column:1/-1"><span>Tickets del gacha</span><b>
         ${r.t1 ? G.Icons.html('ticket', 22) + ' +' + r.t1 + ' ' : ''}${r.t10 ? G.Icons.html('ticket10', 22) + ' +' + r.t10 + ' ×10 ' : ''}${r.ts ? G.Icons.html('ticketS', 22) + ' +' + r.ts + ' shiny' : ''}</b></div>` : ''}
-      <div style="grid-column:1/-1"><span>Movimientos</span><b style="font-size:15px">
-        ${r.moves.map(m => `${G.Icons.html('move:' + m.id, 16)} ${G.T(m.name, 'move')} Nv.${m.lvl}`).join(' · ') || '—'}</b></div>
+      <div style="grid-column:1/-1"><span>Daño de cada ataque</span>${overMoves(r)}</div>
+      ${overTaken(r)}
+      ${r.weekly ? `<div style="grid-column:1/-1;text-align:center" class="gold">${r.weeklyRec ? G.T('Desafío semanal: ¡tu mejor marca de la semana!') : G.T('Desafío semanal terminado')}</div>` : ''}
+      ${r.mastUp ? `<div style="grid-column:1/-1;text-align:center" class="gold">${G.I18n.f('¡Maestría de {x}: {x}! Ahora hace un {x} % más de daño.', esc(G.T(G.DEX_BY[r.mastDex].name)), G.T(r.mastUp.name), r.mastUp.rank)}</div>` : ''}
       ${r.caught && r.caught.length ? `<div style="grid-column:1/-1" class="caught"><span>${G.Icons.html('shiny', 12)} Shinies conseguidos</span>
         <div class="caught-row" id="over-caught"></div></div>` : ''}
       ${r.fall ? `<div style="grid-column:1/-1"><span>Marca para el ranking (primera caída)</span><b>${G.U.mmss(r.fall.time)} · ${(r.fall.dmg || 0).toLocaleString(G.I18n.locale)}</b></div>` : ''}

@@ -165,7 +165,7 @@ G.Spawner = (() => {
 
     // --- goteo normal ---
     if (G.EnemyMgr.count < CAP) {
-      acc += rate(t) * G.Coop.scaleRate(players.length) * (bossFight ? 0.25 : 1) * dt;
+      acc += rate(t) * G.Coop.scaleRate(players.length) * (bossFight ? 0.25 : 1) * (G.Weekly ? G.Weekly.mult('rate') : 1) * dt;
       let n = Math.floor(acc);
       acc -= n;
       while (n-- > 0 && G.EnemyMgr.count < CAP) spawnOne(anchor(), t);
@@ -218,5 +218,7 @@ G.Spawner = (() => {
   function tickBanner(dt) { if (announceT > 0) announceT -= dt; }
 
   return { reset, update, ahead, burst, tickBanner, banner, say, rate, SHINY_RATE, CAP,
-           debugForceShiny(n = 1) { forceShiny = n; } };
+           debugForceShiny(n = 1) { forceShiny = n; },
+           /** Menú de administrador: un jefe ya (como los de después de Arceus). */
+           debugBoss(t) { const p = G.Game.player; if (p) spawnBoss(p, t, G.Enemies.extraBoss(t)); } };
 })();

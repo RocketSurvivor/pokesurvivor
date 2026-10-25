@@ -23,7 +23,7 @@
 G.Settings = (() => {
   const KEY = 'ps.settings';
   const DEF = { quality: 'auto', dmgNumbers: true, calm: false, fps: false, stick: 1, stickMode: 'float', pad: null, gamepad: true, padRumble: true, aimManual: false,
-    autoPick: { on: false, order: ['evo', 'up', 'new', 'stat'], stat: 'atk', stats: null, moves: [] } };
+    autoPick: { on: false, order: ['evo', 'up', 'new', 'stat'], stat: 'atk', stats: null, moves: [], per: {} } };
   let s = Object.assign({}, DEF);
   try { Object.assign(s, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) { /* nada */ }
   if (!s.autoPick || !Array.isArray(s.autoPick.order) || s.autoPick.order.length !== 4) s.autoPick = Object.assign({}, DEF.autoPick, { on: !!(s.autoPick && s.autoPick.on) });

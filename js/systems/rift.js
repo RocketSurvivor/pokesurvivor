@@ -259,12 +259,19 @@ G.Rift = (() => {
   function won() {
     if (!arena || arena.phase !== 'fight') return;
     arena.phase = 'won'; arena.endT = 5;
-    G.Progress.event('rift', { type: arena.type });
+    G.Progress.event('rift', { type: arena.type, trio: !!arena.trio });
     G.Pickups.pullAll();
     G.Spawner.say(arena.trio ? '¡Has vencido a los tres legendarios! Recoge el premio…'
       : '¡Has vencido a ' + G.DEX_BY[arena.dex].name + '! Recoge el premio…', 3.4, true);
     G.Audio.sfx('legend');
     const pl = G.Game.player;
+    // Premio propio de la grieta verde (25-10-2026): un ticket ×10 seguro y un 30 % de
+    // ticket shiny. Sale en el centro de la arena y lo recoge quien llegue (lo atrae pullAll).
+    if (arena.trio && authority()) {
+      G.Pickups.drop('ticket10', arena.x, arena.y, 1);
+      if (Math.random() < 0.3) G.Pickups.drop('ticketS', arena.x + 20, arena.y, 1);
+      G.Pickups.pullAll();
+    }
     if (pl) {
       pl.bonds++;
       G.FX.dmgText(pl.x, pl.y - pl.bodyH - 10, '¡Vínculo!', '#ff8ad8', true);

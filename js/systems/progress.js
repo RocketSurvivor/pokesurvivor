@@ -142,6 +142,16 @@ G.Progress = (() => {
       case 'rift':
         S.riftWins = (S.riftWins || 0) + 1;
         if (d.type) { s.arenas = s.arenas || {}; s.arenas[d.type] = s.arenas[d.type] || Date.now(); }
+        if (d.trio) S.greenWins = (S.greenWins || 0) + 1;            // grieta verde (3 legendarios)
+        break;
+      case 'aipom':
+        S.aipom = (S.aipom || 0) + 1;
+        break;
+      case 'mega':
+        S.megaRuns = (S.megaRuns || 0) + 1;
+        break;
+      case 'weekly':
+        S.weekly = (S.weekly || 0) + 1;
         break;
       case 'evolve':
         S.evolutions = (S.evolutions || 0) + 1;
@@ -152,6 +162,8 @@ G.Progress = (() => {
         break;
       case 'runEnd':
         if (d.group) S.groupRuns = (S.groupRuns || 0) + 1;
+        // Desde abajo: 15 minutos con un Pokémon que ha evolucionado en la partida.
+        if (d.evolved && d.time >= 900) S.baseT15 = (S.baseT15 || 0) + 1;
         break;
       case 'judge':
         S.judged = (S.judged || 0) + 1;

@@ -10,7 +10,7 @@ G.MenuUI = (() => {
   const SORTS = [['num', 'Nº'], ['name', 'Nombre'], ['rar', 'Rareza'], ['new', 'Recién conseguidos'], ['used', 'Más usados']];
 
   function init() {
-    const ICON = { play: 'ball', dex: 'book', upgrades: 'up', shop: 'shop', bag: 'bag', gacha: 'ball4', goals: 'medal3', friends: 'friends', rank: 'trophy', settings: 'gear' };
+    const ICON = { play: 'ball', dex: 'book', upgrades: 'up', shop: 'shop', bag: 'bag', gacha: 'ball4', goals: 'medal3', weekly: 'clock', friends: 'friends', rank: 'trophy', settings: 'gear' };
     document.querySelectorAll('#scr-menu [data-go]').forEach(b => {
       b.insertAdjacentHTML('afterbegin', `<span class="mi-ico">${G.Icons.html(ICON[b.dataset.go], 26)}</span>`);
       b.dataset.sfx = b.dataset.go === 'play' ? 'confirm' : 'click';
@@ -23,6 +23,7 @@ G.MenuUI = (() => {
         else if (go === 'bag') G.ShopUI.openBag();
         else if (go === 'gacha') G.GachaUI.open();
         else if (go === 'goals') G.GoalsUI.open();
+        else if (go === 'weekly') G.WeeklyUI.open();
         else if (go === 'friends') G.FriendsUI.open();
         else if (go === 'rank') G.RankingUI.open();
         else if (go === 'settings') G.SettingsUI.open();
@@ -380,6 +381,11 @@ G.MenuUI = (() => {
         ? `<span class="move-icons">${taught.map(id => `<span title="${G.T(G.Moves.BY_ID[id].name, 'move')}">${G.Icons.html('move:' + id, 16)}</span>`).join('')}</span>`
         : `<small>${G.T('Aún no ha aprendido ninguna')}</small>`}
         ${btn('tm', 'tm', 'Enseñar MT', tmsHere.length)}${taught.length ? `<button class="btn small ghost" data-extra="tmx">${G.T('Olvidar MT')}</button>` : ''}</div>
+      ${(() => {
+        const m = G.Mons.mastery(dex);
+        return `<div class="mx-row"><span>${G.T('Maestría')}</span><b class="mast-${m.rank}">${G.T(m.name)}</b>
+          <small>${m.rank ? G.I18n.f('+{x} % de daño', m.rank) + ' · ' : ''}${m.next ? G.I18n.f('{x} / {x} min de partida', m.min, m.next) : G.T('Rango máximo')}</small></div>`;
+      })()}
       <div id="mx-picker"></div>
     </div>`;
   }
