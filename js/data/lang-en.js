@@ -1737,5 +1737,7 @@ G.I18n.add({
   "Cuantos más seáis, más vida y daño tiene.": "The more of you there are, the more HP and damage it has.",
   "Los ataques exclusivos de legendario también evolucionan: al nivel máximo y con la mejora de su condición cogida en la partida sale la carta dorada (Pulso Primigenio +). Ganan algo menos que un ataque normal al evolucionar, porque ya son fuertes.": "Legendary signature moves can evolve too: at max level, with their condition upgrade taken during the run, the golden card appears (Origin Pulse +). They gain a bit less than a normal move when evolving, since they're already strong.",
   "Incursiones: cuantos más jugadores, más duras. El legendario tiene un 45 % más de vida y un 12 % más de daño por cada jugador de más.": "Raids: the more players, the harder. The legendary has 45% more HP and 12% more damage for each extra player.",
-  "Incursiones: cuando sale el legendario, los demás enemigos se van y no sale ninguno más mientras dura la pelea.": "Raids: when the legendary appears, the other enemies leave and no more spawn while the fight lasts."
+  "Incursiones: cuando sale el legendario, los demás enemigos se van y no sale ninguno más mientras dura la pelea.": "Raids: when the legendary appears, the other enemies leave and no more spawn while the fight lasts.",
+  "¡Teletransporte al campo de batalla!": "Teleporting to the battlefield!",
+  "Incursiones: cuando sale el legendario, todo el grupo se teletransporta a un campo de batalla cerrado (con la arena de uno de sus tipos) para enfrentarlo.": "Raids: when the legendary appears, the whole group is teleported to a closed battlefield (with the arena of one of its types) to face it."
 });

@@ -32,6 +32,7 @@ G.Raid = (() => {
 
   /** @param coop  la configuración de la partida en grupo ({ raid: 1..3 } si es incursión) */
   function reset(coop) {
+    arena = null;
     diff = coop && DIFF[coop.raid] ? +coop.raid : 0;
     phase = diff ? 'wait' : null; bossId = 0; t0 = 0; endT = 0; won = false; said = false;
     if (diff) G.Sprites.preload([boss()], 10000);
@@ -64,16 +65,45 @@ G.Raid = (() => {
     const n = G.Coop.active ? G.Coop.players().length : 1;
     def.hp = Math.round(def.hp * (1 + 0.45 * (n - 1)));
     def.dmg = Math.round(def.dmg * (1 + 0.12 * (n - 1))); def.shotDmg = Math.round(def.shotDmg * (1 + 0.12 * (n - 1)));
+    // Campo de batalla (25-10-2026): todo el grupo viaja a una arena cerrada, lejos del mapa,
+    // con la paleta de uno de sus tipos (Giratina, su Mundo Distorsión), y allí aparece él.
+    const cfg = { tx: 5000 + Math.floor(Math.random() * 3000), ty: 5000 + Math.floor(Math.random() * 3000), r: ARENA_R,
+                  type: G.U.pick(mon.types), dex };
+    if (G.Coop.isHost) G.Coop.broadcast(['rd', 'arena', cfg]);
+    enterArena(cfg);
     const e = G.Spawner.spawnBossDef(def, AT);
     if (!e) return;
     e.legend = true; e.raid = true; e.ai = null;
     e.giant(GIANT);
+    e.x = arena.x; e.y = arena.y - TS() * 4; e.kx = e.ky = 0;
     bossId = e.id; t0 = G.Game.st.time; phase = 'fight';
     // Sólo el jefe (25-10-2026): los demás enemigos se van y no salen más mientras dura.
     G.EnemyMgr.dismissAll(e.id);
     G.Hazards.clear();
     if (G.Coop.isHost) { G.Coop.broadcast(['rg', e.id, GIANT]); G.Coop.broadcast(['rd', 'fight', t0]); }
     announce();
+  }
+
+  const ARENA_R = 14, TS = () => G.Tiles.T * G.Sprites.PX;
+  let arena = null;                 // { x, y } centro del campo de batalla
+
+  /** En cada ordenador: viaje al campo de batalla (todos al sur, el legendario al norte). */
+  function enterArena(cfg) {
+    const ts = TS(), pl = G.Game.player;
+    arena = { x: cfg.tx * ts + ts / 2, y: cfg.ty * ts + ts / 2 };
+    G.Pickups.pullAll();                                   // la experiencia que quedaba, para ti
+    G.Projectiles.clear(); G.Combat.clearFields(); G.Hazards.clear();
+    if (host()) G.EnemyMgr.dismissAll(-1); else G.EnemyMgr.clearRemote();
+    G.World.setArena({ tx: cfg.tx, ty: cfg.ty, r: cfg.r, type: cfg.type });
+    G.World.setBiome(cfg.dex === 487 ? 5 : G.Tiles.arenaBiome(cfg.type), true);
+    const th = G.Tiles.ARENA_THEMES[cfg.type];
+    if (th && th.weather) G.Weather.force(th.weather, LIMIT + 20);
+    const ps = G.Game.everyone();
+    ps.forEach((p, i) => { p.x = arena.x + (i - (ps.length - 1) / 2) * 40; p.y = arena.y + ts * 4; });
+    if (pl) { G.Camera.x = pl.x; G.Camera.y = pl.y; }
+    G.Game.flash('#ff4a6a', 0.9);
+    G.Audio.sfx('rift');
+    G.Spawner.say(G.T('¡Teletransporte al campo de batalla!'), 2.6, true);
   }
 
   function announce() {
@@ -108,7 +138,8 @@ G.Raid = (() => {
   /** Invitado: lo que manda el anfitrión. */
   function remote(ev) {
     if (!diff) return;
-    if (ev[1] === 'fight') { phase = 'fight'; t0 = +ev[2] || 0; announce(); }
+    if (ev[1] === 'arena' && ev[2] && isFinite(ev[2].tx) && isFinite(ev[2].ty)) enterArena({ tx: ev[2].tx | 0, ty: ev[2].ty | 0, r: Math.min(20, ev[2].r | 0) || ARENA_R, type: String(ev[2].type || 'normal'), dex: ev[2].dex | 0 });
+    else if (ev[1] === 'fight') { phase = 'fight'; t0 = +ev[2] || 0; announce(); }
     else if (ev[1] === 'won' || ev[1] === 'lost') { phase = 'end'; won = ev[1] === 'won'; result(won); }
   }
 

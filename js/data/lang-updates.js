@@ -3993,4 +3993,24 @@
   G.I18n.add({
     "Incursiones: cuando sale el legendario, los demás enemigos se van y no sale ninguno más mientras dura la pelea.": "團體戰：傳說寶可夢出現時，其他敵人會離開，戰鬥期間也不會再出現新的敵人。"
   }, 'zh-Hant');
+  G.I18n.add({
+    "¡Teletransporte al campo de batalla!": "Téléportation vers le champ de bataille !",
+    "Incursiones: cuando sale el legendario, todo el grupo se teletransporta a un campo de batalla cerrado (con la arena de uno de sus tipos) para enfrentarlo.": "Raids : quand le légendaire apparaît, tout le groupe est téléporté dans un champ de bataille fermé (avec l'arène d'un de ses types) pour l'affronter."
+  }, 'fr');
+  G.I18n.add({
+    "¡Teletransporte al campo de batalla!": "Teletrasporto al campo di battaglia!",
+    "Incursiones: cuando sale el legendario, todo el grupo se teletransporta a un campo de batalla cerrado (con la arena de uno de sus tipos) para enfrentarlo.": "Raid: quando appare il leggendario, tutto il gruppo viene teletrasportato in un campo di battaglia chiuso (con l'arena di uno dei suoi tipi) per affrontarlo."
+  }, 'it');
+  G.I18n.add({
+    "¡Teletransporte al campo de batalla!": "Teletransporte para o campo de batalha!",
+    "Incursiones: cuando sale el legendario, todo el grupo se teletransporta a un campo de batalla cerrado (con la arena de uno de sus tipos) para enfrentarlo.": "Reides: quando o lendário aparece, todo o grupo é teletransportado para um campo de batalha fechado (com a arena de um dos seus tipos) para enfrentá-lo."
+  }, 'pt-BR');
+  G.I18n.add({
+    "¡Teletransporte al campo de batalla!": "传送到战场！",
+    "Incursiones: cuando sale el legendario, todo el grupo se teletransporta a un campo de batalla cerrado (con la arena de uno de sus tipos) para enfrentarlo.": "团体战：传说宝可梦出现时，全队会被传送到一个封闭的战场（使用其属性之一的竞技场）与它对战。"
+  }, 'zh-Hans');
+  G.I18n.add({
+    "¡Teletransporte al campo de batalla!": "傳送到戰場！",
+    "Incursiones: cuando sale el legendario, todo el grupo se teletransporta a un campo de batalla cerrado (con la arena de uno de sus tipos) para enfrentarlo.": "團體戰：傳說寶可夢出現時，全隊會被傳送到一個封閉的戰場（使用其屬性之一的競技場）與牠對戰。"
+  }, 'zh-Hant');
 })();

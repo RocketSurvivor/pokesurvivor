@@ -190,7 +190,7 @@ G.BiomeFx = (() => {
 
   function update(dt, pl, time) {
     if (!pl) return;
-    if (G.Rift.inArena || G.Judgment.active || (G.Dungeon && G.Dungeon.active && G.Dungeon.calm)) { ev = null; pl.inverted = false; return; }
+    if (G.Rift.inArena || G.Judgment.active || (G.Raid && G.Raid.fighting)) { ev = null; pl.inverted = false; return; }
     if (ev) {
       ev.t += dt;
       if (ev.b === 3 && !G.Coop.active && !pl.dead) {
