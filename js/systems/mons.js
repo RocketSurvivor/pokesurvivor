@@ -140,23 +140,40 @@ G.Mons = (() => {
   // rango: +1 % de daño por rango en sus partidas, hasta el 5.
   const MAST_MIN = [20, 60, 150, 300, 600];
   const MAST_NAME = ['Sin rango', 'Aprendiz', 'Entrenado', 'Experto', 'Maestro', 'Leyenda'];
+  // Misiones de maestría: además de los minutos, cada rango pide un reto con ese Pokémon.
+  const MAST_REQ = [null, 't10', 'leg', 't20', 't30'];
+  const MAST_REQ_TEXT = { t10: 'Llega al minuto 10', leg: 'Vence a un legendario', t20: 'Llega al minuto 20', t30: 'Llega a la Sentencia de Arceus (minuto 30)' };
   function mastery(dex) {
-    const s = save(), secs = (s && s.mast && +s.mast[dex]) || 0, min = secs / 60;
+    const s = save(), secs = (s && s.mast && +s.mast[dex]) || 0, min = secs / 60, q = (s && s.mastq && s.mastq[dex]) || {};
     let rank = 0;
-    while (rank < MAST_MIN.length && min >= MAST_MIN[rank]) rank++;
-    return { rank, min: Math.floor(min), next: MAST_MIN[rank] || 0, name: MAST_NAME[rank], bonus: rank * 0.01 };
+    while (rank < MAST_MIN.length && min >= MAST_MIN[rank] && (!MAST_REQ[rank] || q[MAST_REQ[rank]])) rank++;
+    const req = MAST_REQ[rank];
+    return { rank, min: Math.floor(min), next: MAST_MIN[rank] || 0, name: MAST_NAME[rank], bonus: rank * 0.01,
+             need: req ? MAST_REQ_TEXT[req] : '', needDone: !req || !!q[req] };
+  }
+  /** Apunta los retos de maestría que has cumplido en una partida con este Pokémon. */
+  function masteryQuests(dex, r) {
+    const s = save();
+    if (!s || !dex) return;
+    s.mastq = s.mastq || {};
+    const q = s.mastq[dex] = Object.assign({}, s.mastq[dex]);
+    if (r.time >= 600) q.t10 = 1;
+    if (r.time >= 1200) q.t20 = 1;
+    if (r.time >= 1800) q.t30 = 1;
+    if (r.legs > 0) q.leg = 1;
   }
   /** Suma el tiempo de una partida. → el rango nuevo si ha subido, si no null. */
-  function addMastery(dex, secs) {
+  function addMastery(dex, secs, quests) {
     const s = save();
     if (!s || !dex || !(secs > 0)) return null;
     const before = mastery(dex).rank;
+    if (quests) masteryQuests(dex, quests);
     s.mast = s.mast || {};
     s.mast[dex] = Math.floor((+s.mast[dex] || 0) + secs);
     const now = mastery(dex);
     return now.rank > before ? now : null;
   }
 
-  return { mastery, addMastery, MAST_NAME, name, natureOf, setNature, rolledNature, monFor, abilityOf, abilityChoices, setAbility, abilityName,
+  return { mastery, addMastery, MAST_NAME, MAST_REQ_TEXT, name, natureOf, setNature, rolledNature, monFor, abilityOf, abilityChoices, setAbility, abilityName,
            slots, taught, learnable, canLearn, teach, forget, natural };
 })();

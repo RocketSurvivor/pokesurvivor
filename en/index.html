@@ -77,8 +77,8 @@
   ]
 }
 </script>
-<link rel="stylesheet" href="css/style.css?v=8f89ae49b8">
-<script src="js/core/locales.js?v=9b676e23a8"></script>
+<link rel="stylesheet" href="css/style.css?v=1f7271e94a">
+<script src="js/core/locales.js?v=5c76b35ff4"></script>
 <script src="js/noframe.js"></script>
 </head>
 <body>
@@ -200,6 +200,7 @@
 </section>
 
 <button id="btn-movedex" class="btn small gold movedex-btn hidden" type="button" title="Todos los ataques del juego">Movedex</button>
+<button id="btn-adminstats" class="btn small adminstats-btn hidden" type="button" title="Estadísticas del juego (administradores)">Panel</button>
 <div id="topbar" class="topbar hidden">
   <div class="pill"><span class="coin"></span><span id="coins">0</span></div>
   <div class="pill" id="tickets-pill" title="Tickets del gacha"></div>
@@ -448,6 +449,14 @@
 </div>
 
 <!-- ====== Colección ====== -->
+<section id="scr-adminstats" class="scr dim hidden">
+  <div class="box wide">
+    <div class="row between"><h2>Panel del juego</h2><button class="btn small ghost" data-back>Volver</button></div>
+    <div id="as-tabs" class="chips set-chips"></div>
+    <div id="as-body" class="as-body"></div>
+  </div>
+</section>
+
 <section id="scr-weekly" class="scr dim hidden">
   <div class="box wide">
     <div class="row between"><h2>Desafío semanal <span id="wk-left" class="sub" style="font-size:14px"></span></h2><button class="btn small ghost" data-back>Volver</button></div>
@@ -585,8 +594,8 @@
 <!-- ====== Durante la run ====== -->
 <section id="scr-levelup" class="scr dim hidden">
   <div class="box center">
-    <h2>¡Nivel <span id="lvl-num">2</span>!</h2>
-    <p class="sub">Elige una recompensa · <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd></p>
+    <h2><span id="lvl-head">¡Nivel <span id="lvl-num">2</span>!</span><span id="lvl-head2" class="hidden"></span></h2>
+    <p class="sub"><span id="lvl-sub">Elige una recompensa</span><span id="lvl-sub2" class="hidden"></span> · <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd></p>
     <div id="cards" class="cards"></div>
     <button id="lvl-reroll" class="btn small ghost hidden" data-sfx="none" style="margin-top:10px">Cambiar opciones (<span id="lvl-rr-n">1</span>) · <kbd>R</kbd></button>
     <p id="lvl-wait" class="note hidden"></p>
@@ -653,11 +662,14 @@
   <div class="box center" style="width:min(480px,100%)">
     <h2 id="over-title">Has caído…</h2>
     <div id="over-stats" class="stats"></div>
-    <button id="btn-again" class="btn gold">Volver al menú</button>
+    <div class="row" style="justify-content:center;margin-top:10px">
+      <button id="btn-replay" class="btn gold hidden">Jugar otra vez</button>
+      <button id="btn-again" class="btn">Volver al menú</button>
+    </div>
   </div>
 </section>
 
 <!-- datos generados -->
-<script defer src="js/app.min.js?v=3664017b1b"></script>
+<script defer src="js/app.min.js?v=8808e0c41e"></script>
 </body>
 </html>

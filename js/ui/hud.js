@@ -2,7 +2,8 @@
  * Se dibuja en coordenadas de PANTALLA (sin la transformación de cámara).
  */
 G.HUD = (() => {
-  const F = (w, s) => `${w} ${s}px Pixelify,"Segoe UI",system-ui,sans-serif`;
+  // (Accesibilidad: el tamaño del texto se puede agrandar en Ajustes.)
+  const F = (w, s) => `${w} ${Math.round(s * (G.Settings.get('hudScale') || 1))}px Pixelify,"Segoe UI",system-ui,sans-serif`;
 
   /** Cartel encima de una esfera: su nombre y, con el ratón encima, también lo que hace. */
   function orbTip(ctx, id, cx, by, full, w) {
@@ -78,6 +79,8 @@ G.HUD = (() => {
     ctx.fillStyle = '#eaf2ff';
     ctx.textAlign = 'left';
     ctx.fillText(pl.mon.name, px, py + 10);
+    // Revivir guardado: su icono al lado del nombre.
+    if (pl.revives > 0) G.Icons.draw(ctx, 'revive', px + ctx.measureText(pl.mon.name).width + 6, py - 2, 14);
 
     ctx.font = F(700, 11);
     ctx.fillStyle = '#ffcb3d';

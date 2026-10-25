@@ -122,7 +122,11 @@ G.SettingsUI = (() => {
            </div>`;
     } else if (tab === 'a11y') {
       box.innerHTML = section('Apuntado')
-        + toggle('aimManual', 'Apuntar a mano', 'Tus ataques van hacia el ratón (o hacia donde empujes el stick derecho del mando) en vez de al enemigo más cercano. Si sueltas el stick y no mueves el ratón, vuelve a apuntar solo. La cadena y los meteoros siguen buscando a los enemigos solos.');
+        + toggle('aimManual', 'Apuntar a mano', 'Tus ataques van hacia el ratón (o hacia donde empujes el stick derecho del mando) en vez de al enemigo más cercano. Si sueltas el stick y no mueves el ratón, vuelve a apuntar solo. La cadena y los meteoros siguen buscando a los enemigos solos.')
+        + section('Visión')
+        + toggle('cbMode', 'Modo daltónico', 'Las zonas de peligro de los jefes y sucesos salen siempre en amarillo y azul, con borde grueso y rayas, en vez del color de su tipo.')
+        + `<div class="set-row"><div class="grow"><b>${esc(G.T('Tamaño del texto en la partida'))}</b><small>${esc(G.T('Nombre, nivel, vida, avisos y contadores de la pantalla de juego.'))}</small></div></div>`
+        + choice('hudScale', [[1, 'Normal'], [1.15, 'Grande'], [1.3, 'Muy grande']]);
     } else if (tab === 'acc') {
       renderAccount(box);
     } else {

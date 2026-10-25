@@ -139,6 +139,14 @@ G.Icons = (() => {
       '............', '............', 'kkkkkkkkkkkk', 'kwpppqppyypk', 'kppppqpyyypk', '.kpppqpyyyk.',
       '.kpppqppyyk.', 'kppppqpppppk', 'kqqqqqqqqqqk', 'kkkkkkkkkkkk', '............', '............'] },
     // Ticket shiny (25-10-2026): una ×10 del gacha shiny. Celeste con una estrella.
+    // Revivir (25-10-2026): un cristal rombo con brillo; diseño propio.
+    revive: { pal: { y: '#ffe680', o: '#ffb52e', w: '#fffbe6' }, rows: [
+      '.....kk.....', '....kwyk....', '...kwyyok...', '..kwyyyyok..', '.kwyyyyyyok.', 'kwyyyyyyyyok',
+      'koyyyyyyyyok', '.koyyyyyyok.', '..koyyyyok..', '...kooook...', '....kook....', '.....kk.....'] },
+    // Cofre dorado (25-10-2026)
+    gchest: { pal: { y: '#ffd23f', o: '#c08a10', b: '#7a4b12', w: '#fff3b0' }, rows: [
+      '............', '..kkkkkkkk..', '.kwyyyyyyyk.', 'kyyyyyyyyyyk', 'kooooooooook', 'kbbbbkkbbbbk',
+      'kyyyykwkyyyk', 'kyyyykkkyyyk', 'kyyyyyyyyyyk', 'kooooooooook', '.kkkkkkkkkk.', '............'] },
     ticketS: { pal: { c: '#9ae6ff', b: '#4fb4ff', w: '#e8fbff', y: '#ffd23f' }, rows: [
       '............', '............', 'kkkkkkkkkkkk', 'kwcccbccyyck', 'kccccbcyyyyk', '.kcccbccyyk.',
       '.kcccbcyccyk', 'kccccbccccck', 'kbbbbbbbbbbk', 'kkkkkkkkkkkk', '............', '............'] },

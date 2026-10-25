@@ -84,6 +84,8 @@ G.DB = (() => {
       dfav: {},               // dex -> fecha: favorito de la colección (negativa = quitado entonces)
       pused: {},              // dex -> partidas jugadas con él (orden "más usados")
       mast: {},               // dex -> segundos de partida con él (maestría, ver G.Mons.mastery)
+      mvUsed: {},             // movimiento -> fecha en que lo usaste por primera vez (Movedex)
+      pstat: {},              // dex -> { best, lv, runs, kills, mv: { movimiento: daño } } (ficha del Pokémon)
       pstart: {},             // dex -> movimiento inicial elegido (Mejoras → Movimiento inicial)
       pstart2: {},            // dex -> segundo movimiento inicial (Mejoras → Segundo movimiento inicial)
       // Tienda Kecleon (20-10-2026, ver data/shop.js y systems/mons.js):
@@ -367,6 +369,19 @@ G.DB = (() => {
     for (const d in older.pused || {}) r.pused[d] = Math.max(+r.pused[d] || 0, +older.pused[d] || 0);
     r.mast = r.mast || {};
     for (const d in older.mast || {}) r.mast[d] = Math.max(+r.mast[d] || 0, +older.mast[d] || 0);
+    r.mvUsed = r.mvUsed || {};
+    for (const id in older.mvUsed || {}) if (!r.mvUsed[id]) r.mvUsed[id] = older.mvUsed[id];
+    // Estadísticas por Pokémon: lo mejor de cada una (las partidas, el mayor de los dos).
+    r.pstat = r.pstat || {};
+    for (const d in older.pstat || {}) {
+      const a = r.pstat[d] || {}, b = older.pstat[d] || {};
+      const mv = Object.assign({}, b.mv);
+      for (const k in a.mv || {}) mv[k] = Math.max(+mv[k] || 0, +a.mv[k] || 0);
+      r.pstat[d] = { best: Math.max(+a.best || 0, +b.best || 0), lv: Math.max(+a.lv || 0, +b.lv || 0),
+                     runs: Math.max(+a.runs || 0, +b.runs || 0), kills: Math.max(+a.kills || 0, +b.kills || 0), mv };
+    }
+    r.mastq = r.mastq || {};
+    for (const d in older.mastq || {}) r.mastq[d] = Object.assign({}, older.mastq[d], r.mastq[d]);
     // Movimiento inicial: el de la versión más reciente; si no lo tenía elegido, el de la otra.
     for (const k of ['pstart', 'pstart2']) {
       r[k] = r[k] || {};

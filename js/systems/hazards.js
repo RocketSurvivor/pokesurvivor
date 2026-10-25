@@ -74,11 +74,26 @@ G.Hazards = (() => {
     }
   }
 
+  /** Rayas diagonales azules dentro de una forma (modo daltónico). */
+  function cbStripes(ctx, shape, x0, y0, size) {
+    ctx.save();
+    shape(); ctx.clip();
+    ctx.setLineDash([]);
+    ctx.globalAlpha = 0.45; ctx.strokeStyle = '#0b2a8a'; ctx.lineWidth = 3;
+    ctx.beginPath();
+    for (let i = -size; i < size * 2; i += 14) { ctx.moveTo(x0 + i, y0); ctx.lineTo(x0 + i + size, y0 + size); }
+    ctx.stroke();
+    ctx.restore();
+  }
+
   /** Avisos en el suelo (debajo de los Pokémon). */
   function draw(ctx) {
     const blink = Math.sin(performance.now() / 60) > 0;
-    for (const h of list) {
-      if (h.hit) continue;
+    // Modo daltónico: siempre amarillo (relleno) y azul oscuro (borde grueso), con rayas.
+    const cb = G.Settings.get('cbMode');
+    for (const h0 of list) {
+      if (h0.hit) continue;
+      const h = cb ? Object.assign({}, h0, { color: '#ffe600' }) : h0;
       const k = Math.min(1, h.t / h.delay);
       ctx.save();
       if (h.kind === 'zone') {
@@ -88,9 +103,10 @@ G.Hazards = (() => {
         ctx.globalAlpha = 0.32;
         ctx.beginPath(); ctx.ellipse(h.x, h.y, h.r * k, h.r * 0.75 * k, 0, 0, 6.2832); ctx.fill();
         ctx.globalAlpha = k > 0.75 && blink ? 0.95 : 0.6;
-        ctx.strokeStyle = h.color; ctx.lineWidth = 2;
-        ctx.setLineDash([4, 4]);
+        ctx.strokeStyle = cb ? '#0b2a8a' : h.color; ctx.lineWidth = cb ? 4 : 2;
+        ctx.setLineDash(cb ? [10, 5] : [4, 4]);
         ctx.beginPath(); ctx.ellipse(h.x, h.y, h.r, h.r * 0.75, 0, 0, 6.2832); ctx.stroke();
+        if (cb) cbStripes(ctx, () => { ctx.beginPath(); ctx.ellipse(h.x, h.y, h.r, h.r * 0.75, 0, 0, 6.2832); }, h.x - h.r, h.y - h.r, h.r * 2);
       } else {
         ctx.translate(h.x, h.y);
         ctx.rotate(h.angle);
@@ -100,9 +116,10 @@ G.Hazards = (() => {
         ctx.globalAlpha = 0.34;
         ctx.fillRect(0, -h.w / 2 * k, h.len, h.w * k);
         ctx.globalAlpha = k > 0.75 && blink ? 0.95 : 0.55;
-        ctx.strokeStyle = h.color; ctx.lineWidth = 2;
-        ctx.setLineDash([6, 4]);
+        ctx.strokeStyle = cb ? '#0b2a8a' : h.color; ctx.lineWidth = cb ? 4 : 2;
+        ctx.setLineDash(cb ? [10, 5] : [6, 4]);
         ctx.strokeRect(0, -h.w / 2, h.len, h.w);
+        if (cb) cbStripes(ctx, () => { ctx.beginPath(); ctx.rect(0, -h.w / 2, h.len, h.w); }, 0, -h.len, h.len * 2);
       }
       ctx.restore();
     }

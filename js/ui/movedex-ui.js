@@ -14,7 +14,7 @@ G.MovedexUI = (() => {
   };
   const STAT = { patk: 'Ataque', satk: 'Ataque Especial', spd: 'Velocidad', def: 'Defensa', regen: 'Regeneración', atk: 'Ataque' };
   const SORTS = [['type', 'Tipo'], ['name', 'Nombre'], ['dps', 'Daño/s'], ['dmg', 'Daño'], ['cd', 'Recarga']];
-  let q = '', type = '', sort = 'type';
+  let q = '', type = '', sort = 'type', unused = false;
 
   /** Daño por segundo aproximado a un solo enemigo (nivel 1, sin mejoras). */
   function dps(m) {
@@ -62,6 +62,12 @@ G.MovedexUI = (() => {
       c.onclick = () => { sort = k; render(); };
       sb.appendChild(c);
     });
+    // Filtro: sólo los que aún no has usado nunca.
+    const u = document.createElement('button');
+    u.type = 'button'; u.className = 'chip'; u.id = 'mdx-unused';
+    u.textContent = G.T('Sin usar');
+    u.onclick = () => { unused = !unused; render(); };
+    sb.appendChild(u);
   }
 
   function open() {
@@ -73,7 +79,10 @@ G.MovedexUI = (() => {
     document.querySelectorAll('#mdx-sort .chip').forEach(c => c.classList.toggle('on', c.dataset.k === sort));
     const norm = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
     const order = Object.keys(G.U.TYPE_NAME);
-    let list = G.Moves.ALL.filter(m => (!type || m.type === type) &&
+    const sv = G.DB.save || {}, used = sv.mvUsed || {}, evolved = sv.evoMoves || {};
+    const uc = document.getElementById('mdx-unused');
+    if (uc) uc.classList.toggle('on', unused);
+    let list = G.Moves.ALL.filter(m => (!unused || !used[m.id]) && (!type || m.type === type) &&
       (!q || [m.name, G.T(m.name, 'move')].some(n => norm(n).includes(norm(q)))));
     const by = {
       type: (a, b) => order.indexOf(a.type) - order.indexOf(b.type) || G.T(a.name, 'move').localeCompare(G.T(b.name, 'move'), G.I18n.locale),
@@ -81,7 +90,9 @@ G.MovedexUI = (() => {
       dps: (a, b) => dps(b) - dps(a), dmg: (a, b) => (b.dmg || 0) - (a.dmg || 0), cd: (a, b) => a.cd - b.cd
     }[sort];
     list = list.slice().sort(by);
-    $('mdx-count').textContent = G.I18n.f('{x} ataques', list.length);
+    const nUsed = G.Moves.ALL.filter(m => used[m.id]).length, evoAll = Object.keys(G.Moves.EVO);
+    $('mdx-count').textContent = G.I18n.f('{x} ataques', list.length) + ' · ' + G.I18n.f('usados {x}/{x}', nUsed, G.Moves.ALL.length)
+      + ' · ' + G.I18n.f('evolucionados {x}/{x}', evoAll.filter(id => evolved[id]).length, evoAll.length);
     const grid = $('mdx-grid');
     grid.innerHTML = '';
     for (const m of list) {
@@ -104,10 +115,10 @@ G.MovedexUI = (() => {
       if (m.kind === 'spin' || m.kind === 'quake') rows.push([G.T('Golpes'), m.count]);
       if (m.dur && m.kind !== 'buff') rows.push([G.T('Duración'), num(m.dur) + ' s']);
       const c = document.createElement('div');
-      c.className = 'mdx-card';
+      c.className = 'mdx-card' + (used[m.id] ? '' : ' unused');
       c.innerHTML = `
         <div class="mdx-head">${G.Icons.html('move:' + m.id, 28)}
-          <div><b>${G.T(m.name, 'move')}</b>
+          <div><b>${G.T(m.name, 'move')}</b>${evolved[m.id] ? ` <span class="mdx-badge evo" title="${G.T('Evolucionado')}">★</span>` : used[m.id] ? ` <span class="mdx-badge" title="${G.T('Usado')}">✓</span>` : ''}
           <div class="mdx-tags"><span class="tag-chip" style="background:${G.U.TYPE_COLOR[m.type]}">${G.T(G.U.TYPE_NAME[m.type])}</span>${cat ? `<span class="tag-chip cat">${cat}</span>` : ''}<span class="tag-chip kind">${G.T(KIND[m.kind] || m.kind)}</span></div></div></div>
         <p class="mdx-desc">${G.T(m.desc)}</p>
         <div class="mdx-stats">${rows.map(([k, v]) => `<div><span>${k}</span><b>${v}</b></div>`).join('')}</div>

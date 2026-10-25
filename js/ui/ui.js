@@ -9,7 +9,7 @@ G.UI = (() => {
   const $ = id => document.getElementById(id);
   const SCREENS = ['scr-login', 'scr-test', 'scr-result', 'scr-starters', 'scr-menu',
                    'scr-dex', 'scr-upgrades', 'scr-shop', 'scr-bag', 'scr-gacha', 'scr-levelup', 'scr-pause', 'scr-over',
-                   'scr-nick', 'scr-friends', 'scr-lobby', 'scr-rank', 'scr-item', 'scr-goals', 'scr-bond', 'scr-mod', 'scr-continue', 'scr-evo', 'scr-movedex', 'scr-weekly'];
+                   'scr-nick', 'scr-friends', 'scr-lobby', 'scr-rank', 'scr-item', 'scr-goals', 'scr-bond', 'scr-mod', 'scr-continue', 'scr-evo', 'scr-movedex', 'scr-weekly', 'scr-adminstats'];
 
   function show(id, keepMenu = false) {
     for (const s of SCREENS) if (s !== id && !(keepMenu && s === 'scr-menu')) $(s).classList.add('hidden');
@@ -23,6 +23,7 @@ G.UI = (() => {
   function chrome(on) {
     $('topbar').classList.toggle('hidden', !on);
     $('btn-movedex').classList.toggle('hidden', !on);
+    $('btn-adminstats').classList.toggle('hidden', !on || !(G.Admin && G.Admin.isMe()));
     $('credits-line').classList.toggle('hidden', !on);
     if (!on) $('sound-panel').classList.add('hidden');
     if (on) refreshCoins();

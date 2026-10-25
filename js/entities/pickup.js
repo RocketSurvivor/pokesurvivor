@@ -22,6 +22,7 @@ G.Pickups = (() => {
     ticket:   { color: '#ffd23f', glow: '#c08a10', r: 7 },
     ticket10: { color: '#c47bff', glow: '#8a3fd0', r: 8 },
     ticketS:  { color: '#9ae6ff', glow: '#4fb4ff', r: 9 },        // ticket shiny (Aipom shiny)
+    revive:   { color: '#ffe680', glow: '#ffb52e', r: 9 },        // Revivir: te levanta si caes (25-10-2026)
     item:     { color: '#ffd23f', glow: '#c08a10', r: 9 },      // value = id del objeto
     sphere:   { color: '#c9b8ff', glow: '#7e5be0', r: 8 }       // value = id de la esfera (orbs.js)
   };
@@ -190,8 +191,8 @@ G.Pickups = (() => {
         ctx.beginPath(); ctx.ellipse(p.x, y, r * sx * 0.5, r * 0.5, 0, 0, 6.2832); ctx.fill();
       } else {
         // Baya, imán y bomba: su icono pixel art.
-        const ICON = { heal: 'berry', magnet: 'magnet', bomb: 'bomb', ticket: 'ticket', ticket10: 'ticket10', ticketS: 'ticketS' };
-        const sz = p.kind === 'ticket10' || p.kind === 'ticketS' || p.kind === 'item' || p.kind === 'sphere' ? 24 : 18;
+        const ICON = { heal: 'berry', magnet: 'magnet', bomb: 'bomb', ticket: 'ticket', ticket10: 'ticket10', ticketS: 'ticketS', revive: 'revive' };
+        const sz = p.kind === 'ticket10' || p.kind === 'ticketS' || p.kind === 'item' || p.kind === 'sphere' || p.kind === 'revive' ? 24 : 18;
         if (p.kind === 'sphere') {
           // Esfera: brillo de su color, para distinguirlas desde lejos.
           ctx.globalAlpha = 0.3 + Math.sin(p.t * 1.5) * 0.12;

@@ -13,6 +13,8 @@
  *   gamepad     true/false                        jugar con mando (gamepad.js)
  *   padRumble   true/false                        que el mando vibre al recibir daño
  *   aimManual   true/false                        apuntar a mano (ratón o stick derecho) en vez de solo
+ *   cbMode      true/false                        modo daltónico: zonas de peligro en amarillo/azul con rayas
+ *   hudScale    1 | 1.15 | 1.3                    tamaño del texto del HUD
  *   autoPick    { on, order, stat }               mejora automática al subir de nivel (run-ui.js):
  *                                                 order = prioridad de 'evo' | 'up' | 'new' | 'stat'
  *                                                 stats = orden de las estadísticas · moves = orden de los ataques
@@ -22,7 +24,7 @@
  */
 G.Settings = (() => {
   const KEY = 'ps.settings';
-  const DEF = { quality: 'auto', dmgNumbers: true, calm: false, fps: false, stick: 1, stickMode: 'float', pad: null, gamepad: true, padRumble: true, aimManual: false,
+  const DEF = { quality: 'auto', dmgNumbers: true, calm: false, fps: false, stick: 1, stickMode: 'float', pad: null, gamepad: true, padRumble: true, aimManual: false, cbMode: false, hudScale: 1,
     autoPick: { on: false, order: ['evo', 'up', 'new', 'stat'], stat: 'atk', stats: null, moves: [], per: {} } };
   let s = Object.assign({}, DEF);
   try { Object.assign(s, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) { /* nada */ }

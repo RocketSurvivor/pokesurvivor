@@ -122,6 +122,7 @@ G.Game = (() => {
     G.Spawner.reset();
     G.Rift.reset();
     G.LegendRift.reset();
+    G.GoldChest.reset(); G.Paths.reset(); G.BiomeFx.reset();
     G.Judgment.reset();
     G.Events.reset();
     G.Weather.reset();
@@ -130,7 +131,7 @@ G.Game = (() => {
     G.World.reset(coop ? coop.seed : Math.floor(Math.random() * 1e6));
     G.World.setBiome(0, true);
     biome = 0;
-    time = 0; pendingLevels = 0;
+    time = 0; pendingLevels = 0; laterChoices.length = 0; laterItems.length = 0;
     runReal = performance.now(); tampered = false;
 
     pl = new G.Player(mon, perks, !weekly && !!save.partnerShiny && G.DB.ownsShiny(mon.dex));
@@ -387,7 +388,17 @@ G.Game = (() => {
     save.pused = save.pused || {};
     if (!pl.weekly) save.pused[pl.startDex] = (+save.pused[pl.startDex] || 0) + 1;     // para "más usados" en la colección
     // Maestría: el tiempo de partida (no cuenta si se ha tocado con el menú de administrador).
-    const mastUp = clean() && !pl.weekly ? G.Mons.addMastery(pl.startDex, Math.floor(time)) : null;
+    const mastUp = clean() && !pl.weekly ? G.Mons.addMastery(pl.startDex, Math.floor(time), { time: markT, legs: pl.legKills || 0 }) : null;
+    // Estadísticas de este Pokémon (su ficha): mejor tiempo, nivel, partidas y su ataque que más pega.
+    if (!pl.weekly) {
+      save.pstat = save.pstat || {};
+      const ps = save.pstat[pl.startDex] = Object.assign({ best: 0, lv: 0, runs: 0, kills: 0, mv: {} }, save.pstat[pl.startDex]);
+      ps.best = Math.max(ps.best, Math.floor(markT)); ps.lv = Math.max(ps.lv, pl.level);
+      ps.runs++; ps.kills += pl.kills;
+      ps.mv = Object.assign({}, ps.mv);
+      for (const m of pl.moves) if (m.dealt) ps.mv[m.id] = Math.round((ps.mv[m.id] || 0) + m.dealt);
+      ps.mv = Object.fromEntries(Object.entries(ps.mv).sort((a, b) => b[1] - a[1]).slice(0, 8));
+    }
     save.stats.totalKills += pl.kills;
     save.stats.bestTime = Math.max(save.stats.bestTime, Math.floor(markT));
     if (coop) save.stats.bestGroupTime = Math.max(save.stats.bestGroupTime || 0, Math.floor(time));
@@ -487,6 +498,8 @@ G.Game = (() => {
   }
 
   function maybeLevelUp() {
+    // (Un cofre o un camino que esperaba a que se cerrara otra elección.)
+    if (pendingLevels <= 0 && state === 'playing' && laterChoices.length && !pl.dead) { offerChoice(...laterChoices.shift()); return; }
     if (pendingLevels <= 0 || state !== 'playing') return;
     if (G.Coop.active) {
       // En grupo, las cartas salen a la vez para todos y se espera a que elijan.
@@ -553,6 +566,27 @@ G.Game = (() => {
    */
   let openItem = null;           // { cur, next, take } elección de objeto sin terminar
   const laterItems = [];         // objetos recogidos con las cartas de nivel abiertas
+  const laterChoices = [];       // cofres y caminos que llegan con otra elección abierta
+
+  /**
+   * Una elección con cartas (cofre dorado, camino del minuto 10). Para el juego
+   * mientras eliges (en grupo, para todos, como los objetos).
+   * @param cards  como las de nivel: { icon, color, tag, title, desc, apply(pl) }
+   */
+  function offerChoice(title, sub, cards) {
+    if (!pl || pl.dead || !cards.length) return;
+    if (state !== 'playing' && state !== 'held') { laterChoices.push([title, sub, cards]); return; }
+    state = 'choice';
+    if (G.Coop.active) G.Coop.holdStart();
+    G.Audio.sfx('levelup');
+    G.RunUI.showChoice(title, sub, cards.map(c => Object.assign({ type: 'choice', key: 'choice:' + (c.id || c.title) }, c)), card => {
+      G.Audio.sfx('confirm');
+      if (state === 'choice') state = holdBy.length ? 'held' : 'playing';
+      if (G.Coop.active) G.Coop.holdEnd();
+      card.apply(pl);
+      afterLevelUp();
+    });
+  }
   function afterLevelUp() {
     if (state !== 'playing' && state !== 'held') return;
     if (openItem && !G.UI.isOpen('scr-item')) {
@@ -562,6 +596,7 @@ G.Game = (() => {
       return;
     }
     if (laterItems.length) offerItem(laterItems.shift());
+    else if (laterChoices.length && (state === 'playing' || state === 'held')) offerChoice(...laterChoices.shift());
   }
 
   /** Has cogido un objeto: si no llevas ninguno te lo pones; si no, eliges. */
@@ -622,6 +657,14 @@ G.Game = (() => {
       if (mine) G.Orbs.got(pl, p.value); else G.Orbs.add(who, p.value);
       return;
     }
+    if (p.kind === 'revive') {
+      // Como mucho uno guardado: si ya tienes, el segundo te cura entera.
+      if (!mine) return;
+      if ((pl.revives || 0) < 1) { pl.revives = 1; G.FX.dmgText(who.x, who.y - who.bodyH - 8, G.T('¡Revivir!'), '#ffe680', true); G.Spawner.say('¡Tienes un Revivir! Si caes, te levanta', 2.6, true); }
+      else { pl.hp = pl.maxHp; G.FX.dmgText(who.x, who.y - who.bodyH - 8, G.T('¡Vida al máximo!'), '#5fe08a', true); }
+      G.FX.ring(who.x, who.y, 6, 60, '#ffe680', 0.5, 4);
+      return;
+    }
     if (p.kind === 'ticketS') {
       pl.ts = (pl.ts || 0) + 1;
       bankTickets();
@@ -678,7 +721,7 @@ G.Game = (() => {
       else if (G.Input.tap('digit2') || G.Input.tap('numpad2') || G.Input.tap('escape')) document.getElementById('btn-cont-no').click();
       return;
     }
-    if (state === 'levelup') {
+    if (state === 'levelup' || (state === 'choice' && G.UI.isOpen('scr-levelup'))) {
       for (let i = 0; i < 3; i++) {
         if (G.Input.tap('digit' + (i + 1)) || G.Input.tap('numpad' + (i + 1))) G.RunUI.pick(i);
       }
@@ -699,7 +742,7 @@ G.Game = (() => {
     }
     if (state === 'ui') {
       // Esc en una subpantalla del menú vuelve al menú.
-      if (G.Input.tap('escape') && !G.UI.isOpen('scr-profile') && ['scr-dex', 'scr-upgrades', 'scr-shop', 'scr-bag', 'scr-gacha', 'scr-friends', 'scr-rank', 'scr-goals', 'scr-movedex', 'scr-weekly'].some(G.UI.isOpen)
+      if (G.Input.tap('escape') && !G.UI.isOpen('scr-profile') && ['scr-dex', 'scr-upgrades', 'scr-shop', 'scr-bag', 'scr-gacha', 'scr-friends', 'scr-rank', 'scr-goals', 'scr-movedex', 'scr-weekly', 'scr-adminstats'].some(G.UI.isOpen)
           && document.getElementById('pull-fx').classList.contains('hidden')) G.MenuUI.open();
       return;
     }
@@ -853,6 +896,10 @@ G.Game = (() => {
     G.Interact.update(dt, pl);
     G.Rift.update(dt, pl, time);
     G.LegendRift.update(dt, pl, time);
+    G.GoldChest.update(dt, pl, time);
+    G.BiomeFx.update(dt, pl, time);
+    G.Combos.update(pl);
+    G.Paths.update(pl, time);
     G.Judgment.update(dt, pl, time);
     G.Events.update(dt, all, time);
     G.Weather.update(dt, time, pl);
@@ -890,6 +937,7 @@ G.Game = (() => {
     G.World.drawGround(ctx, cam);
     G.World.drawLiquid(ctx, cam, t);
     G.LegendRift.drawGround(ctx);
+    if (pl && state !== 'ui') G.Combos.drawGround(ctx, pl);
     G.Hazards.draw(ctx);
     G.Combat.drawGroundFields(ctx);
     G.Pickups.draw(ctx);
@@ -902,6 +950,8 @@ G.Game = (() => {
     for (const e of extra) items.push({ y: e.y, ent: e });
     const rift = G.Rift.drawable();
     if (rift) items.push({ y: rift.y, ent: rift });
+    const gchest = pl && state !== 'ui' ? G.GoldChest.drawable() : null;
+    if (gchest) items.push({ y: gchest.y, ent: gchest });
     const arceus = pl && state !== 'ui' ? G.Judgment.drawable() : null;
     if (arceus) items.push({ y: arceus.y, ent: arceus });
     if (pl && state !== 'ui') for (const d of G.Events.drawables()) items.push({ y: d.y, ent: d });
@@ -965,6 +1015,8 @@ G.Game = (() => {
       ctx.fillStyle = g;
       ctx.fillRect(0, 0, w, h);
     }
+    // Niebla del Bosque Umbrío (suceso de zona): sólo se ve alrededor de tu Pokémon.
+    if (pl && state !== 'ui') { const cm = G.Camera; G.BiomeFx.drawHud(ctx, w, h, (pl.x - cm.left()) * cm.scale, (pl.y - 20 - cm.top()) * cm.scale); }
     if (!G.Judgment.cinematic) G.HUD.draw(ctx, w, h, pl, st);
     G.Judgment.drawOverlay(ctx, w, h);
     G.Touch.draw(ctx);
@@ -1081,7 +1133,7 @@ G.Game = (() => {
   })();
 
   return {
-    init, startRun, everyone, levelXp, flash, offerBond,
+    init, startRun, everyone, levelXp, flash, offerBond, offerChoice, offerItem: id => offerItem(id),
     /** Para pruebas: salta el reloj de la run. */
     debugTime(t) { tampered = true; time = t; },
     /** Para grabar vídeos: cámara lenta (0,5 = mitad de velocidad). */
@@ -1104,7 +1156,7 @@ G.Game = (() => {
 G.Flow = {
   boot() {
     G.UI.initChrome();
-    G.LoginUI.init(); G.TestUI.init(); G.MenuUI.init(); G.GachaUI.init(); G.MovedexUI.init(); G.WeeklyUI.init();
+    G.LoginUI.init(); G.TestUI.init(); G.MenuUI.init(); G.GachaUI.init(); G.MovedexUI.init(); G.WeeklyUI.init(); G.AdminStatsUI.init();
     G.SocialUI.init(); G.RankingUI.init(); G.ModUI.init(); G.GoalsUI.init(); G.ProfileUI.init(); G.SettingsUI.init(); G.SupportUI.init(); G.NewsUI.init(); G.LiveUI.init(); G.Updater.init();
     // Tu nombre arriba a la derecha abre tu perfil.
     document.getElementById('user-pill').onclick = () => G.GoalsUI.open('profile');

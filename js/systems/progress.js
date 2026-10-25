@@ -137,7 +137,10 @@ G.Progress = (() => {
     switch (kind) {
       case 'kill':
         if (d.boss) S.bossesTotal = (S.bossesTotal || 0) + 1;
-        if (d.legend) { s.legends = s.legends || {}; if (!s.legends[d.legend]) s.legends[d.legend] = Date.now(); }
+        if (d.legend) {
+          s.legends = s.legends || {}; if (!s.legends[d.legend]) s.legends[d.legend] = Date.now();
+          const p = G.Game.player; if (p) p.legKills = (p.legKills || 0) + 1;      // reto de maestría
+        }
         break;
       case 'rift':
         S.riftWins = (S.riftWins || 0) + 1;

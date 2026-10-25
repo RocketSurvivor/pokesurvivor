@@ -222,7 +222,7 @@ G.Player = class Player {
   cy() { return this.y; }
 
   // ---------------- stats efectivos ----------------
-  get atk() { return this.baseAtk * this.atkMul * (1 + this.buffs.atk.n * this.buffs.atk.amount); }
+  get atk() { return this.baseAtk * this.atkMul * (this.comboK || 1) * (1 + this.buffs.atk.n * this.buffs.atk.amount); }
   /**
    * Ataque con un movimiento: el físico o el especial de tu Pokémon (ver
    * G.Stats), con las danzas que sean de su lado (las de mejora, sin ninguna).
@@ -255,6 +255,9 @@ G.Player = class Player {
     if (this.slots.length >= this.maxMoves || this.hasMove(id)) return false;
     const m = G.Moves.instance(id, 1);
     m.since = G.Game.st.time;          // desde cuándo lo tienes (daño por segundo en el resumen)
+    // Movedex: los ataques que has usado alguna vez (25-10-2026).
+    const sv = !this.remote && G.DB.save;
+    if (sv) { sv.mvUsed = sv.mvUsed || {}; if (!sv.mvUsed[id]) sv.mvUsed[id] = Date.now(); }
     Player.applyPerks(m, this.extraProj, this.areaMul);
     this.moves.push(m);
     const group = [m];
@@ -440,6 +443,15 @@ G.Player = class Player {
       G.FX.ring(this.x, this.y, 6, 70, '#c9b48a', 0.5, 4);
     }
     if (ab && ab.hurt && this.hp > 0) ab.hurt(this, type, cls);
+    // Revivir (25-10-2026): se gasta solo al caer y te levanta con la mitad de vida.
+    if (this.hp <= 0 && this.revives > 0 && !this.remote) {
+      this.revives--;
+      this.hp = Math.round(this.maxHp * 0.5); this.invuln = 2.5;
+      G.FX.dmgText(this.x, this.y - this.bodyH - 16, G.T('¡Revivir!'), '#ffe680', true);
+      G.FX.ring(this.x, this.y, 8, 140, '#ffe680', 0.8, 6);
+      G.FX.burst(this.x, this.y - this.bodyH * 0.5, '#fff3b0', 40, 240);
+      G.Audio.sfx('legend');
+    }
     if (this.hp <= 0) {
       this.hp = 0; this.dead = true;
       this.anim.play('Faint', { hold: true });

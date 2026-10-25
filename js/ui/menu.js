@@ -382,9 +382,18 @@ G.MenuUI = (() => {
         : `<small>${G.T('Aún no ha aprendido ninguna')}</small>`}
         ${btn('tm', 'tm', 'Enseñar MT', tmsHere.length)}${taught.length ? `<button class="btn small ghost" data-extra="tmx">${G.T('Olvidar MT')}</button>` : ''}</div>
       ${(() => {
-        const m = G.Mons.mastery(dex);
+        const m = G.Mons.mastery(dex), ps = (G.DB.save.pstat || {})[dex];
+        const topMv = ps && Object.entries(ps.mv || {}).sort((a, b) => b[1] - a[1])[0];
         return `<div class="mx-row"><span>${G.T('Maestría')}</span><b class="mast-${m.rank}">${G.T(m.name)}</b>
-          <small>${m.rank ? G.I18n.f('+{x} % de daño', m.rank) + ' · ' : ''}${m.next ? G.I18n.f('{x} / {x} min de partida', m.min, m.next) : G.T('Rango máximo')}</small></div>`;
+          <small>${m.rank ? G.I18n.f('+{x} % de daño', m.rank) + ' · ' : ''}${m.next ? G.I18n.f('{x} / {x} min de partida', m.min, m.next) : G.T('Rango máximo')}</small></div>
+        ${m.need ? `<p class="sub mx-desc">${G.T('Para el siguiente rango')}: ${G.T(m.need)} ${m.needDone ? '✓' : ''}</p>` : ''}
+        ${ps ? `<div class="mx-stats">
+          <div><span>${G.T('Mejor tiempo')}</span><b>${G.U.mmss(ps.best || 0)}</b></div>
+          <div><span>${G.T('Nivel máximo')}</span><b>${ps.lv || 0}</b></div>
+          <div><span>${G.T('Partidas')}</span><b>${ps.runs || 0}</b></div>
+          <div><span>${G.T('Derrotados')}</span><b>${(ps.kills || 0).toLocaleString(G.I18n.locale)}</b></div>
+          ${topMv && G.Moves.BY_ID[topMv[0]] ? `<div class="wide"><span>${G.T('Su ataque que más pega')}</span><b>${G.Icons.html('move:' + topMv[0], 14)} ${G.T(G.Moves.BY_ID[topMv[0]].name, 'move')}</b></div>` : ''}
+        </div>` : ''}`;
       })()}
       <div id="mx-picker"></div>
     </div>`;

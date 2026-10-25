@@ -84,6 +84,9 @@ G.AchDefs = (() => {
     { id: 'mast3', cat: 'otros', tier: 2, name: 'Experto', desc: 'Consigue la maestría Experto con un Pokémon.', value: s => mastTop(s), goal: 3, reward: { t10: 1 } },
     { id: 'mast5', cat: 'otros', tier: 3, name: 'Leyenda viva', desc: 'Consigue la maestría Leyenda con un Pokémon.', value: s => mastTop(s), goal: 5, reward: { t10: 3 }, title: 'Leyenda viva' },
     { id: 'weekly1', cat: 'otros', tier: 1, name: 'Retador', desc: 'Juega un Desafío semanal.', value: st('weekly'), goal: 1, reward: { t1: 3 } },
+    { id: 'mv30', cat: 'combate', tier: 1, name: 'Repertorio', desc: 'Usa 30 ataques distintos.', value: count('mvUsed'), goal: 30, reward: { t1: 3 } },
+    { id: 'mv80', cat: 'combate', tier: 2, name: 'Gran repertorio', desc: 'Usa 80 ataques distintos.', value: count('mvUsed'), goal: 80, reward: { t10: 1 } },
+    { id: 'mvAll', cat: 'combate', tier: 3, name: 'Movedex completa', desc: 'Usa todos los ataques del juego.', value: count('mvUsed'), goal: 999, reward: { t10: 3 }, title: 'Enciclopedia de ataques' },
     { id: 'weekly10', cat: 'otros', tier: 2, name: 'Retador incansable', desc: 'Juega 10 Desafíos semanales.', value: st('weekly'), goal: 10, reward: { t10: 1 }, title: 'Retador' }
   ];
 
@@ -96,6 +99,7 @@ G.AchDefs = (() => {
   for (const a of LIST) if (a.id === 'legAll') { a.goal = totalLegends; a.desc = `Vence a los ${totalLegends} legendarios.`; }
   // Metas que dependen de los datos del juego.
   for (const a of LIST) if (a.id === 'ownAll') { a.goal = G.DEX.length; a.desc = `Ten los ${G.DEX.length} Pokémon del juego.`; }
+  for (const a of LIST) if (a.id === 'mvAll') { a.goal = G.Moves.ALL.length; a.desc = `Usa los ${G.Moves.ALL.length} ataques del juego.`; }
   const evoTotal = Object.keys(G.Moves.EVO).length;
   for (const a of LIST) if (a.id === 'evoAll') { a.goal = evoTotal; a.desc = `Evoluciona los ${evoTotal} movimientos distintos.`; }
 

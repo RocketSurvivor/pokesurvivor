@@ -34,6 +34,7 @@ G.RunUI = (() => {
       return;
     }
     offerCb = cb; coopMode = coop;
+    choiceHead(null);
     $('lvl-num').textContent = level;
     $('lvl-wait').textContent = '';
     $('lvl-wait').classList.toggle('hidden', !coop);
@@ -300,6 +301,31 @@ G.RunUI = (() => {
     });
   }
 
+  /** Cabecera de la pantalla de cartas: la de nivel (null) u otra (cofre, camino...). */
+  function choiceHead(title, sub) {
+    $('lvl-head').classList.toggle('hidden', !!title);
+    $('lvl-head2').classList.toggle('hidden', !title);
+    $('lvl-sub').classList.toggle('hidden', !!title);
+    $('lvl-sub2').classList.toggle('hidden', !title);
+    if (title) { $('lvl-head2').textContent = G.T(title); $('lvl-sub2').textContent = G.T(sub || 'Elige una'); }
+  }
+
+  /**
+   * Otras elecciones con la misma pantalla que las cartas de nivel (cofre dorado,
+   * camino del minuto 10): no se eligen solas ni se pueden cambiar.
+   */
+  function showChoice(title, sub, list, cb) {
+    offerCb = cb; coopMode = false;
+    choiceHead(title, sub);
+    $('lvl-wait').classList.add('hidden');
+    $('cards').classList.remove('done');
+    renderCards(list);
+    $('lvl-reroll').classList.add('hidden');
+    $('lvl-reroll').onclick = null;
+    G.UI.show('scr-levelup');
+    guard($('cards'));
+  }
+
   /**
    * Cambiar las cartas: 1 vez gratis por partida y 1 más por cada jefe
    * derrotado (en grupo cuentan los jefes del equipo; cada uno tiene los suyos).
@@ -311,7 +337,7 @@ G.RunUI = (() => {
   }
 
   function reroll() {
-    if (!offers || rerollsLeft() <= 0) return;
+    if (!offers || rerollsLeft() <= 0 || !$('lvl-head2').classList.contains('hidden')) return;
     const p = G.Game.player;
     p.rerolls = (p.rerolls || 0) + 1;
     G.Audio.sfx('select');
@@ -439,6 +465,16 @@ G.RunUI = (() => {
     const ask = $('over-ask');
     if (ask) ask.querySelector('.x').onclick = () => ask.remove();
     $('btn-again').onclick = onBack;
+    // Jugar otra vez (25-10-2026): otra partida con el mismo Pokémon (o el mismo desafío), sin pasar por el menú.
+    // En grupo no: la sala decide.
+    const replay = $('btn-replay');
+    replay.classList.toggle('hidden', !!G.Social.room);
+    replay.onclick = () => {
+      G.Audio.sfx('confirm');
+      onBack();
+      if (G.Social.room || G.Game.state !== 'ui') return;
+      if (r.weekly) G.Weekly.play(); else G.Flow.play();
+    };
     if (r.caught && r.caught.length) {
       const row = $('over-caught');
       for (const c of r.caught) {
@@ -609,5 +645,5 @@ G.RunUI = (() => {
     $('btn-quit').onclick = onQuit;
   }
 
-  return { showLevelUp, reroll, showItemChoice, showBond, pickBond, bondBack, pick, setWaiting, closeLevelUp, showOver, wirePause, showPause, bestCard };
+  return { showLevelUp, reroll, showItemChoice, showBond, pickBond, bondBack, pick, setWaiting, closeLevelUp, showOver, wirePause, showPause, bestCard, showChoice };
 })();
