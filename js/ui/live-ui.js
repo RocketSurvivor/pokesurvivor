@@ -9,7 +9,9 @@
  */
 G.LiveUI = (() => {
   const $ = G.UI.$;
-  const CHANNEL = 'https://www.youtube.com/@jpter78';
+  // (25-10-2026) El canal de Rocket Petru. El aviso de «EN DIRECTO» miraba el canal del autor
+  // original (live.json de su repositorio), así que queda apagado (LIVE_CHECK).
+  const CHANNEL = 'https://www.youtube.com/@rocketpetru', LIVE_CHECK = false;
   const SRC = 'https://raw.githubusercontent.com/JPTER78/pokesurvivor/live/live.json';
   const EVERY = 5 * 60 * 1000, STALE = 90 * 60 * 1000;
   let live = null, lastT = 0;
@@ -35,7 +37,7 @@ G.LiveUI = (() => {
 
   async function check() {
     // Sólo con la pestaña a la vista y como mucho una vez cada 5 min.
-    if (document.hidden || Date.now() - lastT < EVERY - 5000) return;
+    if (!LIVE_CHECK || document.hidden || Date.now() - lastT < EVERY - 5000) return;
     lastT = Date.now();
     try {
       const r = await fetch(SRC, { cache: 'no-cache' });
