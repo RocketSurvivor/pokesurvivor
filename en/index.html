@@ -77,8 +77,8 @@
   ]
 }
 </script>
-<link rel="stylesheet" href="css/style.css?v=5c8e66d447">
-<script src="js/core/locales.js?v=1608fb06b6"></script>
+<link rel="stylesheet" href="css/style.css?v=b16520db80">
+<script src="js/core/locales.js?v=21565651ee"></script>
 <script src="js/noframe.js"></script>
 </head>
 <body>
@@ -186,10 +186,8 @@
         <button class="menu-item" data-go="shop">Tienda Kecleon<small>Mentas, Cápsulas y MT</small></button>
         <button class="menu-item" data-go="bag">Mochila<small id="menu-bag-sub">Vacía</small></button>
         <button class="menu-item" data-go="gacha">Gacha<small>9 regiones · Pokémon y shinies</small></button>
-        <button class="menu-item" data-go="weekly">Desafío<small>Semanal: reglas iguales para todos</small></button>
-        <button class="menu-item" data-go="goals">Misiones<small id="menu-goals-sub">Misiones, logros y perfil</small></button>
+        <button class="menu-item" data-go="hub">Retos<small id="menu-hub-sub">Misiones, desafío, ranking y guía</small></button>
         <button class="menu-item" data-go="friends">Amigos<small id="menu-friends-sub">Juega en grupo, hasta 4</small></button>
-        <button class="menu-item" data-go="rank">Ranking<small>Quién aguanta más</small></button>
         <button class="menu-item" data-go="settings">Ajustes<small>Sonido, gráficos, controles y cuenta</small></button>
       </div>
     </div>
@@ -449,6 +447,26 @@
 </div>
 
 <!-- ====== Colección ====== -->
+<section id="scr-hub" class="scr dim hidden">
+  <div class="box">
+    <div class="row between"><h2>Retos</h2><button class="btn small ghost" data-back>Volver</button></div>
+    <div class="hub-cards">
+      <button class="panel hub-card" data-hub="goals" type="button"><span class="hub-ico" data-ico="medal3"></span><b>Misiones</b><small id="menu-goals-sub">Misiones, logros y perfil</small></button>
+      <button class="panel hub-card" data-hub="weekly" type="button"><span class="hub-ico" data-ico="clock"></span><b>Desafío semanal</b><small>El mismo Pokémon y las mismas reglas para todos</small></button>
+      <button class="panel hub-card" data-hub="rank" type="button"><span class="hub-ico" data-ico="trophy"></span><b>Ranking</b><small>Quién aguanta más</small></button>
+      <button class="panel hub-card" data-hub="guide" type="button"><span class="hub-ico" data-ico="book"></span><b>Guía</b><small>Cómo funciona todo lo nuevo</small></button>
+    </div>
+  </div>
+</section>
+
+<section id="scr-guide" class="scr dim hidden">
+  <div class="box wide">
+    <div class="row between"><h2>Guía de novedades</h2><button class="btn small ghost" data-back>Volver</button></div>
+    <p class="sub">Lo que se ha añadido al juego y cómo funciona. Puedes volver aquí desde Retos.</p>
+    <div id="guide-cards" class="guide-cards"></div>
+  </div>
+</section>
+
 <section id="scr-mode" class="scr dim hidden">
   <div class="box">
     <div class="row between"><h2>Elige el modo</h2><button class="btn small ghost" data-back>Volver</button></div>
@@ -687,6 +705,6 @@
 </section>
 
 <!-- datos generados -->
-<script defer src="js/app.min.js?v=cbeb120f07"></script>
+<script defer src="js/app.min.js?v=4018422450"></script>
 </body>
 </html>

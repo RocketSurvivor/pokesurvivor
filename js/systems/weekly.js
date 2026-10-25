@@ -26,7 +26,21 @@ G.Weekly = (() => {
                   const m = G.Moves.BY_ID[id];
                   if (m && m.type !== t && m.kind !== 'buff') pl.banned.add(id);
                 }
-              } }
+              } },
+    // (25-10-2026, más reglas para que no se repitan tan pronto)
+    lead:   { name: 'Pies de plomo', desc: 'Vas un 15 % más lento, pero pegas un 20 % más.',
+              apply: pl => { pl.spdMul *= 0.85; pl.atkMul *= 1.2; } },
+    regen:  { name: 'Regeneración', desc: 'Recuperas 2 de vida por segundo, pero los enemigos tienen un 20 % más de vida.', ehp: 1.2,
+              apply: pl => { pl.regenFlat += 2; } },
+    study:  { name: 'Aprendiz rápido', desc: 'Ganas un 50 % más de experiencia, pero los enemigos son un 15 % más rápidos.', espd: 1.15,
+              apply: pl => { pl.xpMul *= 1.5; } },
+    giant:  { name: 'Jefes gigantes', desc: 'Los jefes y legendarios tienen un 50 % más de vida.', bhp: 1.5 },
+    rapid:  { name: 'Recarga rápida', desc: 'Tus ataques recargan un 25 % antes, pero tienes un 30 % menos de vida.',
+              apply: pl => { pl.cdMul *= 0.75; pl.maxHp = Math.max(1, Math.round(pl.maxHp * 0.7)); pl.hp = pl.maxHp; } },
+    magnet: { name: 'Imán gigante', desc: 'Recoges la experiencia desde el triple de lejos, pero los enemigos pegan un 20 % más.', edmg: 1.2,
+              apply: pl => { pl.magnet *= 3; } },
+    naked:  { name: 'Sin defensas', desc: 'Recibes un 25 % más de daño, pero ganas un 30 % más de experiencia.',
+              apply: pl => { pl.dmgReduce -= 0.25; pl.xpMul *= 1.3; } }
   };
   let active = false, cur = null;
 
@@ -44,7 +58,9 @@ G.Weekly = (() => {
     // Pokémon con sprite, ni legendario ni mega (que todos lo puedan llevar bien).
     const pool = G.DEX.filter(p => !p.leg && !p.mega && G.SPRITE_META[p.dex]).sort((a, b) => a.dex - b.dex);
     const mon = pool[Math.floor(r() * pool.length)];
-    const keys = Object.keys(MODS);
+    // (Las 7 reglas nuevas entran desde la semana 44 de 2026: la 43 sigue con las suyas.)
+    const OLD = ['tough', 'fast', 'swarm', 'strong', 'glass', 'mono'];
+    const keys = id <= 'w2026-43' ? OLD.slice() : Object.keys(MODS);
     const a = keys.splice(Math.floor(r() * keys.length), 1)[0];
     const b = keys[Math.floor(r() * keys.length)];
     cur = { id, dex: mon.dex, mods: [a, b].map(k => Object.assign({ id: k }, MODS[k])) };

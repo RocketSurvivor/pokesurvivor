@@ -671,6 +671,7 @@ G.Game = (() => {
     if (p.kind === 'revive') {
       // Como mucho uno guardado: si ya tienes, el segundo te cura entera.
       if (!mine) return;
+      G.Guide.tip('revive');
       if ((pl.revives || 0) < 1) { pl.revives = 1; G.FX.dmgText(who.x, who.y - who.bodyH - 8, G.T('¡Revivir!'), '#ffe680', true); G.Spawner.say('¡Tienes un Revivir! Si caes, te levanta', 2.6, true); }
       else { pl.hp = pl.maxHp; G.FX.dmgText(who.x, who.y - who.bodyH - 8, G.T('¡Vida al máximo!'), '#5fe08a', true); }
       G.FX.ring(who.x, who.y, 6, 60, '#ffe680', 0.5, 4);
@@ -753,7 +754,7 @@ G.Game = (() => {
     }
     if (state === 'ui') {
       // Esc en una subpantalla del menú vuelve al menú.
-      if (G.Input.tap('escape') && !G.UI.isOpen('scr-profile') && ['scr-dex', 'scr-upgrades', 'scr-shop', 'scr-bag', 'scr-gacha', 'scr-friends', 'scr-rank', 'scr-goals', 'scr-movedex', 'scr-weekly', 'scr-adminstats', 'scr-mode'].some(G.UI.isOpen)
+      if (G.Input.tap('escape') && !G.UI.isOpen('scr-profile') && ['scr-dex', 'scr-upgrades', 'scr-shop', 'scr-bag', 'scr-gacha', 'scr-friends', 'scr-rank', 'scr-goals', 'scr-movedex', 'scr-weekly', 'scr-adminstats', 'scr-mode', 'scr-hub', 'scr-guide'].some(G.UI.isOpen)
           && document.getElementById('pull-fx').classList.contains('hidden')) G.MenuUI.open();
       return;
     }
@@ -1243,6 +1244,7 @@ G.Flow = {
     G.Audio.music('village');
     G.MenuUI.open();
     if (!G.LoginUI.updateNotices()) G.LoginUI.offerRecovery();
+    G.Guide.maybeShow();
   },
   /** Al cerrar el resumen: a la sala si sigues en una, si no al menú. */
   afterRun() {

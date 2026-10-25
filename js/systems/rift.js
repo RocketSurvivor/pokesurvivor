@@ -91,6 +91,7 @@ G.Rift = (() => {
     // (El aviso grande lo dibuja hud.js mientras rift.t < 4,5 s.)
     G.Audio.sfx('rift');
     G.FX.ring(x, y, 6, 80, trio ? '#6dff8a' : '#b48aff', 0.7, 5);
+    if (trio) G.Guide.tip('green');
   }
 
   function enter() {

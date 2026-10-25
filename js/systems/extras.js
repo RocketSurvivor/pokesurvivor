@@ -59,6 +59,7 @@ G.GoldChest = (() => {
         chest.guards.push(e.id);
       }
       G.Spawner.say('¡Un cofre dorado! Vence a sus guardianes para abrirlo', 3.4);
+      G.Guide.tip('chest');
       G.Audio.sfx('shiny');
       G.FX.ring(x, y, 8, 90, '#ffd23f', 0.7, 5);
       return;
@@ -162,6 +163,7 @@ G.Paths = (() => {
   function update(pl, time) {
     if (done || !pl || pl.dead || time < AT || G.Rift.inArena || G.Judgment.active) return;
     done = true;
+    G.Guide.tip('path');
     const pick = G.U.pickN(PATHS, 3);
     G.Game.offerChoice('Elige tu camino', 'Dura toda la partida', pick.map(p => ({
       id: p.id, icon: p.icon, color: p.color, tag: G.T('Camino'), title: G.T(p.title), desc: G.T(p.desc),
@@ -207,6 +209,7 @@ G.BiomeFx = (() => {
     if (!(b in DUR)) return;
     ev = { b, t: 0, dur: DUR[b], acc: 1.2 };
     G.Spawner.say(NAME[b], 3);
+    G.Guide.tip('biome');
     G.Audio.sfx(b === 0 ? 'biome' : 'boss');
     if (b !== 0) G.Camera.kick(0.6);
   }
@@ -327,6 +330,7 @@ G.ZoneBoss = (() => {
     e.zoneBoss = z;
     e.ai = null;                  // se rehace con su ataque de zona (Enemy.bossInit)
     G.Spawner.say(G.I18n.f('¡Jefe de zona: {x}!', G.T(e.name)), 3.2);
+    G.Guide.tip('zoneboss');
   }
 
   return { reset, update, color, type, ZONES, debugSpawn() { spawn(G.Tiles.zoneOf(G.World.biome), G.Game.st.time || 0); } };
@@ -354,7 +358,7 @@ G.Season = (() => {
   /** Al empezar la partida: +10 % de daño si tu Pokémon es del tipo de la temporada. */
   function applyPlayer(pl) {
     pl.season = fits(pl.mon);
-    if (pl.season) pl.atkMul *= 1.1;
+    if (pl.season) { pl.atkMul *= 1.1; if (!pl.weekly) setTimeout(() => G.Guide.tip('season'), 2500); }
   }
 
   function update(pl, time) {

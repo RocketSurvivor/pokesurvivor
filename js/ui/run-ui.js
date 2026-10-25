@@ -35,6 +35,7 @@ G.RunUI = (() => {
     }
     offerCb = cb; coopMode = coop;
     choiceHead(null);
+    if (level >= 3) G.Guide.tip('auto');
     $('lvl-num').textContent = level;
     $('lvl-wait').textContent = '';
     $('lvl-wait').classList.toggle('hidden', !coop);
@@ -163,7 +164,7 @@ G.RunUI = (() => {
   }
 
   /** Controles de la mejora automática en el menú de pausa. */
-  const autoOpen = { stats: false, moves: false };
+  const autoOpen = { main: false, stats: false, moves: false };     // (plegado por defecto: la pausa estaba muy llena)
   // Para ordenar: tocas uno (se marca) y luego otro de la misma lista, y se cambian de sitio.
   let autoSel = null;            // { g: 'cat' | 'stat' | 'move', i }
   function renderAuto() {
@@ -195,7 +196,7 @@ G.RunUI = (() => {
     box.innerHTML = `
       <div class="auto-row"><b>${G.T('Mejora automática')}</b>
         <button type="button" class="btn small ${cfg.on ? 'gold' : 'ghost'}" id="auto-on">${cfg.on ? G.T('Activada') : G.T('Desactivada')}</button></div>
-      <div class="${cfg.on ? '' : 'hidden'}">
+      <details id="auto-d-main" class="${cfg.on ? '' : 'hidden'}" ${autoOpen.main ? 'open' : ''}><summary>${G.T('Orden y preferencias')}</summary>
         <p class="sub" style="margin:4px 0 0;font-size:12px">${G.T('Elige sola las cartas al subir de nivel. Prioridad (lo de arriba primero):')}</p>
         <p class="sub auto-hint">${G.T('Para cambiar el orden, toca uno y luego otro: se intercambian.')}</p>
         ${dex ? `<p class="sub" style="margin:2px 0 0;font-size:11px">${G.I18n.f('Este orden es sólo de {x}.', G.T(G.DEX_BY[dex].name))}</p>` : ''}
@@ -211,7 +212,7 @@ G.RunUI = (() => {
           ${cfg.moves.length ? `<button type="button" class="btn small ghost" id="auto-mreset">${G.T('Volver al orden automático')}</button>` : ''}`
           : `<p class="sub" style="margin:4px 0;font-size:12px">${G.T('Empieza una partida para ordenar sus ataques.')}</p>`}
         </details>
-      </div>`;
+      </details>`;
     box.querySelector('#auto-on').onclick = () => save({ on: !cfg.on });
     box.querySelectorAll('[data-preset]').forEach(b => b.onclick = () => {
       G.Audio.sfx('select');
@@ -221,6 +222,7 @@ G.RunUI = (() => {
     });
     box.querySelector('#auto-d-stats').ontoggle = e => { autoOpen.stats = e.target.open; };
     box.querySelector('#auto-d-moves').ontoggle = e => { autoOpen.moves = e.target.open; };
+    box.querySelector('#auto-d-main').ontoggle = e => { autoOpen.main = e.target.open; };
     const reset = box.querySelector('#auto-mreset');
     if (reset) reset.onclick = () => save({ moves: [] });
     const swap = (grp, i, j) => {

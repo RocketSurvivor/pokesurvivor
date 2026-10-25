@@ -10,7 +10,7 @@ G.MenuUI = (() => {
   const SORTS = [['num', 'Nº'], ['name', 'Nombre'], ['rar', 'Rareza'], ['new', 'Recién conseguidos'], ['used', 'Más usados']];
 
   function init() {
-    const ICON = { play: 'ball', dex: 'book', upgrades: 'up', shop: 'shop', bag: 'bag', gacha: 'ball4', goals: 'medal3', weekly: 'clock', friends: 'friends', rank: 'trophy', settings: 'gear' };
+    const ICON = { play: 'ball', dex: 'book', upgrades: 'up', shop: 'shop', bag: 'bag', gacha: 'ball4', goals: 'medal3', weekly: 'clock', hub: 'medal3', friends: 'friends', rank: 'trophy', settings: 'gear' };
     document.querySelectorAll('#scr-menu [data-go]').forEach(b => {
       b.insertAdjacentHTML('afterbegin', `<span class="mi-ico">${G.Icons.html(ICON[b.dataset.go], 26)}</span>`);
       b.dataset.sfx = b.dataset.go === 'play' ? 'confirm' : 'click';
@@ -24,12 +24,26 @@ G.MenuUI = (() => {
         else if (go === 'gacha') G.GachaUI.open();
         else if (go === 'goals') G.GoalsUI.open();
         else if (go === 'weekly') G.WeeklyUI.open();
+        else if (go === 'hub') G.UI.show('scr-hub', true);
         else if (go === 'friends') G.FriendsUI.open();
         else if (go === 'rank') G.RankingUI.open();
         else if (go === 'settings') G.SettingsUI.open();
       };
     });
     document.querySelectorAll('[data-back]').forEach(b => { b.onclick = open; });
+    // Retos (25-10-2026): Misiones, Desafío semanal, Ranking y Guía en una sola entrada del menú.
+    document.querySelectorAll('#scr-hub [data-hub]').forEach(b => {
+      const ic = b.querySelector('.hub-ico');
+      if (ic) ic.innerHTML = G.Icons.html(ic.dataset.ico, 30);
+      b.onclick = () => {
+        G.Audio.sfx('click');
+        const k = b.dataset.hub;
+        if (k === 'goals') G.GoalsUI.open();
+        else if (k === 'weekly') G.WeeklyUI.open();
+        else if (k === 'rank') G.RankingUI.open();
+        else G.Guide.open();
+      };
+    });
     G.Social.on(() => { if (G.UI.isOpen('scr-menu')) socialLine(); });
     $('btn-logout').onclick = () => {
       if (G.DB.guest && !confirm('Eres invitado: se perderá todo el progreso. ¿Salir?')) return;
@@ -83,6 +97,8 @@ G.MenuUI = (() => {
     const pend = G.Progress.pending();
     $('menu-goals-sub').textContent = pend ? pend + (pend === 1 ? ' premio por recoger' : ' premios por recoger') : 'Misiones, logros y perfil';
     $('menu-goals-sub').classList.toggle('gold', pend > 0);
+    $('menu-hub-sub').textContent = pend ? $('menu-goals-sub').textContent : 'Misiones, desafío, ranking y guía';
+    $('menu-hub-sub').classList.toggle('gold', pend > 0);
     // Con cuenta en la nube: amigos en línea, invitaciones y (una vez) el apodo.
     if (G.DB.online && !G.Social.started) {
       G.Social.start().then(r => {

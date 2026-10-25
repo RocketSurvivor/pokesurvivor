@@ -60,7 +60,7 @@
       this.bodyH = G.Sprites.bodyHeight(def.dex, this.scale);
 
       // (Desafío semanal: sus reglas, ver systems/weekly.js; fuera del desafío es 1.)
-      this.maxHp = Math.round(def.hp * sc.hp * (G.Weekly ? G.Weekly.mult('ehp') : 1));
+      this.maxHp = Math.round(def.hp * sc.hp * (G.Weekly ? G.Weekly.mult('ehp') * (boss ? G.Weekly.mult('bhp') : 1) : 1));
       this.hp = this.maxHp;
       this.spd = def.spd * sc.spd * (G.Weekly ? G.Weekly.mult('espd') : 1);
       this.dmg = def.dmg * sc.dmg * (G.Weekly ? G.Weekly.mult('edmg') : 1);
